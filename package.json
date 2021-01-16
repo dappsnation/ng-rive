@@ -30,14 +30,17 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^11.0.0",
+    "@angular/cdk": "^11.0.4",
     "@angular/common": "^11.0.0",
     "@angular/compiler": "^11.0.0",
     "@angular/core": "^11.0.0",
     "@angular/forms": "^11.0.0",
+    "@angular/material": "^11.0.4",
     "@angular/platform-browser": "^11.0.0",
     "@angular/platform-browser-dynamic": "^11.0.0",
     "@angular/router": "^11.0.0",
     "@nrwl/angular": "11.1.5",
+    "rive-canvas": "^0.6.7",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "^0.10.2"
@@ -73,5 +76,10 @@
     "ts-node": "~9.1.1",
     "tslint": "~6.1.0",
     "typescript": "~4.0.3"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
   }
 }
