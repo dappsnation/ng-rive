@@ -11,7 +11,7 @@ interface RivePlayerState {
   /** Reset automatically to 0 when play is down if mode is "one-shot" */
   autoreset: boolean;
   /** override mode of the animation */
-  mode: 'loop' | 'ping-pong' | 'one-shot';
+  mode?: 'loop' | 'ping-pong' | 'one-shot';
   /** Work Start */
   start: number;
   /** Work End */
@@ -24,7 +24,6 @@ function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerSta
     direction: 1,
     playing: false,
     mix: 1,
-    mode: 'one-shot',
     autoreset: false,
     start: 0,
     ...state

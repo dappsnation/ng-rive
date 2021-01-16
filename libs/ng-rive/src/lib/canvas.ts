@@ -90,6 +90,7 @@ export class RiveCanvasDirective {
       this.animations[name] = new this.rive.LinearAnimationInstance(anim);
       // Looks like the first time value is the start in frame (instead of sec)
       this.animations[name].time = frameToSec(this.animations[name].time, anim.fps);
+      console.log(name, this.animations[name].time);
     }
     return this.animations[name];
   }
@@ -136,7 +137,6 @@ export class RiveCanvasDirective {
       const { direction, speed, autoreset, mode, start, end } = state;
       let delta = (time / 1000) * speed * direction;
       
-
       // When player hit floor
       if (anim.time + delta < start) {
         if (mode === 'loop' && direction === -1 && end) {

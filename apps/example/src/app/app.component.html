@@ -11,6 +11,7 @@
         [(play)]="animation.playing"
         [(time)]="animation.time"
         [mode]="animation.mode"
+        autoreset
       ></riv-player>
     </ng-container>
   </canvas>
@@ -25,6 +26,7 @@
       <mat-form-field>
         <mat-label>Mode</mat-label>
         <mat-select [(value)]="animation.mode">
+          <mat-option>None</mat-option>
           <mat-option value="one-shot">
             <span>One Shot</span>
           </mat-option>

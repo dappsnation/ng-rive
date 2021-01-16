@@ -21,7 +21,7 @@ function createAnimation(name: string, start: number = 0, end?: number) {
     start,
     end,
     playing: false,
-    time: 0,
+    time: start,
     speed: 1,
     mix: 0.5,
   }

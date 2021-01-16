@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { RiveModule } from './rive/module';
+import { RiveModule, RIVE_FOLDER } from 'ng-rive';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatSliderModule } from '@angular/material/slider';
@@ -24,7 +24,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatSelectModule,
     MatFormFieldModule,
   ],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

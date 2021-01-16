@@ -1,9 +1,9 @@
-interface RiveOptions {
-  locateFile(file: string): string
-}
+// interface RiveOptions {
+//   locateFile(file: string): string
+// }
 
-declare function Rive(options: RiveOptions): Promise<RiveCanvas>;
-export default Rive;
+// declare function Rive(options: RiveOptions): Promise<RiveCanvas>;
+// export default Rive;
 
 
 export interface RiveCanvas {
