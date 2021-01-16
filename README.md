@@ -20,12 +20,12 @@ import { RiveModule } from 'ng-rive';
 export class MyModule { }
 ```
 
-3. Add your .riv file in your assets
+3. Add your .riv file in your assets folder
 
 ```
-|-- assets
-|   |--rive
-|      |-- knight.riv
+assets
+└── rive
+    └── knight.riv
 ```
 If you want to change the path you can specify it with the `RIVE_FOLDER` provider: 
 ```typescript

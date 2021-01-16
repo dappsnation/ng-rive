@@ -8,5 +8,8 @@
   },
   "dependencies": {
     "tslib": "^2.0.0"
+  },
+  "author": {
+    "name": "GrandSchtroumpf"
   }
 }
