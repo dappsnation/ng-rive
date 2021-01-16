@@ -1,98 +1,91 @@
-# NgRive
+# ng-rive
 
-This project was generated using [Nx](https://nx.dev).
+## Get started
+1. Install :
+```
+npm install ng-rive rive-canvas
+```
 
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+2. Import `RiveModule`: 
+```typescript
+import { RiveModule } from 'ng-rive';
 
-🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
+@NgModule({
+  declarations: [MyComponent],
+  imports: [
+    CommonModule,
+    RiveModule,
+  ],
+})
+export class MyModule { }
+```
 
-## Quick Start & Documentation
+3. Add your .riv file in your assets
 
-[Nx Documentation](https://nx.dev/angular)
+```
+|-- assets
+|   |--rive
+|      |-- knight.riv
+```
+If you want to change the path you can specify it with the `RIVE_FOLDER` provider: 
+```typescript
+import { RiveModule, RIVE_FOLDER } from 'ng-rive';
+@NgModule({
+  declarations: [MyComponent],
+  imports: [
+    CommonModule,
+    RiveModule,
+  ],
+  providers: [{
+    provide: RIVE_FOLDER,
+    useValue: 'assets/animations',
+  }]
+})
+export class MyModule { }
+```
 
-[10-minute video showing all Nx features](https://nx.dev/angular/getting-started/what-is-nx)
+4. Use in template : 
+```html
+<canvas riv="knight" width="500" height="500">
+  <riv-player name="idle" play></riv-player>
+</canvas>
+```
 
-[Interactive Tutorial](https://nx.dev/angular/tutorial/01-create-application)
+Let's take a quick look : 
+```html
+<canvas riv="knight" width="500" height="500">
+```
+This will load the file at the folder destination and attach it to the canvas.
 
-## Adding capabilities to your workspace
+```html
+<riv-player name="idle" play></riv-player>
+```
+This will load the animation "idle" and play it. The default behaviour will apply (if the animation has been built in "loop" mode, the animation will loop).
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+## Player
+You can use `riv-player` to manipulate the animation : 
+#### Input / Output
+- `[(time)]`: Bind the animation to a specific time
+- `[(play)]`: Bind the player to a boolean (playing: `true`, paused: `false`).
+- `[(reverse)]`: Bind the player direction to a boolean
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+#### Input
+- `[name]`: The name of the animation in the file loaded by the canvas.
+- `[mode]`: Force a mode: `"one-shot"`, `"loop"` or `"ping-pong"` (if `undefined`, default mode is used).
+- `[mix]`: The weight of this application over another in the same `Artboard`.
+- `[speed]`: A multiplicator for the speed of the animation (default to 1).
+- `[start]`: Starting time (in sec) of the animation in the editor (default to 0).
+- `[end]`: Ending time (in sec) of the animation in the editor.
+- `[autoreset]`: If `true`, will reset the animation to `start` when done (only for `one-shot` mode).
 
-Below are our core plugins:
+## Multiple Animations
+You can run multiple animations within the same canvas : 
+```html
+<canvas riv="knight">
+  <riv-player name="idle" play></riv-player>
+  <riv-player name="day_night" play mode="ping-pong" speed="0.5"></riv-player>
+</canvas>
+```
 
-- [Angular](https://angular.io)
-  - `ng add @nrwl/angular`
-- [React](https://reactjs.org)
-  - `ng add @nrwl/react`
-- Web (no framework frontends)
-  - `ng add @nrwl/web`
-- [Nest](https://nestjs.com)
-  - `ng add @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `ng add @nrwl/express`
-- [Node](https://nodejs.org)
-  - `ng add @nrwl/node`
-
-There are also many [community plugins](https://nx.dev/nx-community) you could add.
-
-## Generate an application
-
-Run `ng g @nrwl/angular:app my-app` to generate an application.
-
-> You can use any of the plugins above to generate applications as well.
-
-When using Nx, you can create multiple applications and libraries in the same workspace.
-
-## Generate a library
-
-Run `ng g @nrwl/angular:lib my-lib` to generate a library.
-
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are sharable across libraries and applications. They can be imported from `@ng-rive/mylib`.
-
-## Development server
-
-Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng g component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx dep-graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
-
-## ☁ Nx Cloud
-
-### Computation Memoization in the Cloud
-
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+## Known issues
+Some animations defaulted to "loop" might encounter jumps when using with `start`.
