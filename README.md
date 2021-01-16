@@ -62,6 +62,15 @@ This will load the file at the folder destination and attach it to the canvas.
 ```
 This will load the animation "idle" and play it. The default behaviour will apply (if the animation has been built in "loop" mode, the animation will loop).
 
+5. If you see the error `Error: Can't resolve 'fs'`
+Add this in your `package.json`: 
+```json
+"browser": {
+  "fs": false,
+  "path": false
+}
+```
+
 ## Player
 You can use `riv-player` to manipulate the animation : 
 #### Input / Output
