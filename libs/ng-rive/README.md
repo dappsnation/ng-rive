@@ -1,5 +1,7 @@
 # ng-rive
 
+Angular library for running Rive animation on the web.
+
 ## Get started
 1. Install :
 ```
@@ -71,6 +73,16 @@ Add this in your `package.json`:
   "path": false
 }
 ```
+
+## Canvas
+The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag : 
+
+#### Input
+- `[riv]`: The name of the `.riv` file. Full path is managed by the `RIVE_FOLDER` token.
+- `[artboard]`: The name of the artboard to used. If not specified, the default one is used.
+- `[lazy]`: If provided, the file will only be loaded when canvas is visible in the viewport
+
+⚠️ The `lazy` input use the `IntersectionObserver` API which will not work in all browser.
 
 ## Player
 You can use `riv-player` to manipulate the animation : 
