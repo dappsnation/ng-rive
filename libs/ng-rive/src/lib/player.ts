@@ -35,7 +35,6 @@ function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerSta
   exportAs: 'rivPlayer'
 })
 export class RivePlayer {
-  private _lazy: boolean = false;
   distance = new BehaviorSubject<number | null>(null);
   state = new BehaviorSubject<RivePlayerState>(getRivePlayerState());
 

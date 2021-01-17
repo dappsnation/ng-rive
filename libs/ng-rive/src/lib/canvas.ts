@@ -1,6 +1,6 @@
 import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
 import { Observable, Subscription, of, merge } from 'rxjs';
-import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import type { RivePlayer } from './player';
 import { RiveService } from './service';
 import { Artboard, CanvasRenderer, LinearAnimationInstance, RiveCanvas, File } from './types';
@@ -18,17 +18,20 @@ const animationFrame = new Observable<number>((subject) => {
 });
 
 // Observable that trigger once when element is visible
-const onVisible = (element: HTMLElement) => new Observable((subscriber) => {
-  if (!('IntersectionObserver' in window)) return subscriber.complete();
+const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber) => {
+  if (!('IntersectionObserver' in window)) return subscriber.next(true);
+  let isVisible = false;
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting || entry.intersectionRatio > 0) {
-        subscriber.next(true);
-        observer.disconnect();
-        subscriber.complete();
+      if (entry.isIntersecting) {
+        const visible = entry.intersectionRatio > 0.1;
+        if (visible !== isVisible) {
+          isVisible = !isVisible;
+          subscriber.next(isVisible);
+        }
       }
     });
-  }, {});
+  }, { threshold: [0, 0.1] });
   // start observing element visibility
   observer.observe(element);
 })
@@ -58,6 +61,8 @@ export class RiveCanvasDirective {
 
   private animations: Record<string, LinearAnimationInstance> = {};
 
+  public isVisible: Observable<boolean>;
+
   @Input('riv') url!: string;
   @Input('artboard') artboardName?: string;
     
@@ -76,6 +81,10 @@ export class RiveCanvasDirective {
     const ctx = this.canvas.getContext('2d');
     if (!ctx) throw new Error('Could not find context of canvas');
     this.ctx = ctx;
+    this.isVisible = onVisible(this.canvas).pipe(
+      shareReplay(1),
+      tap(console.log),
+    );
   }
 
   get isLazy() {
@@ -203,7 +212,9 @@ export class RiveCanvasDirective {
     );
 
     // Wait for the canvas to be visible
-    const onReady = this.isLazy ? onVisible(this.canvas) : of(true);
+    const onReady = this.isLazy
+      ? this.isVisible.pipe(filter(visible => !!visible), take(1))
+      : of(true);
 
     const sub = onReady.pipe(
       switchMap(() => this.load()),
