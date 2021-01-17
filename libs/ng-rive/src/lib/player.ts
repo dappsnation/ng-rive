@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, Output } from "@angular/core";
+import { Directive, EventEmitter, Input, NgZone, Output } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { RiveCanvasDirective } from './canvas';
 
@@ -35,13 +35,17 @@ function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerSta
   exportAs: 'rivPlayer'
 })
 export class RivePlayer {
+  private _lazy: boolean = false;
   distance = new BehaviorSubject<number | null>(null);
   state = new BehaviorSubject<RivePlayerState>(getRivePlayerState());
 
   @Input() set name(name: string) {
     // TODO: unregister old name if any
-    this.rive.register(name, this);
+    this.zone.runOutsideAngular(() => {
+      this.rive.register(name, this);
+    });
   }
+
   @Input() set mix(value: number | string) {
     const mix = typeof value === 'string' ? parseFloat(value) : value; 
     if (mix >= 0 && mix <= 1) this.update({ mix });
@@ -84,19 +88,21 @@ export class RivePlayer {
       this.update({ autoreset: false });
     }
   }
+  
   @Input() set time(value: number | string) {
     const time = typeof value === 'string' ? parseFloat(value) : value;
     if (typeof time === 'number') this.distance.next(time);
   }
-  
-
 
 
   @Output() timeChange = new EventEmitter<number>();
   @Output() playChange = new EventEmitter<boolean>();
   @Output() revertChange = new EventEmitter<boolean>();
 
-  constructor(private rive: RiveCanvasDirective) {}
+  constructor(
+    private zone: NgZone,
+    private rive: RiveCanvasDirective
+  ) {}
 
   update(state: Partial<RivePlayerState>) {
     const next = getRivePlayerState({...this.state.getValue(), ...state })

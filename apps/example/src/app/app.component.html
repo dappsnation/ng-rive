@@ -1,6 +1,6 @@
 <article *ngFor="let file of files; trackBy: trackByName">
   <h3>{{ file.name }}</h3>
-  <canvas [riv]="file.name" width="500" height="500">
+  <canvas [riv]="file.name" width="500" height="500" lazy>
     <ng-container *ngFor="let animation of file.animations">
       <riv-player
         [start]="animation.start"

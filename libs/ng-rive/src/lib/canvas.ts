@@ -1,20 +1,37 @@
-import { Directive, ElementRef, EventEmitter, Input, Output } from '@angular/core';
-import { Observable, combineLatest, Subscription } from 'rxjs';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { Observable, Subscription, of, merge } from 'rxjs';
+import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
 import type { RivePlayer } from './player';
 import { RiveService } from './service';
 import { Artboard, CanvasRenderer, LinearAnimationInstance, RiveCanvas, File } from './types';
 
-const animationFrame = new Observable<number>((observer) => {
+// Observable that trigger on every frame
+const animationFrame = new Observable<number>((subject) => {
   let start = 0;
   const run = (time: number) => {
     const delta = time - start;
     start = time;
-    observer.next(delta);
+    subject.next(delta);
     requestAnimationFrame(run)
   }
   requestAnimationFrame(run);
 });
+
+// Observable that trigger once when element is visible
+const onVisible = (element: HTMLElement) => new Observable((subscriber) => {
+  if (!('IntersectionObserver' in window)) return subscriber.complete();
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting || entry.intersectionRatio > 0) {
+        subscriber.next(true);
+        observer.disconnect();
+        subscriber.complete();
+      }
+    });
+  }, {});
+  // start observing element visibility
+  observer.observe(element);
+})
 
 function exist<T>(v: T | undefined | null): v is T {
   return v !== undefined && v !== null;
@@ -43,11 +60,15 @@ export class RiveCanvasDirective {
 
   @Input('riv') url!: string;
   @Input('artboard') artboardName?: string;
+    
+  @Input() lazy: boolean | '' = false;
+
 
   @Output() played = new EventEmitter<string>();
   @Output() paused = new EventEmitter<string>();
 
   constructor(
+    private zone: NgZone,
     private service: RiveService,
     element: ElementRef<HTMLCanvasElement>
   ) {
@@ -57,8 +78,12 @@ export class RiveCanvasDirective {
     this.ctx = ctx;
   }
 
+  get isLazy() {
+    return this.lazy === true || this.lazy === '';
+  }
+
   ngOnInit() {
-    this.load();
+    if (!this.isLazy) this.load();
   }
 
   ngOnDestroy() {
@@ -90,16 +115,14 @@ export class RiveCanvasDirective {
       this.animations[name] = new this.rive.LinearAnimationInstance(anim);
       // Looks like the first time value is the start in frame (instead of sec)
       this.animations[name].time = frameToSec(this.animations[name].time, anim.fps);
-      console.log(name, this.animations[name].time);
     }
     return this.animations[name];
   }
 
 
   async register(animation: string, player: RivePlayer) {
-    await this.load();
 
-    const anim = this.getAnimation(animation);
+    let anim: LinearAnimationInstance;
 
     // Apply changes on the canvas
     const applyChange = (delta: number) => {
@@ -110,7 +133,7 @@ export class RiveCanvasDirective {
       anim.advance(delta);
       anim.apply(this.artboard, player.state.getValue().mix);
       this.artboard.advance(delta);
-      player.timeChange.next(anim.time);
+      this.zone.run(() => player.timeChange.next(anim.time));
 
       // Render frame on canvas
       const frame = { minX: 0, minY: 0, maxX: this.canvas.width, maxY: this.canvas.height };
@@ -121,58 +144,74 @@ export class RiveCanvasDirective {
       this.ctx.restore();
     }
 
+    // Trigger change when player time has been manually changed
     const onTimeChange = player.distance.pipe(
       filter(exist),
-      distinctUntilChanged()
-    ).subscribe(time => {
-      const delta = time - anim.time;
-      applyChange(delta);
-    });
-    this.subs.push(onTimeChange);
+      filter(time => time !== anim.time),
+      distinctUntilChanged(),
+      map(time => time - anim.time)
+    );
     
+    // Trigger change on every frame if player is playing
     let lastTime: number;
-    const onFrameChange = combineLatest([ animationFrame, player.state ]).pipe(
-      filter(([ time, state ]) => state.playing)
-    ).subscribe(([ time, state ]) => {
-      const { direction, speed, autoreset, mode, start, end } = state;
-      let delta = (time / 1000) * speed * direction;
-      
-      // When player hit floor
-      if (anim.time + delta < start) {
-        if (mode === 'loop' && direction === -1 && end) {
-          delta = end;
-        } else if (mode === 'ping-pong') {
-          lastTime = anim.time + delta;
-          player.update({ direction: 1 });
-          player.revertChange.emit(false);
-        } else if (mode === 'one-shot') {
-          player.update({ playing: false });
-          player.playChange.emit(false);
-          if (autoreset && end) delta = end - anim.time;
+    const onFrameChange = player.state.pipe(
+      switchMap((state) => {
+        if (state.playing) {
+          return animationFrame.pipe(map((time) => [state, time] as const));
+        } else {
+          return of(null)
         }
-      }
-
-      // When player hit last frame (workaround awaiting for new version with workEnd)
-      const workEnded = (end && anim.time + delta > end) || (!end && anim.time === lastTime);
-      if (workEnded) {
-        if (mode === 'loop' && direction === 1) {
-          delta = start - anim.time;
-        } else if (mode === 'ping-pong') {
-          lastTime = anim.time + delta;
-          player.update({ direction: -1 });
-          player.revertChange.emit(true);
-        } else if (mode === 'one-shot') {
-          player.update({ playing: false });
-          player.playChange.emit(false);
-          if (autoreset) delta = start - anim.time;
+      }),
+      filter(exist),
+      map(([ state, time ]) => {
+        const { direction, speed, autoreset, mode, start, end } = state;
+        let delta = (time / 1000) * speed * direction;
+        
+        // When player hit floor
+        if (anim.time + delta < start) {
+          if (mode === 'loop' && direction === -1 && end) {
+            delta = end;
+          } else if (mode === 'ping-pong') {
+            lastTime = anim.time + delta;
+            player.update({ direction: 1 });
+            this.zone.run(() => player.revertChange.emit(false));
+          } else if (mode === 'one-shot') {
+            player.update({ playing: false });
+            this.zone.run(() => player.playChange.emit(false));
+            if (autoreset && end) delta = end - anim.time;
+          }
         }
-      }
-      lastTime = anim.time;
 
-      applyChange(delta);
+        // When player hit last frame (workaround awaiting for new version with workEnd)
+        const workEnded = (end && anim.time + delta > end) || (!end && anim.time === lastTime);
+        if (workEnded) {
+          if (mode === 'loop' && direction === 1) {
+            delta = start - anim.time;
+          } else if (mode === 'ping-pong') {
+            lastTime = anim.time + delta;
+            player.update({ direction: -1 });
+            this.zone.run(() => player.revertChange.emit(true));
+          } else if (mode === 'one-shot') {
+            player.update({ playing: false });
+            this.zone.run(() => player.playChange.emit(false));
+            if (autoreset) delta = start - anim.time;
+          }
+        }
+        lastTime = anim.time;
+        return delta;
+      })
+    );
 
-    });
-    this.subs.push(onFrameChange);
+    // Wait for the canvas to be visible
+    const onReady = this.isLazy ? onVisible(this.canvas) : of(true);
+
+    const sub = onReady.pipe(
+      switchMap(() => this.load()),
+      tap(() => anim = this.getAnimation(animation)),
+      switchMap(() => merge(onTimeChange, onFrameChange)),
+    ).subscribe(applyChange);
+
+    this.subs.push(sub);
   }
 
 }
