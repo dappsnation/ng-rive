@@ -1,52 +1,47 @@
-<canvas riv="knight" #canvas="rivCanvas" width="500" height="500">
-  <riv-player name="idle" [play]="canvas.isVisible | async"></riv-player>
-</canvas>
-<!--
-  <article *ngFor="let file of files; trackBy: trackByName">
-    <h3>{{ file.name }}</h3>
-    <canvas [riv]="file.name" width="500" height="500" lazy>
-      <ng-container *ngFor="let animation of file.animations">
-        <riv-player
-          [start]="animation.start"
-          [end]="animation.end"
-          [name]="animation.name"
-          [mix]="animation.mix"
-          [speed]="animation.speed"
-          [(play)]="animation.playing"
-          [(time)]="animation.time"
-          [mode]="animation.mode"
-          autoreset
-        ></riv-player>
-      </ng-container>
-    </canvas>
-  
-    <mat-list>
-      <mat-list-item *ngFor="let animation of file.animations; trackBy: trackByName">
-        <span mat-line>{{ animation.name }}</span>
-        <mat-slider mat-line step="0.1"
-          [min]="animation.start" [max]="animation.end || 1"
-          [value]="animation.time" (change)="animation.time = $event.value">
-        </mat-slider>
-        <mat-form-field>
-          <mat-label>Mode</mat-label>
-          <mat-select [(value)]="animation.mode">
-            <mat-option>None</mat-option>
-            <mat-option value="one-shot">
-              <span>One Shot</span>
-            </mat-option>
-            <mat-option value="ping-pong">
-              <span>Ping Pong</span>
-            </mat-option>
-            <mat-option value="loop">
-              <span>Loop</span>
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button mat-icon-button (click)="animation.playing = !animation.playing">
-          <mat-icon *ngIf="!animation.playing">play_arrow</mat-icon>
-          <mat-icon *ngIf="animation.playing">pause</mat-icon>
-        </button>
-      </mat-list-item>
-    </mat-list>
-  </article>
--->
+<article *ngFor="let file of files; trackBy: trackByName">
+  <h3>{{ file.name }}</h3>
+  <canvas [riv]="file.name" width="500" height="500" lazy>
+    <ng-container *ngFor="let animation of file.animations">
+      <riv-player
+        [start]="animation.start"
+        [end]="animation.end"
+        [name]="animation.name"
+        [mix]="animation.mix"
+        [speed]="animation.speed"
+        [(play)]="animation.playing"
+        [(time)]="animation.time"
+        [mode]="animation.mode"
+        autoreset
+      ></riv-player>
+    </ng-container>
+  </canvas>
+
+  <mat-list>
+    <mat-list-item *ngFor="let animation of file.animations; trackBy: trackByName">
+      <span mat-line>{{ animation.name }}</span>
+      <mat-slider mat-line step="0.1"
+        [min]="animation.start" [max]="animation.end || 1"
+        [value]="animation.time" (change)="animation.time = $event.value">
+      </mat-slider>
+      <mat-form-field>
+        <mat-label>Mode</mat-label>
+        <mat-select [(value)]="animation.mode">
+          <mat-option>None</mat-option>
+          <mat-option value="one-shot">
+            <span>One Shot</span>
+          </mat-option>
+          <mat-option value="ping-pong">
+            <span>Ping Pong</span>
+          </mat-option>
+          <mat-option value="loop">
+            <span>Loop</span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-icon-button (click)="animation.playing = !animation.playing">
+        <mat-icon *ngIf="!animation.playing">play_arrow</mat-icon>
+        <mat-icon *ngIf="animation.playing">pause</mat-icon>
+      </button>
+    </mat-list-item>
+  </mat-list>
+</article>

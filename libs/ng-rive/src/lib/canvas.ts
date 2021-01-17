@@ -1,17 +1,25 @@
 import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
 import { Observable, Subscription, of, merge } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, share, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import type { RivePlayer } from './player';
 import { RiveService } from './service';
 import { Artboard, CanvasRenderer, LinearAnimationInstance, RiveCanvas, File } from './types';
 
 // Observable that trigger on every frame
-const animationFrame = new Observable<number>((subject) => {
+const animationFrame = new Observable<number>((subscriber) => {
   let start = 0;
+  let first = true;
   const run = (time: number) => {
     const delta = time - start;
     start = time;
-    subject.next(delta);
+    if (first) {
+      subscriber.next(16);  
+      first = false;
+    } else {
+      subscriber.next(delta); 
+    }
+    // Because of bug in Chrome first value might be too big and cause issues
+    if (subscriber.closed) return;
     requestAnimationFrame(run)
   }
   requestAnimationFrame(run);
@@ -23,18 +31,28 @@ const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber)
   let isVisible = false;
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const visible = entry.intersectionRatio > 0.1;
-        if (visible !== isVisible) {
-          isVisible = !isVisible;
-          subscriber.next(isVisible);
-        }
+      const visible = entry.intersectionRatio !== 0;
+      if (visible !== isVisible) {
+        isVisible = !isVisible;
+        subscriber.next(isVisible);
       }
     });
-  }, { threshold: [0, 0.1] });
+  }, { threshold: [0] });
   // start observing element visibility
   observer.observe(element);
-})
+});
+
+// Force event to run inside zones
+export function enterZone(zone: NgZone) {
+  return <T>(source: Observable<T>) =>
+    new Observable<T>(observer =>
+      source.subscribe({
+        next: (x) => zone.run(() => observer.next(x)),
+        error: (err) => observer.error(err),
+        complete: () => observer.complete()
+    })
+   );
+}
 
 function exist<T>(v: T | undefined | null): v is T {
   return v !== undefined && v !== null;
@@ -62,9 +80,10 @@ export class RiveCanvasDirective {
   private animations: Record<string, LinearAnimationInstance> = {};
 
   public isVisible: Observable<boolean>;
+  public frame = animationFrame.pipe(share());
 
-  @Input('riv') url!: string;
-  @Input('artboard') artboardName?: string;
+  @Input('riv') private url!: string;
+  @Input('artboard') private artboardName?: string;
     
   @Input() lazy: boolean | '' = false;
 
@@ -83,7 +102,7 @@ export class RiveCanvasDirective {
     this.ctx = ctx;
     this.isVisible = onVisible(this.canvas).pipe(
       shareReplay(1),
-      tap(console.log),
+      enterZone(this.zone),
     );
   }
 
@@ -99,6 +118,7 @@ export class RiveCanvasDirective {
     this.subs.forEach(sub => sub.unsubscribe());
   }
 
+  // Load the file
   private load() {
     if (!this.loaded) {
       this.loaded = new Promise(async (res, rej) => {
@@ -116,6 +136,7 @@ export class RiveCanvasDirective {
     return this.loaded;
   }
 
+  // Get the animation instance
   private getAnimation(name: string) {
     if (!this.animations[name]) {
       if (!this.rive) throw new Error('Load rive before loading animation');
@@ -129,6 +150,7 @@ export class RiveCanvasDirective {
   }
 
 
+  // Register the player of a specific animation
   async register(animation: string, player: RivePlayer) {
 
     let anim: LinearAnimationInstance;
@@ -143,7 +165,6 @@ export class RiveCanvasDirective {
       anim.apply(this.artboard, player.state.getValue().mix);
       this.artboard.advance(delta);
       this.zone.run(() => player.timeChange.next(anim.time));
-
       // Render frame on canvas
       const frame = { minX: 0, minY: 0, maxX: this.canvas.width, maxY: this.canvas.height };
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -158,7 +179,7 @@ export class RiveCanvasDirective {
       filter(exist),
       filter(time => time !== anim.time),
       distinctUntilChanged(),
-      map(time => time - anim.time)
+      map(time => time - anim.time),
     );
     
     // Trigger change on every frame if player is playing
@@ -166,7 +187,7 @@ export class RiveCanvasDirective {
     const onFrameChange = player.state.pipe(
       switchMap((state) => {
         if (state.playing) {
-          return animationFrame.pipe(map((time) => [state, time] as const));
+          return this.frame.pipe(map((time) => [state, time] as const));
         } else {
           return of(null)
         }
@@ -181,7 +202,7 @@ export class RiveCanvasDirective {
           if (mode === 'loop' && direction === -1 && end) {
             delta = end;
           } else if (mode === 'ping-pong') {
-            lastTime = anim.time + delta;
+            delta = -delta;
             player.update({ direction: 1 });
             this.zone.run(() => player.revertChange.emit(false));
           } else if (mode === 'one-shot') {
@@ -197,7 +218,7 @@ export class RiveCanvasDirective {
           if (mode === 'loop' && direction === 1) {
             delta = start - anim.time;
           } else if (mode === 'ping-pong') {
-            lastTime = anim.time + delta;
+            delta = -delta;
             player.update({ direction: -1 });
             this.zone.run(() => player.revertChange.emit(true));
           } else if (mode === 'one-shot') {
@@ -217,7 +238,7 @@ export class RiveCanvasDirective {
       : of(true);
 
     const sub = onReady.pipe(
-      switchMap(() => this.load()),
+      switchMap(() => this.zone.run(() => this.load())),
       tap(() => anim = this.getAnimation(animation)),
       switchMap(() => merge(onTimeChange, onFrameChange)),
     ).subscribe(applyChange);
