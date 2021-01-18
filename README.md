@@ -2,7 +2,7 @@
 
 A repository for Angular built around the [rive canvas runtime](https://help.rive.app/runtimes/overview).
 
-[![GitHub](https://img.shields.io/github/license/dappsnation/ng-rive)](LICENSE)
+[![GitHub](https://img.shields.io/github/license/dappsnation/ng-rive)](https://github.com/dappsnation/ng-rive/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/ng-rive)](https://www.npmjs.com/package/ng-antv-g6)
 [![npm](https://img.shields.io/npm/dm/ng-rive)](https://www.npmjs.com/package/ng-antv-g6)
 
