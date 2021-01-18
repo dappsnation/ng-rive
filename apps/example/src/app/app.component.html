@@ -1,47 +1,91 @@
-<article *ngFor="let file of files; trackBy: trackByName">
-  <h3>{{ file.name }}</h3>
-  <canvas [riv]="file.name" width="500" height="500" lazy>
-    <ng-container *ngFor="let animation of file.animations">
-      <riv-player
-        [start]="animation.start"
-        [end]="animation.end"
-        [name]="animation.name"
-        [mix]="animation.mix"
-        [speed]="animation.speed"
-        [(play)]="animation.playing"
-        [(time)]="animation.time"
-        [mode]="animation.mode"
-        autoreset
-      ></riv-player>
-    </ng-container>
-  </canvas>
-
-  <mat-list>
-    <mat-list-item *ngFor="let animation of file.animations; trackBy: trackByName">
-      <span mat-line>{{ animation.name }}</span>
-      <mat-slider mat-line step="0.1"
-        [min]="animation.start" [max]="animation.end || 1"
-        [value]="animation.time" (change)="animation.time = $event.value">
-      </mat-slider>
-      <mat-form-field>
-        <mat-label>Mode</mat-label>
-        <mat-select [(value)]="animation.mode">
-          <mat-option>None</mat-option>
-          <mat-option value="one-shot">
-            <span>One Shot</span>
-          </mat-option>
-          <mat-option value="ping-pong">
-            <span>Ping Pong</span>
-          </mat-option>
-          <mat-option value="loop">
-            <span>Loop</span>
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <button mat-icon-button (click)="animation.playing = !animation.playing">
-        <mat-icon *ngIf="!animation.playing">play_arrow</mat-icon>
-        <mat-icon *ngIf="animation.playing">pause</mat-icon>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" opened>
+    <form [formGroup]="form">
+      <fieldset formGroupName="canvas">
+        <legend>Canvas</legend>
+        <mat-form-field>
+          <mat-label>Width</mat-label>
+          <input matInput formControlName="width" name="width" type="number" min="0"/>
+          <span matSuffix>px</span>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Height</mat-label>
+          <input matInput formControlName="height" name="height" type="number" min="0"/>
+          <span matSuffix>px</span>
+        </mat-form-field>
+      </fieldset>
+      <fieldset formGroupName="output">
+        <legend>Output</legend>
+        <mat-form-field>
+          <mat-label>File name</mat-label>
+          <input matInput formControlName="name" name="name"/>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Extension</mat-label>
+          <mat-select formControlName="name">
+            <mat-option value="video/webm">WebM</mat-option>
+          </mat-select>
+          <mat-hint>Only webm is supported by most browsers</mat-hint>
+        </mat-form-field>
+      </fieldset>
+      <fieldset *ngIf="animations.length">
+        <legend>Animation</legend>
+        <mat-selection-list formControlName="animations">
+          <mat-list-option [value]="index" *ngFor="let index of animations">
+            {{ index }}
+          </mat-list-option>
+        </mat-selection-list>
+        <span class="mat-caption">Select animations to run</span>
+      </fieldset>
+    </form>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar>
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
       </button>
-    </mat-list-item>
-  </mat-list>
-</article>
+      <h1>Rive to video</h1>
+      <ng-container *ngIf="file">
+        <button *ngIf="!recording" mat-flat-button color="primary" (click)="record()">
+          <span>Start Recording</span>
+          <mat-icon>fiber_manual_record</mat-icon>
+        </button>
+        <button *ngIf="recording" mat-flat-button color="warn" (click)="stopRecording()">
+          <span>stop Recording</span>
+          <mat-icon>stop</mat-icon>
+        </button>
+      </ng-container>
+    </mat-toolbar>
+    <section>
+      <ng-container *ngIf="file else noFile">
+        <canvas [riv]="file" (artboardChange)="setArtboard($event)" [width]="canvas.width" [height]="canvas.height">
+          <ng-container *ngFor="let index of form.value.animations">
+            <riv-player [index]="index" [play]="recording" time="0"></riv-player>
+          </ng-container>
+        </canvas>
+      </ng-container>
+      <ng-template #noFile>
+        <article>
+          <h2>Upload your file</h2>
+          <button type="button" mat-button (click)="fileInput.click()">
+            <mat-icon>backup</mat-icon>
+            <span>Pick a file</span>
+            <input #fileInput hidden (change)="upload($event)" type="file" accept=".riv"/>
+          </button>
+        </article>
+      </ng-template>
+    </section>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<ng-template #download>
+  <div class="snack-bar">
+    <a mat-button [href]="downloadUrl" [download]="filename">
+      <span>Download</span>
+      <mat-icon>download</mat-icon>
+    </a>
+    <button mat-icon-button (click)="snackRef?.dismiss()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</ng-template>
