@@ -1,16 +1,33 @@
-import { ChangeDetectorRef, Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { ChangeDetectorRef, Component, Pipe, PipeTransform, TemplateRef, ViewChild } from '@angular/core';
+import {  FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Artboard, RiveCanvasDirective } from 'ng-rive';
+import { cpuUsage } from 'process';
 import type { MediaRecorder } from './type-media-recorder';
 interface CanvasElement extends HTMLCanvasElement {
   captureStream(frameRate?: number): MediaStream;
 }
 
-const mimeTypes = {
-  'video/webm': 'video/webm;codecs=H264',
+function getMimeTypes() {
+  if (!('MediaRecorder' in window)) return [];
+  const VIDEO_TYPES = [ "webm",  "ogg", "mp4", "x-matroska" ];
+  const VIDEO_CODECS = [  "h265", "h.265", "h264", "h.264", "vp9", "vp8", "avc1", "av1", "opus" ];
+  const types = [];
+  VIDEO_TYPES.forEach((videoType) => {
+    const type = `video/${videoType}`;
+    VIDEO_CODECS.forEach((codec) => types.push(`${type};codecs:${codec}`));
+  });
+  return types.filter(type => window['MediaRecorder'].isTypeSupported(type));
 }
+
+const extensions = {
+  "video/x-matroska": 'mkv',
+  'video/webm': 'webm',
+  'video/mp4': 'mp4',
+  'video/ogg': 'ogg',
+}
+
 @Component({
   selector: 'ng-rive-root',
   templateUrl: './app.component.html',
@@ -20,6 +37,7 @@ export class AppComponent {
   @ViewChild('download') download: TemplateRef<any>;
   @ViewChild(RiveCanvasDirective) rivCanvas: RiveCanvasDirective;
   animations: number[] = [];
+  formats = getMimeTypes();
   file?: File;
   snackRef: MatSnackBarRef<any>;
   recorder: MediaRecorder;
@@ -34,7 +52,7 @@ export class AppComponent {
     }),
     output: new FormGroup({
       name: new FormControl('rive'),
-      extension: new FormControl('video/webm'),
+      format: new FormControl(this.formats[0]),
     }),
     animations: new FormControl([]),
   });
@@ -50,8 +68,10 @@ export class AppComponent {
   }
 
   get filename() {
-    const { name, extension } = this.form.get('output').value;
-    return `${name}.${extension.split('/').pop()}`;
+    const { name, format } = this.form.get('output').value;
+    const [ type ] = format.split(';');
+    const extension = extensions[type];
+    return `${name}.${extension}`;
   }
 
   upload(event: DragEvent) {
@@ -62,7 +82,6 @@ export class AppComponent {
   setArtboard(artboard: Artboard) {
     this.form.get('animations').reset();
     this.animations = new Array(artboard.animationCount()).fill(null).map((_, i) => i);
-    console.log('animations', this.animations);
     this.cdr.markForCheck();
   }
 
@@ -70,11 +89,11 @@ export class AppComponent {
     if (!('MediaRecorder' in window)) return;
     this.revokeUrl();
     this.recording = true;
-    const type = this.form.get('output.extension').value;
-    const mimeType = mimeTypes[type];
+    const mimeType = this.form.get('output.format').value;
+    const [ type ] = mimeType.split(';');
     const recordedChunks = [];
     const url: string = await new Promise((res, rej) => {
-      const stream = (this.rivCanvas.canvas as CanvasElement).captureStream(60 /*fps*/);
+      const stream = (this.rivCanvas.canvas as CanvasElement).captureStream(60);
       this.recorder = new window['MediaRecorder'](stream, { mimeType });
 
       this.recorder.start();
@@ -105,5 +124,15 @@ export class AppComponent {
   revokeUrl() {
     window.URL.revokeObjectURL(this.downloadUrl as string);
     delete this.downloadUrl;
+  }
+}
+
+
+@Pipe({ name: 'videoFormat' })
+export class VideoFormatPipe implements PipeTransform {
+  transform(format: string) {
+    const [ type, codec ] = format.split(';');
+    const extension = extensions[type];
+    return `${extension} (${codec.split(':').pop()})`;
   }
 }

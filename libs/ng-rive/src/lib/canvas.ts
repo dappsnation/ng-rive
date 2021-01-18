@@ -84,7 +84,6 @@ export class RiveCanvasDirective {
   public frame = animationFrame.pipe(share());
 
   @Input('riv') set riv(url: string | File) {
-    console.log('File', url);
     this.url.next(url);
   }
 

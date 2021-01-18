@@ -21,11 +21,13 @@
           <input matInput formControlName="name" name="name"/>
         </mat-form-field>
         <mat-form-field>
-          <mat-label>Extension</mat-label>
-          <mat-select formControlName="name">
-            <mat-option value="video/webm">WebM</mat-option>
+          <mat-label>Format</mat-label>
+          <mat-select formControlName="format">
+            <ng-container *ngFor="let format of formats">
+              <mat-option [value]="format">{{ format | videoFormat }}</mat-option>
+            </ng-container>
           </mat-select>
-          <mat-hint>Only webm is supported by most browsers</mat-hint>
+          <mat-hint>Formats supported by your browser</mat-hint>
         </mat-form-field>
       </fieldset>
       <fieldset *ngIf="animations.length">
@@ -51,7 +53,7 @@
           <mat-icon>fiber_manual_record</mat-icon>
         </button>
         <button *ngIf="recording" mat-flat-button color="warn" (click)="stopRecording()">
-          <span>stop Recording</span>
+          <span>Stop Recording</span>
           <mat-icon>stop</mat-icon>
         </button>
       </ng-container>
@@ -63,11 +65,19 @@
             <riv-player [index]="index" [play]="recording" time="0"></riv-player>
           </ng-container>
         </canvas>
+        <article *ngIf="!form.value.animations" class="no-animation">
+          <h3 class="mat-display-1">
+            👈 In the sidebar, select the animations you want to record.
+          </h3>
+          <p>
+            Currently we cannot get the name of the animations, so we display them in the ame order as in the Rive editor.
+          </p>
+        </article>
       </ng-container>
       <ng-template #noFile>
         <article>
-          <h2>Upload your file</h2>
-          <button type="button" mat-button (click)="fileInput.click()">
+          <h2>Upload your .riv file</h2>
+          <button type="button" mat-flat-button color="primary" (click)="fileInput.click()">
             <mat-icon>backup</mat-icon>
             <span>Pick a file</span>
             <input #fileInput hidden (change)="upload($event)" type="file" accept=".riv"/>
