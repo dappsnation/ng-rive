@@ -1,6 +1,10 @@
-# ng-rive
+<h1 align="center">Angular Rive</h1>
 
-Angular library for running Rive animation on the web.
+A repository for Angular built around the [rive canvas runtime](https://help.rive.app/runtimes/overview).
+
+[![GitHub](https://img.shields.io/github/license/dappsnation/ng-rive)](LICENSE)
+[![npm](https://img.shields.io/npm/v/ng-rive)](https://www.npmjs.com/package/ng-antv-g6)
+[![npm](https://img.shields.io/npm/dm/ng-rive)](https://www.npmjs.com/package/ng-antv-g6)
 
 ## Get started
 1. Install :
@@ -78,11 +82,14 @@ Add this in your `package.json`:
 The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag : 
 
 #### Input
-- `[riv]`: The name of the `.riv` file. Full path is managed by the `RIVE_FOLDER` token.
+- `[riv]`: The `.riv` file or it's name if in the asset. Full path is managed by the `RIVE_FOLDER` token.
 - `[artboard]`: The name of the artboard to used. If not specified, the default one is used.
 - `[lazy]`: If provided, the file will only be loaded when canvas is visible in the viewport
 
 ⚠️ The `lazy` input use the `IntersectionObserver` API which will not work in all browser.
+
+### Output
+- `(artboardChange)`: Emit the new Artboard
 
 ## Player
 You can use `riv-player` to manipulate the animation : 
@@ -99,6 +106,14 @@ You can use `riv-player` to manipulate the animation :
 - `[start]`: Starting time (in sec) of the animation in the editor (default to 0).
 - `[end]`: Ending time (in sec) of the animation in the editor.
 - `[autoreset]`: If `true`, will reset the animation to `start` when done (only for `one-shot` mode).
+
+## Play if canvas is visible
+To save ressources you can play the animation only when the canvas is visible in the viewport : 
+```html
+<canvas #canvas="rivCanvas" riv="knight" width="500" height="500">
+  <riv-player name="idle" [name]="canvas.isVisible | async"></riv-player>
+</canvas>
+```
 
 ## Multiple Animations
 You can run multiple animations within the same canvas : 

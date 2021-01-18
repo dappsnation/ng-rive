@@ -1,5 +1,5 @@
 import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
-import { Observable, Subscription, of, merge, Subject, ReplaySubject } from 'rxjs';
+import { Observable, Subscription, of, merge, ReplaySubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, share, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import type { RivePlayer } from './player';
 import { RiveService } from './service';
