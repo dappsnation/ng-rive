@@ -94,9 +94,11 @@ export class AppComponent {
     const recordedChunks = [];
     const url: string = await new Promise((res, rej) => {
       const stream = (this.rivCanvas.canvas as CanvasElement).captureStream(60);
-      this.recorder = new window['MediaRecorder'](stream, { mimeType });
-
-      this.recorder.start();
+      const options = {
+        videoBitsPerSecond: 2_500_000,
+        mimeType
+      };
+      this.recorder = new window['MediaRecorder'](stream, options);
 
       this.recorder.ondataavailable = (e) => {
         recordedChunks.push(e.data);
@@ -111,6 +113,7 @@ export class AppComponent {
         const url = URL.createObjectURL(blob);
         res(url);
       }
+      this.recorder.start();
     });
     this.downloadUrl = this.sanitizer.bypassSecurityTrustUrl(url);
     this.snackRef = this.snackbar.openFromTemplate(this.download);
