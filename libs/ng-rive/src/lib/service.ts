@@ -2,14 +2,14 @@
 import Rive from 'rive-canvas';
 import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RiveCanvas, File } from './types';
+import { RiveCanvas, File as RiveFile } from './types';
 
 export const RIVE_FOLDER = new InjectionToken<string>('Folder with Rive files');
 export const RIVE_VERSION = new InjectionToken<string>('Version used to load rive WASM');
 
 @Injectable({ providedIn: 'root' })
 export class RiveService {
-  private files: Record<string, File> = {};
+  private files: Record<string, RiveFile> = {};
   public rive?: RiveCanvas;
 
   constructor(
@@ -29,16 +29,23 @@ export class RiveService {
     return this.rive;
   }
 
-  async load(url: string) {
-    if (!this.files[url]) {
-      const asset = `${this.folder}/${url}.riv`;
+  async load(file: string | File) {
+    if (typeof file !== 'string') {
+      const [ rive, buffer ] = await Promise.all([
+        this.getRive(),
+        file.arrayBuffer(),
+      ]);
+      return rive?.load(new Uint8Array(buffer));
+    }
+    if (!this.files[file]) {
+      const asset = `${this.folder}/${file}.riv`;
       const [ rive, buffer ] = await Promise.all([
         this.getRive(),
         this.http.get(asset, { responseType: 'arraybuffer' }).toPromise(),
       ]);
       if (!rive) throw new Error('Could not load rive');
-      this.files[url] = rive.load(new Uint8Array(buffer));
+      this.files[file] = rive.load(new Uint8Array(buffer));
     }
-    return this.files[url];
+    return this.files[file];
   }
 }

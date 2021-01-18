@@ -44,6 +44,12 @@ export class RivePlayer {
       this.rive.register(name, this);
     });
   }
+  @Input() set index(value: number | string) {
+    const index = typeof value === 'string' ? parseInt(value) : value;
+    this.zone.runOutsideAngular(() => {
+      this.rive.register(index, this);
+    });
+  }
 
   @Input() set mix(value: number | string) {
     const mix = typeof value === 'string' ? parseFloat(value) : value; 

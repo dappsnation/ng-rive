@@ -1,9 +1,9 @@
 import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
-import { Observable, Subscription, of, merge } from 'rxjs';
+import { Observable, Subscription, of, merge, Subject, ReplaySubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, share, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import type { RivePlayer } from './player';
 import { RiveService } from './service';
-import { Artboard, CanvasRenderer, LinearAnimationInstance, RiveCanvas, File } from './types';
+import { Artboard, CanvasRenderer, LinearAnimationInstance, RiveCanvas, File as RiveFile } from './types';
 
 // Observable that trigger on every frame
 const animationFrame = new Observable<number>((subscriber) => {
@@ -68,13 +68,14 @@ function frameToSec(frameIndex: number, fps: number) {
   exportAs: 'rivCanvas'
 })
 export class RiveCanvasDirective {
+  private url = new ReplaySubject<string | File>();
   private subs: Subscription[] = [];
   private loaded?: Promise<boolean>;
-  private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private renderer?: CanvasRenderer;
   private rive?: RiveCanvas;
-  private file?: File; 
+  private file?: RiveFile; 
+  public canvas: HTMLCanvasElement;
   public artboard?: Artboard;
 
   private animations: Record<string, LinearAnimationInstance> = {};
@@ -82,14 +83,16 @@ export class RiveCanvasDirective {
   public isVisible: Observable<boolean>;
   public frame = animationFrame.pipe(share());
 
-  @Input('riv') private url!: string;
+  @Input('riv') set riv(url: string | File) {
+    console.log('File', url);
+    this.url.next(url);
+  }
+
   @Input('artboard') private artboardName?: string;
-    
   @Input() lazy: boolean | '' = false;
 
 
-  @Output() played = new EventEmitter<string>();
-  @Output() paused = new EventEmitter<string>();
+  @Output() artboardChange = new EventEmitter<Artboard>();
 
   constructor(
     private zone: NgZone,
@@ -110,6 +113,10 @@ export class RiveCanvasDirective {
     return this.lazy === true || this.lazy === '';
   }
 
+  get count() {
+    return this.artboard?.animationCount();
+  }
+
   ngOnInit() {
     if (!this.isLazy) this.load();
   }
@@ -122,14 +129,16 @@ export class RiveCanvasDirective {
   private load() {
     if (!this.loaded) {
       this.loaded = new Promise(async (res, rej) => {
-        this.file = await this.service.load(this.url);
+        const url = await this.url.pipe(take(1)).toPromise();
+        this.file = await this.service.load(url);
         this.rive = this.service.rive;
         if (!this.rive) throw new Error('Service could not load rive');
 
         this.renderer = new this.rive.CanvasRenderer(this.ctx);
         this.artboard = this.artboardName
-          ? this.file.artboard(this.artboardName)
-          : this.file.defaultArtboard();
+          ? this.file?.artboard(this.artboardName)
+          : this.file?.defaultArtboard();
+        this.artboardChange.emit(this.artboard);
         res(true);
       });
     }
@@ -137,11 +146,14 @@ export class RiveCanvasDirective {
   }
 
   // Get the animation instance
-  private getAnimation(name: string) {
+  private getAnimation(name: string | number) {
     if (!this.animations[name]) {
       if (!this.rive) throw new Error('Load rive before loading animation');
       if (!this.artboard) throw new Error('Load artboard before loading animation');
-      const anim = this.artboard.animation(name);
+    
+      const anim = (typeof name === "string")
+        ? this.artboard.animation(name)
+        : this.artboard.animationAt(name);
       this.animations[name] = new this.rive.LinearAnimationInstance(anim);
       // Looks like the first time value is the start in frame (instead of sec)
       this.animations[name].time = frameToSec(this.animations[name].time, anim.fps);
@@ -151,7 +163,7 @@ export class RiveCanvasDirective {
 
 
   // Register the player of a specific animation
-  async register(animation: string, player: RivePlayer) {
+  async register(animation: string | number, player: RivePlayer) {
 
     let anim: LinearAnimationInstance;
 
