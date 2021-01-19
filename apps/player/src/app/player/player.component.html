@@ -1,0 +1,22 @@
+<ng-container *ngIf="file$ | async as file">
+  <section>
+    <canvas [riv]="file.name" width="500" height="500">
+      <ng-container *ngFor="let anim of file.animations">
+        <riv-player [name]="anim.name" [(play)]="anim.playing" autoreset mode="one-shot"></riv-player>
+      </ng-container>
+    </canvas>
+  </section>
+  <footer>
+    <mat-divider></mat-divider>
+    <ng-container *ngFor="let anim of file.animations">
+      <div class="row">
+        <span class="name">{{ anim.name }}</span>
+        <button mat-icon-button (click)="anim.playing = !anim.playing">
+          <mat-icon *ngIf="!anim.playing">play_arrow</mat-icon>
+          <mat-icon *ngIf="anim.playing">pause</mat-icon>
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+    </ng-container>
+  </footer>
+</ng-container>

@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent, VideoFormatPipe } from './app.component';
-import { RiveModule, RIVE_FOLDER } from 'ng-rive';
+import { RiveModule } from 'ng-rive';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatSliderModule } from '@angular/material/slider';

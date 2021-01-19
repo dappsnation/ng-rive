@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  height: 100;
+}
+
+section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+footer {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+
+  .name {
+    width: 150px;
+    padding: 8px 16px;
+  }
+}
