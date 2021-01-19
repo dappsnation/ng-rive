@@ -33,10 +33,6 @@ export function enterZone(zone: NgZone) {
    );
 }
 
-function exist<T>(v: T | undefined | null): v is T {
-  return v !== undefined && v !== null;
-}
-
 @Directive({
   selector: 'canvas[riv]',
   exportAs: 'rivCanvas'

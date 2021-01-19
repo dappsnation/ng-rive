@@ -1,3 +1,3 @@
 module.exports = {
-  projects: ['<rootDir>/apps/example', '<rootDir>/libs/ng-rive'],
+  projects: [<rootDir>/apps/recorder, '<rootDir>/libs/ng-rive'],
 };
