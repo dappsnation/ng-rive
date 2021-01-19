@@ -28,36 +28,36 @@ export interface RiveCanvas {
 // RENDERER //
 //////////////
 export declare class RendererWrapper {
-	save(): void;
-	restore(): void;
-	transform(tranform: Mat2D): void;
+  save(): void;
+  restore(): void;
+  transform(tranform: Mat2D): void;
   drawPath(path: RenderPath, paint: RenderPaint): void;
-	clipPath(path: RenderPath): void;
+  clipPath(path: RenderPath): void;
 };
 
 export declare class RenderPathWrapper {
-	reset(): void;
-	addPath(path: CommandPath, transform: Mat2D): void;
-	fillRule(value: FillRule ): void;
-	moveTo(x: number, y: number): void
-	lineTo(x: number, y: number): void
-	cubicTo(ox: number, oy: number, ix: number, iy: number, x: number, y: number): void;
-	close(): void;
+  reset(): void;
+  addPath(path: CommandPath, transform: Mat2D): void;
+  fillRule(value: FillRule ): void;
+  moveTo(x: number, y: number): void
+  lineTo(x: number, y: number): void
+  cubicTo(ox: number, oy: number, ix: number, iy: number, x: number, y: number): void;
+  close(): void;
 };
 
 
 export declare class RenderPaintWrapper {
-	color(value: number): void;
-	thickness(value: number): void;
-	join(value: StrokeJoin): void;
-	cap(value: StrokeCap ): void;
-	blendMode(value: BlendMode): void;
+  color(value: number): void;
+  thickness(value: number): void;
+  join(value: StrokeJoin): void;
+  cap(value: StrokeCap ): void;
+  blendMode(value: BlendMode): void;
 
-	style(value: RenderPaintStyle): void;
-	linearGradient(sx: number, sy: number, ex: number, ey: number): void;
-	radialGradient(sx: number, sy: number, ex: number, ey: number): void;
-	addStop(color: number, stop: number): void;
-	completeGradient(): void;
+  style(value: RenderPaintStyle): void;
+  linearGradient(sx: number, sy: number, ex: number, ey: number): void;
+  radialGradient(sx: number, sy: number, ex: number, ey: number): void;
+  addStop(color: number, stop: number): void;
+  completeGradient(): void;
 };
 
 export declare class Renderer extends RendererWrapper {
@@ -146,12 +146,12 @@ export declare class TransformComponent {
 ///////////////
 
 export declare class LinearAnimation {
-  duration: number;
-  fps: number;
-  workStart: number;
-  workEnd: number;
-  loopValue: number;
-  speed: number;
+  get duration(): number;
+  get fps(): number;
+  get workStart(): number;
+  get workEnd(): number;
+  get loopValue(): number;
+  get speed(): number;
   apply(artboard: Artboard, time: number, mix: number): void;
 }
 
