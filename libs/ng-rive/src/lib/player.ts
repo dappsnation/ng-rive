@@ -52,7 +52,8 @@ export class RivePlayer {
   state = new BehaviorSubject<RivePlayerState>(getRivePlayerState());
 
   @Input()
-  set name(name: string) {
+  set name(name: string | undefined) {
+    if (typeof name !== 'string') return;
     this.zone.runOutsideAngular(() => {
       this.lastTime = 0;
       this.register(name);
@@ -60,17 +61,18 @@ export class RivePlayer {
   }
 
   @Input()
-  set index(value: number | string) {
+  set index(value: number | string | undefined | null) {
     const index = typeof value === 'string' ? parseInt(value) : value;
+    if (typeof index !== 'number') return;
     this.zone.runOutsideAngular(() => {
       this.register(index);
     });
   }
 
   @Input()
-  set mix(value: number | string) {
+  set mix(value: number | string | undefined | null) {
     const mix = typeof value === 'string' ? parseFloat(value) : value; 
-    if (mix >= 0 && mix <= 1) this.update({ mix });
+    if (mix && mix >= 0 && mix <= 1) this.update({ mix });
   }
   get mix() {
     return this.state.getValue().mix;
@@ -85,7 +87,7 @@ export class RivePlayer {
   }
   // NUMBERS
   @Input()
-  set speed(value: number | string) {
+  set speed(value: number | string | undefined | null) {
     const speed = typeof value === 'string' ? parseFloat(value) : value;
     if (typeof speed === 'number') this.update({ speed });
   }
@@ -93,16 +95,7 @@ export class RivePlayer {
     return this.state.getValue().speed;
   }
 
-  // @Input() set start(value: number | string) {
-  //   const start = typeof value === 'string' ? parseFloat(value) : value;
-  //   if (typeof start === 'number') this.update({ start });
-  // }
-  // @Input() set end(value: number | string) {
-  //   const end = typeof value === 'string' ? parseFloat(value) : value;
-  //   if (typeof end === 'number') this.update({ end });
-  // }
-
-  @Input() set revert(revert: boolean | '') {
+  @Input() set revert(revert: boolean | '' | undefined | null) {
     if (revert === true || revert === '') {
       this.update({ direction: -1 });
     } else if (revert === false) {
@@ -113,7 +106,7 @@ export class RivePlayer {
     return this.state.getValue().direction === -1 ? false : true;
   }
 
-  @Input() set play(playing: boolean | '') {
+  @Input() set play(playing: boolean | '' | undefined | null) {
     if (playing === true || playing === '') {
       this.update({ playing: true });
     } else if (playing === false) {
@@ -125,7 +118,7 @@ export class RivePlayer {
   }
 
   @Input()
-  set autoreset(autoreset: boolean | '') {
+  set autoreset(autoreset: boolean | '' | undefined | null) {
     if (autoreset === true || autoreset === '') {
       this.update({ autoreset: true });
     } else if (autoreset === false) {
@@ -137,7 +130,7 @@ export class RivePlayer {
   }
   
   @Input()
-  set time(value: number | string) {
+  set time(value: number | string | undefined | null) {
     const time = typeof value === 'string' ? parseFloat(value) : value;
     if (typeof time === 'number') this.distance.next(time);
   }
@@ -150,7 +143,6 @@ export class RivePlayer {
 
   private animation?: LinearAnimation;
   private animationInstance?: LinearAnimationInstance;
-  private lastTime: number = 0;
 
   constructor(
     private zone: NgZone,
@@ -226,8 +218,8 @@ export class RivePlayer {
     const { direction, speed, autoreset, mode } = state;
     let delta = (time / 1000) * speed * direction;
     
-    const start = frameToSec(this.animation.workStart, this.animation.fps);
-    const end = frameToSec(this.animation.workEnd, this.animation.fps);
+    const start = this.animation.workStart / this.animation.fps;
+    const end = (this.animation.workEnd || this.animation.duration) / this.animation.fps;
     const currentTime = this.animationInstance.time;
   
     // When player hit floor
@@ -258,7 +250,6 @@ export class RivePlayer {
         if (autoreset) delta = start - currentTime;
       }
     }
-    this.lastTime = currentTime;
     return delta;
   }
 

@@ -24,8 +24,8 @@ export class PlayerComponent {
 
   setDuration(state: AnimationState, animation: LinearAnimation) {
     if (!animation) return;
-    const start = frameToSec(animation.workStart, animation.fps);
-    const end = frameToSec(animation.workEnd, animation.fps);
+    const start = animation.workStart / animation.fps;
+    const end = (animation.workEnd || animation.duration) / animation.fps;
     state.duration = { start, end };
     state.time = start;
     this.cdr.detectChanges();

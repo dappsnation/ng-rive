@@ -1,13 +1,13 @@
 <ng-container *ngIf="file$ | async as file">
   <section>
     <canvas [riv]="file.name" width="500" height="500">
-      <ng-container *ngFor="let anim of file.animations; trackBy: trackByName">
+      <ng-container *ngFor="let anim of file?.animations; trackBy: trackByName">
         <riv-player
           [name]="anim.name"
           [mode]="anim.mode"
           [(play)]="anim.playing"
-          [(time)]="anim.time"
           [(speed)]="anim.speed"
+          [(time)]="anim.time"
           (load)="setDuration(anim, $event)"
           autoreset>
         </riv-player>
@@ -16,7 +16,7 @@
   </section>
   <footer>
     <mat-divider></mat-divider>
-    <ng-container *ngFor="let anim of file.animations; trackBy: trackByName">
+    <ng-container *ngFor="let anim of file?.animations; trackBy: trackByName">
       <div class="row">
         <span class="name">{{ anim.name }}</span>
         <div class="timeline">
@@ -26,7 +26,7 @@
           </button>
           <ng-container *ngIf="anim.duration as duration">
             <mat-slider mat-line step="0.1"
-              [min]="duration.start" [max]="duration.end"
+              [min]="duration?.start" [max]="duration?.end"
               [value]="anim.time" (change)="anim.time = $event.value">
             </mat-slider>
           </ng-container>
@@ -34,7 +34,7 @@
         <mat-form-field>
           <mat-label>Mode</mat-label>
           <mat-select [(value)]="anim.mode">
-            <mat-option>-</mat-option>
+            <mat-option>Default</mat-option>
             <mat-option value="one-shot">
               <span>One Shot</span>
             </mat-option>

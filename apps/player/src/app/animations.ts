@@ -5,7 +5,7 @@ interface AnimationFile {
 export interface AnimationState {
   name: string;
   playing: boolean;
-  time?: number;
+  time?: number | null;
   speed: number;
   mix: number;
   mode?: 'loop' | 'ping-pong' | 'one-shot';
@@ -40,5 +40,21 @@ export const files: AnimationFile[] = [{
   animations: [
     createAnimation('Animation1'),
     createAnimation('Animation2'),
+  ]
+}, {
+  name: 'truck',
+  animations: [
+    createAnimation('idle'),
+    createAnimation('curves'),
+  ]
+}, {
+  name: 'opensource',
+  animations: [
+    createAnimation('Untitled 1'),
+  ]
+}, {
+  name: 'control',
+  animations: [
+    createAnimation('Untitled 1'),
   ]
 }];
