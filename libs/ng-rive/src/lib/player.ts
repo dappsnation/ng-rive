@@ -1,6 +1,6 @@
 import { Directive, EventEmitter, Input, NgZone, Output } from "@angular/core";
 import { BehaviorSubject, merge, of, Subscription } from "rxjs";
-import { distinctUntilChanged, filter, map, switchMap, tap } from "rxjs/operators";
+import { distinctUntilChanged, filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
 import { LinearAnimation, LinearAnimationInstance } from "./types";
@@ -15,10 +15,6 @@ interface RivePlayerState {
   autoreset: boolean;
   /** override mode of the animation */
   mode?: 'loop' | 'ping-pong' | 'one-shot';
-  /** Work Start */
-  // start: number;
-  /** Work End */
-  // end?: number;
 }
 
 function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerState {
@@ -28,7 +24,6 @@ function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerSta
     playing: false,
     mix: 1,
     autoreset: false,
-    // start: 0,
     ...state
   }
 }
@@ -37,6 +32,9 @@ export function frameToSec(frame: number, fps: number) {
   return frame / fps;
 }
 
+export function round(value: number) {
+  return Math.round((value + Number.EPSILON) * 10000) / 10000;
+}
 
 function exist<T>(v: T | undefined | null): v is T {
   return v !== undefined && v !== null;
@@ -55,7 +53,6 @@ export class RivePlayer {
   set name(name: string | undefined) {
     if (typeof name !== 'string') return;
     this.zone.runOutsideAngular(() => {
-      this.lastTime = 0;
       this.register(name);
     });
   }
@@ -218,10 +215,12 @@ export class RivePlayer {
     const { direction, speed, autoreset, mode } = state;
     let delta = (time / 1000) * speed * direction;
     
-    const start = this.animation.workStart / this.animation.fps;
-    const end = (this.animation.workEnd || this.animation.duration) / this.animation.fps;
-    const currentTime = this.animationInstance.time;
-  
+    // Round to avoid JS error on division
+    const start = round(this.animation.workStart / this.animation.fps);
+    const end = round((this.animation.workEnd || this.animation.duration) / this.animation.fps);
+    const currentTime = round(this.animationInstance.time);
+
+
     // When player hit floor
     if (currentTime + delta < start) {
       if (mode === 'loop' && direction === -1 && end) {
@@ -233,9 +232,20 @@ export class RivePlayer {
       } else if (mode === 'one-shot') {
         this.update({ playing: false });
         this.zone.run(() => this.playChange.emit(false));
-        if (autoreset && end) delta = end - currentTime;
+        delta = start - currentTime;
       }
     }
+
+    // Put before "hit last frame" else currentTime + delta > end
+    if (mode === 'one-shot' && autoreset) {
+      if (direction === 1 && currentTime === end) {
+        delta = start - end;
+      }
+      if (direction === -1 && currentTime === start) {
+        delta = end - start;
+      }
+    }
+
     // When player hit last frame
     if (currentTime + delta > end) {
       if (mode === 'loop' && direction === 1) {
@@ -247,9 +257,10 @@ export class RivePlayer {
       } else if (mode === 'one-shot') {
         this.update({ playing: false });
         this.zone.run(() => this.playChange.emit(false));
-        if (autoreset) delta = start - currentTime;
+        delta = end - currentTime;
       }
     }
+  
     return delta;
   }
 

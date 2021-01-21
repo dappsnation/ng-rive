@@ -107,6 +107,9 @@ You can use `riv-player` to manipulate the animation :
 - `[end]`: Ending time (in sec) of the animation in the editor.
 - `[autoreset]`: If `true`, will reset the animation to `start` when done (only for `one-shot` mode).
 
+#### Output
+- `(load)`: Emitted the loaded `LinearAnimation`.
+
 ## Play if canvas is visible
 To save ressources you can play the animation only when the canvas is visible in the viewport : 
 ```html
@@ -123,6 +126,3 @@ You can run multiple animations within the same canvas :
   <riv-player name="day_night" play mode="ping-pong" speed="0.5"></riv-player>
 </canvas>
 ```
-
-## Known issues
-Some animations defaulted to "loop" might encounter jumps when using with `start`.
