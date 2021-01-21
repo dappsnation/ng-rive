@@ -1,6 +1,6 @@
 import { Directive, EventEmitter, Input, NgZone, Output } from "@angular/core";
 import { BehaviorSubject, merge, of, Subscription } from "rxjs";
-import { distinctUntilChanged, filter, map, switchMap } from "rxjs/operators";
+import { distinctUntilChanged, filter, map, switchMap, tap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
 import { LinearAnimation, LinearAnimationInstance } from "./types";
@@ -16,9 +16,9 @@ interface RivePlayerState {
   /** override mode of the animation */
   mode?: 'loop' | 'ping-pong' | 'one-shot';
   /** Work Start */
-  start: number;
+  // start: number;
   /** Work End */
-  end?: number;
+  // end?: number;
 }
 
 function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerState {
@@ -28,9 +28,13 @@ function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerSta
     playing: false,
     mix: 1,
     autoreset: false,
-    start: 0,
+    // start: 0,
     ...state
   }
+}
+
+export function frameToSec(frame: number, fps: number) {
+  return frame / fps;
 }
 
 
@@ -89,14 +93,14 @@ export class RivePlayer {
     return this.state.getValue().speed;
   }
 
-  @Input() set start(value: number | string) {
-    const start = typeof value === 'string' ? parseFloat(value) : value;
-    if (typeof start === 'number') this.update({ start });
-  }
-  @Input() set end(value: number | string) {
-    const end = typeof value === 'string' ? parseFloat(value) : value;
-    if (typeof end === 'number') this.update({ end });
-  }
+  // @Input() set start(value: number | string) {
+  //   const start = typeof value === 'string' ? parseFloat(value) : value;
+  //   if (typeof start === 'number') this.update({ start });
+  // }
+  // @Input() set end(value: number | string) {
+  //   const end = typeof value === 'string' ? parseFloat(value) : value;
+  //   if (typeof end === 'number') this.update({ end });
+  // }
 
   @Input() set revert(revert: boolean | '') {
     if (revert === true || revert === '') {
@@ -142,6 +146,7 @@ export class RivePlayer {
   @Output() timeChange = new EventEmitter<number>();
   @Output() playChange = new EventEmitter<boolean>();
   @Output() revertChange = new EventEmitter<boolean>();
+  @Output() load = new EventEmitter<LinearAnimation>();
 
   private animation?: LinearAnimation;
   private animationInstance?: LinearAnimationInstance;
@@ -159,27 +164,29 @@ export class RivePlayer {
   }
 
 
-  update(state: Partial<RivePlayerState>) {
+  private update(state: Partial<RivePlayerState>) {
     const next = getRivePlayerState({...this.state.getValue(), ...state })
     this.state.next(next);
   }
 
-  initAnimation(name: string | number) {
-    if (!this.canvas.rive) throw new Error('');
-    if (!this.canvas.artboard) throw new Error('');
+  private initAnimation(name: string | number) {
+    if (!this.canvas.rive) throw new Error('Could not load animation instance before rive');
+    if (!this.canvas.artboard) throw new Error('Could not load animation instance before artboard');
     this.animation = typeof name === 'string'
       ? this.canvas.artboard.animation(name)
       : this.canvas.artboard.animationAt(name);
+
     this.animationInstance = new this.canvas.rive.LinearAnimationInstance(this.animation);
+    this.load.emit(this.animation);
   }
 
-  getTime() {
+  private getTime() {
     if (!this.animationInstance) throw new Error('Could not load animation instance before running it');
     return this.animationInstance.time;
   }
 
 
-  getFrame(state: RivePlayerState) {
+  private getFrame(state: RivePlayerState) {
     if (state.playing) {
       return this.service.frame.pipe(map((time) => [state, time] as const));
     } else {
@@ -187,7 +194,7 @@ export class RivePlayer {
     }
   }
 
-  register(name: string | number) {
+  private register(name: string | number) {
     // Stop subscribing to previous animation if any
     this.sub?.unsubscribe(); 
 
@@ -213,14 +220,14 @@ export class RivePlayer {
     ).subscribe((delta) => this.applyChange(delta));
   }
 
-  moveFrame(state: RivePlayerState, time: number) {
+  private moveFrame(state: RivePlayerState, time: number) {
     if (!this.animation) throw new Error('Could not load animation before runningit');
     if (!this.animationInstance) throw new Error('Could not load animation instance before runningit');
     const { direction, speed, autoreset, mode } = state;
     let delta = (time / 1000) * speed * direction;
     
-    const start = this.animation.workStart;
-    const end = this.animation.workEnd;
+    const start = frameToSec(this.animation.workStart, this.animation.fps);
+    const end = frameToSec(this.animation.workEnd, this.animation.fps);
     const currentTime = this.animationInstance.time;
   
     // When player hit floor
@@ -237,7 +244,6 @@ export class RivePlayer {
         if (autoreset && end) delta = end - currentTime;
       }
     }
-
     // When player hit last frame
     if (currentTime + delta > end) {
       if (mode === 'loop' && direction === 1) {
@@ -256,7 +262,7 @@ export class RivePlayer {
     return delta;
   }
 
-  applyChange(delta: number) {
+  private applyChange(delta: number) {
     if (!this.canvas.rive) throw new Error('Could not load rive before registrating animation');
     if (!this.canvas.artboard) throw new Error('Could not load artboard before registrating animation');
     if (!this.canvas.renderer) throw new Error('Could not load renderer before registrating animation');

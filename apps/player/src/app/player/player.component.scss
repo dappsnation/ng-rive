@@ -16,10 +16,24 @@ footer {
 
 .row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-
+  padding: 8px 16px;
   .name {
     width: 150px;
-    padding: 8px 16px;
+  }
+
+  .timeline {
+    margin: 0 16px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    mat-slider {
+      flex: 1;
+    }
+  }
+
+  mat-form-field {
+    margin-right: 8px;
   }
 }

@@ -2,20 +2,20 @@ interface AnimationFile {
   name: string;
   animations: AnimationState[];
 }
-interface AnimationState {
+export interface AnimationState {
   name: string;
   playing: boolean;
-  time: number;
+  time?: number;
   speed: number;
   mix: number;
   mode?: 'loop' | 'ping-pong' | 'one-shot';
+  duration?: { start: number, end: number };
 }
 
 function createAnimation(name: string) {
   return {
     name,
     playing: false,
-    time: 0,
     speed: 1,
     mix: 0.5,
   }
