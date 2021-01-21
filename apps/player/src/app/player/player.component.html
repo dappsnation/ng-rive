@@ -5,8 +5,8 @@
         <riv-player
           [name]="anim.name"
           [mode]="anim.mode"
+          [speed]="anim.speed"
           [(play)]="anim.playing"
-          [(speed)]="anim.speed"
           [(time)]="anim.time"
           (load)="setDuration(anim, $event)"
           autoreset>
@@ -36,7 +36,7 @@
           <mat-select [(value)]="anim.mode">
             <mat-option>Default</mat-option>
             <mat-option value="one-shot">
-              <span>One Shot</span>
+              <span>One Shot (autoreset)</span>
             </mat-option>
             <mat-option value="ping-pong">
               <span>Ping Pong</span>

@@ -91,6 +91,11 @@ export class RiveCanvasDirective {
     );
   }
 
+
+  ngOnInit() {
+    this.onReady().pipe(take(1)).subscribe();
+  }
+
   private setArtboard() {
     return this.arboardName.pipe(
       map(name => this.artboard = name ? this.file?.artboard(name) : this.file?.defaultArtboard()),
