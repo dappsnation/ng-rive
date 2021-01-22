@@ -16,8 +16,8 @@
     }
   },
   "projects": {
-    "example": { "tags": [] },
-    "example-e2e": { "tags": [], "implicitDependencies": ["example"] },
-    "ng-rive": { "tags": [] }
+    "ng-rive": { "tags": [] },
+    "recorder": { "tags": [] },
+    "player": { "tags": [] }
   }
 }

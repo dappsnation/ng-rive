@@ -1,0 +1,12 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="side" opened>
+    <mat-nav-list>
+      <ng-container *ngFor="let file of files">
+        <a mat-list-item [routerLink]="file.name">{{ file.name }}</a>
+      </ng-container>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

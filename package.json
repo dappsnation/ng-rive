@@ -7,7 +7,8 @@
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
     "nx": "nx",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build:recorder": "ng build recorder --prod",
+    "build:player": "ng build player --prod",
     "test": "ng test",
     "lint": "nx workspace-lint && ng lint",
     "e2e": "ng e2e",
@@ -40,7 +41,7 @@
     "@angular/platform-browser-dynamic": "^11.0.0",
     "@angular/router": "^11.0.0",
     "@nrwl/angular": "11.1.5",
-    "rive-canvas": "^0.6.7",
+    "rive-canvas": "^0.6.8",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "^0.10.2"

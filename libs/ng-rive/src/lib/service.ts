@@ -3,6 +3,8 @@ import Rive from 'rive-canvas';
 import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RiveCanvas, File as RiveFile } from './types';
+import { animationFrame } from './frame';
+import { share } from 'rxjs/operators';
 
 export const RIVE_FOLDER = new InjectionToken<string>('Folder with Rive files');
 export const RIVE_VERSION = new InjectionToken<string>('Version used to load rive WASM');
@@ -11,6 +13,7 @@ export const RIVE_VERSION = new InjectionToken<string>('Version used to load riv
 export class RiveService {
   private files: Record<string, RiveFile> = {};
   public rive?: RiveCanvas;
+  public frame = animationFrame.pipe(share());
 
   constructor(
     @Optional() @Inject(RIVE_FOLDER) private folder: string,
