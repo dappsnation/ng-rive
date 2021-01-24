@@ -18,6 +18,7 @@
   "projects": {
     "ng-rive": { "tags": [] },
     "recorder": { "tags": [] },
-    "player": { "tags": [] }
+    "player": { "tags": [] },
+    "playground": { "tags": [] }
   }
 }

@@ -41,12 +41,12 @@ export class RiveCanvasDirective {
   private url = new ReplaySubject<string | File>();
   private arboardName = new BehaviorSubject<string | null>(null);
   private loaded: Observable<boolean>;
-  public ctx: CanvasRenderingContext2D;
-  public renderer?: CanvasRenderer;
+  public canvas: HTMLCanvasElement | OffscreenCanvas;
+  public ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
   public rive?: RiveCanvas;
   public file?: RiveFile; 
-  public canvas: HTMLCanvasElement;
   public artboard?: Artboard;
+  public renderer?: CanvasRenderer;
 
   public isVisible: Observable<boolean>;
 
@@ -67,12 +67,14 @@ export class RiveCanvasDirective {
     private service: RiveService,
     element: ElementRef<HTMLCanvasElement>
   ) {
-    this.canvas = element.nativeElement;
+    this.canvas = ('OffscreenCanvas' in window)
+      ? element.nativeElement.transferControlToOffscreen()
+      : element.nativeElement;
     const ctx = this.canvas.getContext('2d');
     if (!ctx) throw new Error('Could not find context of canvas');
     this.ctx = ctx;
 
-    this.isVisible = onVisible(this.canvas).pipe(
+    this.isVisible = onVisible(element.nativeElement).pipe(
       shareReplay(1),
       enterZone(this.zone),
     );
