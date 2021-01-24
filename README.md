@@ -6,6 +6,11 @@ A repository for Angular built around the [rive canvas runtime](https://help.riv
 [![npm](https://img.shields.io/npm/v/ng-rive)](https://www.npmjs.com/package/ng-rive)
 [![npm](https://img.shields.io/npm/dm/ng-rive)](https://www.npmjs.com/package/ng-rive)
 
+
+## Demo
+- 🎞️ [Rive Player](https://rive-animation-player.netlify.app/)
+- 🎥 [Animation Recorder](https://rive-video-recorder.netlify.app/)
+
 ## Get started
 1. Install :
 ```
@@ -93,22 +98,31 @@ The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag :
 
 ## Player
 You can use `riv-player` to manipulate the animation : 
+
 #### Input / Output
 - `[(time)]`: Bind the animation to a specific time
 - `[(play)]`: Bind the player to a boolean (playing: `true`, paused: `false`).
-- `[(reverse)]`: Bind the player direction to a boolean
+- `[(speed)]`: The speed at which the animation should play. Negative values cause the animation to play backward.
+
+⚠️ The speed only applies if `mode` is provided.
 
 #### Input
 - `[name]`: The name of the animation in the file loaded by the canvas.
 - `[mode]`: Force a mode: `"one-shot"`, `"loop"` or `"ping-pong"` (if `undefined`, default mode is used).
 - `[mix]`: The weight of this application over another in the same `Artboard`.
-- `[speed]`: A multiplicator for the speed of the animation (default to 1).
 - `[autoreset]`: If `true`, will reset the animation to `start` when done (only for `one-shot` mode).
 
 #### Output
 - `(load)`: Emitted the loaded `LinearAnimation`.
 
-## Play if canvas is visible
+### Player Mode or Default
+Rive automatically apply the loop, ping-pong, speed and other property by default in the runtime.
+Setting the `mode` property will override the default behavior.
+
+Using `mode` might create conflict with default behavior. Known conflicts are:
+- using a "loop" mode with an animation that is already a loop will fail if speed is negative
+
+### Play if canvas is visible
 To save ressources you can play the animation only when the canvas is visible in the viewport : 
 ```html
 <canvas #canvas="rivCanvas" riv="knight" width="500" height="500">
@@ -116,7 +130,7 @@ To save ressources you can play the animation only when the canvas is visible in
 </canvas>
 ```
 
-## Multiple Animations
+### Multiple Animations
 You can run multiple animations within the same canvas : 
 ```html
 <canvas riv="knight">
@@ -124,3 +138,7 @@ You can run multiple animations within the same canvas :
   <riv-player name="day_night" play mode="ping-pong" speed="0.5"></riv-player>
 </canvas>
 ```
+
+
+## Roadmap
+- Create two directives, `riv-player` with `mode` and `riv-anim` without to avoid conflicts.

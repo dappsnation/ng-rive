@@ -11,4 +11,22 @@ mat-sidenav-content {
 }
 mat-sidenav {
   width: 250px;
+  aside {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    mat-nav-list {
+      flex: 1;
+    }
+    mat-toolbar {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: flex-start;
+      p {
+        margin: 0;
+      }
+    }
+  }
 }

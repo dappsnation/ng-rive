@@ -7,7 +7,6 @@ import { LinearAnimation, LinearAnimationInstance } from "./types";
 
 interface RivePlayerState {
   speed: number;
-  direction: 1 | -1;
   playing: boolean;
   /** Weight of this animation over another */
   mix: number;
@@ -20,7 +19,6 @@ interface RivePlayerState {
 function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerState {
   return {
     speed: 1,
-    direction: 1,
     playing: false,
     mix: 1,
     autoreset: false,
@@ -92,17 +90,6 @@ export class RivePlayer {
     return this.state.getValue().speed;
   }
 
-  @Input() set revert(revert: boolean | '' | undefined | null) {
-    if (revert === true || revert === '') {
-      this.update({ direction: -1 });
-    } else if (revert === false) {
-      this.update({ direction: 1 });
-    }
-  }
-  get revert() {
-    return this.state.getValue().direction === -1 ? false : true;
-  }
-
   @Input() set play(playing: boolean | '' | undefined | null) {
     if (playing === true || playing === '') {
       this.update({ playing: true });
@@ -135,7 +122,7 @@ export class RivePlayer {
 
   @Output() timeChange = new EventEmitter<number>();
   @Output() playChange = new EventEmitter<boolean>();
-  @Output() revertChange = new EventEmitter<boolean>();
+  @Output() speedChange = new EventEmitter<number>();
   @Output() load = new EventEmitter<LinearAnimation>();
 
   private animation?: LinearAnimation;
@@ -212,23 +199,26 @@ export class RivePlayer {
   private moveFrame(state: RivePlayerState, time: number) {
     if (!this.animation) throw new Error('Could not load animation before runningit');
     if (!this.animationInstance) throw new Error('Could not load animation instance before runningit');
-    const { direction, speed, autoreset, mode } = state;
-    let delta = (time / 1000) * speed * direction;
+    const { speed, autoreset, mode } = state;
+
+    // Default mode, don't apply any logic
+    if (!mode) return time / 1000;
+
+    let delta = (time / 1000) * speed;
     
     // Round to avoid JS error on division
     const start = round(this.animation.workStart / this.animation.fps);
     const end = round((this.animation.workEnd || this.animation.duration) / this.animation.fps);
     const currentTime = round(this.animationInstance.time);
 
-
     // When player hit floor
     if (currentTime + delta < start) {
-      if (mode === 'loop' && direction === -1 && end) {
-        delta = end;
+      if (mode === 'loop' && speed < 0 && end) {
+        delta = end - currentTime; // end - currentTime
       } else if (mode === 'ping-pong') {
         delta = -delta;
-        this.update({ direction: 1 });
-        this.zone.run(() => this.revertChange.emit(false));
+        this.update({ speed: -speed });
+        this.zone.run(() => this.speedChange.emit(-speed));
       } else if (mode === 'one-shot') {
         this.update({ playing: false });
         this.zone.run(() => this.playChange.emit(false));
@@ -238,22 +228,22 @@ export class RivePlayer {
 
     // Put before "hit last frame" else currentTime + delta > end
     if (mode === 'one-shot' && autoreset) {
-      if (direction === 1 && currentTime === end) {
+      if (speed > 0 && currentTime === end) {
         delta = start - end;
       }
-      if (direction === -1 && currentTime === start) {
+      if (speed < 0 && currentTime === start) {
         delta = end - start;
       }
     }
 
     // When player hit last frame
     if (currentTime + delta > end) {
-      if (mode === 'loop' && direction === 1) {
+      if (mode === 'loop' && speed > 0) {
         delta = start - currentTime;
       } else if (mode === 'ping-pong') {
         delta = -delta;
-        this.update({ direction: -1 });
-        this.zone.run(() => this.revertChange.emit(true));
+        this.update({ speed: -speed });
+        this.zone.run(() => this.speedChange.emit(-speed));
       } else if (mode === 'one-shot') {
         this.update({ playing: false });
         this.zone.run(() => this.playChange.emit(false));

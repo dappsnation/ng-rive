@@ -1,10 +1,16 @@
 <mat-sidenav-container>
   <mat-sidenav mode="side" opened>
-    <mat-nav-list>
-      <ng-container *ngFor="let file of files">
-        <a mat-list-item [routerLink]="file.name">{{ file.name }}</a>
-      </ng-container>
-    </mat-nav-list>
+    <aside>
+      <mat-nav-list>
+        <ng-container *ngFor="let file of files">
+          <a mat-list-item [routerLink]="file.name">{{ file.name }}</a>
+        </ng-container>
+      </mat-nav-list>
+      <mat-toolbar>
+        <p class="mat-body-1">Powered by <a href="https://github.com/dappsnation/ng-rive">ng-rive</a></p>
+        <p class="mat-body-1">Animations from <a href="https://beta.rive.app/community/">Rive Team</a></p>
+      </mat-toolbar>
+    </aside>
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>
