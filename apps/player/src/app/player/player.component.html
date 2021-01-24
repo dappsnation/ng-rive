@@ -5,7 +5,7 @@
         <riv-player
           [name]="anim.name"
           [mode]="anim.mode"
-          [speed]="anim.speed"
+          [(speed)]="anim.speed"
           [(play)]="anim.playing"
           [(time)]="anim.time"
           (load)="setDuration(anim, $event)"

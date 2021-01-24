@@ -12,6 +12,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { PlayerComponent } from './player/player.component';
 
@@ -29,6 +30,7 @@ import { PlayerComponent } from './player/player.component';
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
+    MatToolbarModule,
     FormsModule,
     RouterModule.forRoot([{
       path: ':name',
