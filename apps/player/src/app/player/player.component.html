@@ -1,6 +1,6 @@
 <ng-container *ngIf="file$ | async as file">
   <section>
-    <canvas [riv]="file.name" width="500" height="500">
+    <canvas [riv]="file.name" viewbox="0 0 100% 100%" width="500" height="500">
       <ng-container *ngFor="let anim of file?.animations; trackBy: trackByName">
         <riv-player
           [name]="anim.name"
