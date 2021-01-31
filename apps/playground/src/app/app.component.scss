@@ -1,4 +1,14 @@
-canvas {
-  width: 500px;
-  height: 500px;
+:host {
+  display: block;
+  height: 100%;
+}
+mat-sidenav-container {
+  height: 100%;
+}
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+}
+mat-sidenav {
+  width: 250px;
 }
