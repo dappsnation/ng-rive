@@ -49,7 +49,7 @@ export abstract class RiveTransformComponent<T extends TransformComponent> {
   protected set(key: keyof T, value: number | string | null | undefined) {
     this.zone.runOutsideAngular(() => {
       const v = typeof value === 'string' ? parseFloat(value) : value;
-      if (v) {
+      if (typeof v === 'number') {
         if (this.component) this.component[key] = v as any;
         else this.state[key] = v as any;
       }
