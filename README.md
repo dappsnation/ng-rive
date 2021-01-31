@@ -10,6 +10,7 @@ A repository for Angular built around the [rive canvas runtime](https://help.riv
 ## Demo
 - 🎞️ [Rive Player](https://rive-animation-player.netlify.app/)
 - 🎥 [Animation Recorder](https://rive-video-recorder.netlify.app/)
+- ⛱️ [Playground](https://ng-rive-playground.netlify.app/)
 
 ## Get started
 1. Install :
@@ -83,6 +84,8 @@ Add this in your `package.json`:
 }
 ```
 
+----
+
 ## Canvas
 The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag : 
 
@@ -104,7 +107,7 @@ Canvas zoomed from "25% 25%" (top left), to "75% 75%" (bottom right).
 <canvas riv="knight" viewbox="25% 25% 75% 75%" width="500" height="500"></canvas>
 ```
 
-
+----
 
 ## Player
 You can use `riv-player` to manipulate the animation : 
@@ -149,6 +152,28 @@ You can run multiple animations within the same canvas :
 </canvas>
 ```
 
+----
+## Node
+The `RiveNode` directive give you access to one node :
+```html
+<canvas riv="knight">
+  <riv-player name="idle" play></riv-player>
+  <riv-node name="cloud" x="300"></riv-node>
+</canvas>
+```
+This example will set the position of the cloud to 300px of its origin.
+
+**Important**: You need to have at least one animation playing to modify a node.
+
+#### Input
+- `[x]` The x position of the node.
+- `[y]` The y position of the node.
+- `[scaleX]` The scaleX of the node.
+- `[scaleY]` The scaleX of the node.
+- `[scale]` Apply scaleX & scaleY.
+- `[rotation]` Apply rotation on the node. If value is below 2*PI use radians, else degrees.
+
+⚠️ If the property of the node is updated by the animation, the animation wins.
 
 ## Roadmap
 - Create two directives, `riv-player` with `mode` and `riv-anim` without to avoid conflicts.

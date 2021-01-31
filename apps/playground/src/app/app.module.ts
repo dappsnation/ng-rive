@@ -7,6 +7,7 @@ import { RiveModule } from 'ng-rive';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { SheepComponent } from './sheep/sheep.component';
 
@@ -22,6 +23,7 @@ import { SheepComponent } from './sheep/sheep.component';
     MatSidenavModule,
     MatButtonModule,
     MatListModule,
+    MatToolbarModule,
     RouterModule.forRoot([{
       path: '',
       redirectTo: 'sheep',
