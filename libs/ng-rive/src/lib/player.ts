@@ -266,10 +266,9 @@ export class RivePlayer {
     artboard.advance(delta);
     this.zone.run(() => this.timeChange.next(this.getTime()));
     // Render frame on canvas
-    const frame = { minX: 0, minY: 0, maxX: canvas.width, maxY: canvas.height };
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
-    renderer.align(rive.Fit.contain, rive.Alignment.center, frame, artboard.bounds);
+    renderer.align(rive.Fit.contain, rive.Alignment.center, this.canvas.box, artboard.bounds);
     artboard.draw(renderer);
     ctx.restore();
   }

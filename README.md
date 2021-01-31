@@ -89,12 +89,22 @@ The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag :
 #### Input
 - `[riv]`: The `.riv` file or it's name if in the asset. Full path is managed by the `RIVE_FOLDER` token.
 - `[artboard]`: The name of the artboard to used. If not specified, the default one is used.
-- `[lazy]`: If provided, the file will only be loaded when canvas is visible in the viewport
+- `[lazy]`: If provided, the file will only be loaded when canvas is visible in the viewport.
+- `[viewbox]`: Enable zoom in the canvas. Expect a string `minX minY maxX maxY`. Default `0 0 100% 100%`.
 
 ⚠️ The `lazy` input use the `IntersectionObserver` API which will not work in all browser.
 
-### Output
+#### Output
 - `(artboardChange)`: Emit the new Artboard
+
+
+#### Examples
+Canvas zoomed from "25% 25%" (top left), to "75% 75%" (bottom right).
+```html
+<canvas riv="knight" viewbox="25% 25% 75% 75%" width="500" height="500"></canvas>
+```
+
+
 
 ## Player
 You can use `riv-player` to manipulate the animation : 

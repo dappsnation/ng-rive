@@ -2,7 +2,7 @@ import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@ang
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { RiveService } from './service';
-import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile } from './types';
+import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB } from './types';
 
 // Observable that trigger once when element is visible
 const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber) => {
@@ -41,12 +41,13 @@ export class RiveCanvasDirective {
   private url = new ReplaySubject<string | File>();
   private arboardName = new BehaviorSubject<string | null>(null);
   private loaded: Observable<boolean>;
-  public ctx: CanvasRenderingContext2D;
-  public renderer?: CanvasRenderer;
+  private boxes: Record<string, AABB> = {};
+  public canvas: HTMLCanvasElement | OffscreenCanvas;
+  public ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
   public rive?: RiveCanvas;
   public file?: RiveFile; 
-  public canvas: HTMLCanvasElement;
   public artboard?: Artboard;
+  public renderer?: CanvasRenderer;
 
   public isVisible: Observable<boolean>;
 
@@ -57,8 +58,9 @@ export class RiveCanvasDirective {
   @Input('artboard') set name(name: string) {
     this.arboardName.next(name);
   }
-  @Input() lazy: boolean | '' = false;
 
+  @Input() viewbox: string = '0 0 100% 100%';
+  @Input() lazy: boolean | '' = false;
 
   @Output() artboardChange = new EventEmitter<Artboard>();
 
@@ -67,12 +69,14 @@ export class RiveCanvasDirective {
     private service: RiveService,
     element: ElementRef<HTMLCanvasElement>
   ) {
-    this.canvas = element.nativeElement;
+    this.canvas = ('OffscreenCanvas' in window)
+      ? element.nativeElement.transferControlToOffscreen()
+      : element.nativeElement;
     const ctx = this.canvas.getContext('2d');
     if (!ctx) throw new Error('Could not find context of canvas');
     this.ctx = ctx;
 
-    this.isVisible = onVisible(this.canvas).pipe(
+    this.isVisible = onVisible(element.nativeElement).pipe(
       shareReplay(1),
       enterZone(this.zone),
     );
@@ -102,6 +106,22 @@ export class RiveCanvasDirective {
       tap(_ => this.artboardChange.emit(this.artboard)),
       map(_ => true)
     );
+  }
+
+  get box() {
+    if (!this.boxes[this.viewbox]) {
+      const bounds = this.viewbox.split(' ');
+      if (bounds.length !== 4) throw new Error('View box should look like "0 0 100% 100%"');
+      const [minX, minY, maxX, maxY] = bounds.map((v, i) => {
+        const size = i % 2 === 0 ? this.canvas.width : this.canvas.height;
+        const percentage = v.endsWith('%')
+          ? parseInt(v.slice(0, -1), 10) / 100
+          : parseInt(v, 10) / size;
+        return i < 2 ? -size * percentage : size / percentage;
+      });
+      this.boxes[this.viewbox] = {minX, minY, maxX, maxY};
+    }
+    return this.boxes[this.viewbox];
   }
 
   get isLazy() {
