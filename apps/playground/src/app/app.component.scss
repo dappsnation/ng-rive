@@ -1,4 +1,32 @@
-canvas {
-  width: 500px;
-  height: 500px;
+:host {
+  display: block;
+  height: 100%;
+}
+mat-sidenav-container {
+  height: 100%;
+}
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+}
+mat-sidenav {
+  width: 250px;
+  aside {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    mat-nav-list {
+      flex: 1;
+    }
+    mat-toolbar {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: flex-start;
+      p {
+        margin: 0;
+      }
+    }
+  }
 }

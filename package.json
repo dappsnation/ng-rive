@@ -9,6 +9,7 @@
     "start": "ng serve",
     "build:recorder": "ng build recorder --prod",
     "build:player": "ng build player --prod",
+    "build:playground": "ng build playground --prod",
     "test": "ng test",
     "lint": "nx workspace-lint && ng lint",
     "e2e": "ng e2e",
