@@ -8,13 +8,16 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSliderModule } from '@angular/material/slider';
 import { RouterModule } from '@angular/router';
 import { SheepComponent } from './sheep/sheep.component';
+import { ResizeComponent } from './resize/resize.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SheepComponent,
+    ResizeComponent,
   ],
   imports: [
     BrowserModule,
@@ -24,6 +27,7 @@ import { SheepComponent } from './sheep/sheep.component';
     MatButtonModule,
     MatListModule,
     MatToolbarModule,
+    MatSliderModule,
     RouterModule.forRoot([{
       path: '',
       redirectTo: 'sheep',
@@ -31,6 +35,9 @@ import { SheepComponent } from './sheep/sheep.component';
     }, {
       path: 'sheep',
       component: SheepComponent
+    }, {
+      path: 'resize',
+      component: ResizeComponent
     }])
   ],
   providers: [],

@@ -39,8 +39,6 @@ export function enterZone(zone: NgZone) {
   exportAs: 'rivCanvas'
 })
 export class RiveCanvasDirective {
-  private _width?: number;
-  private _height?: number;
   private url = new ReplaySubject<string | File>();
   private arboardName = new BehaviorSubject<string | null>(null);
   private loaded: Observable<boolean>;
@@ -65,18 +63,18 @@ export class RiveCanvasDirective {
   @Input() viewbox: string = '0 0 100% 100%';
   @Input() lazy: boolean | '' = false;
   @Input()
-  set width(w: number) {
-    this._width = toInt(w);
+  set width(w: number | string) {
+    this.canvas.width = toInt(w) ?? this.canvas.width;
   }
   get width() {
-    return this._width ?? this.element.nativeElement.getBoundingClientRect().width;
+    return this.canvas.width;
   }
   @Input()
-  set height(h: number) {
-    this._height = toInt(h);
+  set height(h: number | string) {
+    this.canvas.height = toInt(h) ?? this.canvas.height;
   }
   get height() {
-    return this._height ?? this.element.nativeElement.getBoundingClientRect().height;
+    return this.canvas.width;
   }
 
   @Output() artboardChange = new EventEmitter<Artboard>();
@@ -130,8 +128,8 @@ export class RiveCanvasDirective {
    * It memorizes the values to avoid recalculation for each frame
    */
   get box() {
-    const w = this.width;
-    const h = this.height;
+    const w = this.width as number;
+    const h = this.height as number;
     const boxId = `${this.viewbox} ${w} ${h}`;
     if (!this.boxes[boxId]) {
       const bounds = this.viewbox.split(' ');

@@ -259,16 +259,18 @@ export class RivePlayer {
     if (!this.canvas.artboard) throw new Error('Could not load artboard before registrating animation');
     if (!this.canvas.renderer) throw new Error('Could not load renderer before registrating animation');
     if (!this.animationInstance) throw new Error('Could not load animation instance before runningit');
-    const { rive, artboard, renderer, canvas, ctx } = this.canvas;
+    const { rive, artboard, renderer, ctx } = this.canvas;
     // Move frame
     this.animationInstance.advance(delta);
     this.animationInstance.apply(artboard, this.state.getValue().mix);
     artboard.advance(delta);
     this.zone.run(() => this.timeChange.next(this.getTime()));
     // Render frame on canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const box = this.canvas.box;
+    console.log(box);
+    ctx.clearRect(box.minX, box.minY, box.maxX, box.maxY);
     ctx.save();
-    renderer.align(rive.Fit.contain, rive.Alignment.center, this.canvas.box, artboard.bounds);
+    renderer.align(rive.Fit.contain, rive.Alignment.center, box, artboard.bounds);
     artboard.draw(renderer);
     ctx.restore();
   }
