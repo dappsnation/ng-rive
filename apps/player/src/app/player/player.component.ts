@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { LinearAnimation, frameToSec } from 'ng-rive';
+import { LinearAnimation } from 'rive-canvas';
 import { map } from 'rxjs/operators';
 import { files, AnimationState } from '../animations';
 

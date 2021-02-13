@@ -16,19 +16,7 @@ export class SheepComponent {
   }
 
   reset() {
-    const move = () => {
-      if (this.x) {
-        if (this.x > 1) this.x--;
-        else if (this.x < -1) this.x++;
-        else this.x = 0;
-      }
-      if (this.y) {
-        if (this.y > 1) this.y--;
-        else if (this.y < -1) this.y++;
-        else this.y = 0;
-      }
-      if (this.x || this.y) requestAnimationFrame(move);
-    }
-    requestAnimationFrame(move);
+    this.x = 0;
+    this.y = 0;
   }
 }

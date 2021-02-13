@@ -1,0 +1,4 @@
+<canvas riv="sheep" [width]="size" [height]="size">
+  <riv-player name="idle" play></riv-player>
+</canvas>
+<mat-slider min="100" max="800" step="50" [value]="size" (change)="setSize($event)"></mat-slider>

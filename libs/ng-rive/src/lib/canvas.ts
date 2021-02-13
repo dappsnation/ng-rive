@@ -2,7 +2,8 @@ import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@ang
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { RiveService } from './service';
-import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB } from './types';
+import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB } from 'rive-canvas';
+import { toInt } from './utils';
 
 // Observable that trigger once when element is visible
 const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber) => {
@@ -61,6 +62,20 @@ export class RiveCanvasDirective {
 
   @Input() viewbox: string = '0 0 100% 100%';
   @Input() lazy: boolean | '' = false;
+  @Input()
+  set width(w: number | string) {
+    this.canvas.width = toInt(w) ?? this.canvas.width;
+  }
+  get width() {
+    return this.canvas.width;
+  }
+  @Input()
+  set height(h: number | string) {
+    this.canvas.height = toInt(h) ?? this.canvas.height;
+  }
+  get height() {
+    return this.canvas.width;
+  }
 
   @Output() artboardChange = new EventEmitter<Artboard>();
 
@@ -108,20 +123,27 @@ export class RiveCanvasDirective {
     );
   }
 
+  /**
+   * Calculate the box of the canvas based on viewbox, width and height
+   * It memorizes the values to avoid recalculation for each frame
+   */
   get box() {
-    if (!this.boxes[this.viewbox]) {
+    const w = this.width as number;
+    const h = this.height as number;
+    const boxId = `${this.viewbox} ${w} ${h}`;
+    if (!this.boxes[boxId]) {
       const bounds = this.viewbox.split(' ');
       if (bounds.length !== 4) throw new Error('View box should look like "0 0 100% 100%"');
       const [minX, minY, maxX, maxY] = bounds.map((v, i) => {
-        const size = i % 2 === 0 ? this.canvas.width : this.canvas.height;
+        const size = i % 2 === 0 ? w : h;
         const percentage = v.endsWith('%')
           ? parseInt(v.slice(0, -1), 10) / 100
           : parseInt(v, 10) / size;
         return i < 2 ? -size * percentage : size / percentage;
       });
-      this.boxes[this.viewbox] = {minX, minY, maxX, maxY};
+      this.boxes[boxId] = {minX, minY, maxX, maxY};
     }
-    return this.boxes[this.viewbox];
+    return this.boxes[boxId];
   }
 
   get isLazy() {
