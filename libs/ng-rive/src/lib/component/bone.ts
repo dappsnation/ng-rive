@@ -1,7 +1,7 @@
 import { Directive, Input, NgZone } from '@angular/core';
 import { RiveCanvasDirective } from '../canvas';
 import { RiveTransformComponent } from './transform-component';
-import { Bone } from '../types';
+import { Bone } from 'rive-canvas';
 
 
 @Directive({

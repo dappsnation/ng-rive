@@ -1,8 +1,6 @@
-// @ts-ignore : should be fixed with https://github.com/rive-app/rive-wasm/pull/12
-import Rive from 'rive-canvas';
+import Rive, { RiveCanvas, File as RiveFile } from 'rive-canvas';
 import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RiveCanvas, File as RiveFile } from './types';
 import { animationFrame } from './frame';
 import { share } from 'rxjs/operators';
 

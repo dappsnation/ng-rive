@@ -1,6 +1,6 @@
-import { Directive, Injectable, Input, NgZone } from '@angular/core';
+import { Directive, Input, NgZone } from '@angular/core';
 import { RiveCanvasDirective } from '../canvas';
-import { TransformComponent } from '../types';
+import { TransformComponent } from 'rive-canvas';
 
 @Directive()
 export abstract class RiveTransformComponent<T extends TransformComponent> {

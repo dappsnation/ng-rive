@@ -3,7 +3,7 @@ import { BehaviorSubject, merge, of, Subscription } from "rxjs";
 import { distinctUntilChanged, filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
-import { LinearAnimation, LinearAnimationInstance } from "./types";
+import { LinearAnimation, LinearAnimationInstance } from "rive-canvas";
 
 interface RivePlayerState {
   speed: number;
