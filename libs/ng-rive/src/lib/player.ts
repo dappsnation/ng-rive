@@ -267,7 +267,6 @@ export class RivePlayer {
     this.zone.run(() => this.timeChange.next(this.getTime()));
     // Render frame on canvas
     const box = this.canvas.box;
-    console.log(box);
     ctx.clearRect(box.minX, box.minY, box.maxX, box.maxY);
     ctx.save();
     renderer.align(rive.Fit.contain, rive.Alignment.center, box, artboard.bounds);

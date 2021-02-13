@@ -82,7 +82,7 @@ export class RiveCanvasDirective {
   constructor(
     private zone: NgZone,
     private service: RiveService,
-    private element: ElementRef<HTMLCanvasElement>
+    element: ElementRef<HTMLCanvasElement>
   ) {
     this.canvas = ('OffscreenCanvas' in window)
       ? element.nativeElement.transferControlToOffscreen()
