@@ -269,8 +269,6 @@ export class RivePlayer {
     const box = this.canvas.box;
     ctx.clearRect(0, 0, this.canvas.width as number, this.canvas.height as number);
     ctx.save();
-    console.log(fit, rive.Fit[fit])
-    console.log(alignment, rive.Alignment[alignment])
     renderer.align(rive.Fit[fit], rive.Alignment[alignment], box, artboard.bounds);
     artboard.draw(renderer);
     ctx.restore();
