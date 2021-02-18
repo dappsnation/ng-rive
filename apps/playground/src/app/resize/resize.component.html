@@ -1,4 +1,31 @@
-<canvas riv="sheep" [width]="size" [height]="size">
-  <riv-player name="idle" play></riv-player>
-</canvas>
-<mat-slider min="100" max="800" step="50" [value]="size" (change)="setSize($event)"></mat-slider>
+<section *ngIf="value$ | async as v">
+  <canvas riv="sheep" [width]="v.width" [height]="v.height" [fit]="v.fit" [alignment]="v.alignment">
+    <riv-player name="idle" play></riv-player>
+  </canvas>
+</section>
+<form [formGroup]="form">
+  <mat-form-field>
+    <mat-label>Width</mat-label>
+    <input matInput type="number" formControlName="width"/>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Height</mat-label>
+    <input matInput type="number" formControlName="height"/>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Fit</mat-label>
+    <mat-select formControlName="fit">
+      <ng-container *ngFor="let fit of fits">
+        <mat-option [value]="fit">{{ fit }}</mat-option>
+      </ng-container>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Alignment</mat-label>
+    <mat-select formControlName="alignment">
+      <ng-container *ngFor="let alignment of alignments">
+        <mat-option [value]="alignment">{{ alignment }}</mat-option>
+      </ng-container>
+    </mat-select>
+  </mat-form-field>
+</form>

@@ -5,6 +5,10 @@ import { RiveService } from './service';
 import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB } from 'rive-canvas';
 import { toInt } from './utils';
 
+export type CanvasFit = 'cover' | 'contain' | 'fill' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
+export type CanvasAlignment = 'center' | 'topLeft' | 'topCenter' | 'topRight' | 'centerLeft' | 'centerRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
+
+
 // Observable that trigger once when element is visible
 const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber) => {
   if (!('IntersectionObserver' in window)) return subscriber.next(true);
@@ -62,7 +66,8 @@ export class RiveCanvasDirective {
 
   @Input() viewbox: string = '0 0 100% 100%';
   @Input() lazy: boolean | '' = false;
-  @Input()
+  @Input() fit: CanvasFit = 'fill';
+  @Input() alignment: CanvasAlignment = 'center';
   set width(w: number | string) {
     this.canvas.width = toInt(w) ?? this.canvas.width;
   }
@@ -84,9 +89,7 @@ export class RiveCanvasDirective {
     private service: RiveService,
     element: ElementRef<HTMLCanvasElement>
   ) {
-    this.canvas = ('OffscreenCanvas' in window)
-      ? element.nativeElement.transferControlToOffscreen()
-      : element.nativeElement;
+    this.canvas = element.nativeElement;
     const ctx = this.canvas.getContext('2d');
     if (!ctx) throw new Error('Could not find context of canvas');
     this.ctx = ctx;
