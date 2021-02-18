@@ -1,9 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { RiveModule } from 'ng-rive';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
@@ -22,12 +26,16 @@ import { ResizeComponent } from './resize/resize.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
     RiveModule,
+    MatFormFieldModule,
+    MatSelectModule,
     MatSidenavModule,
     MatButtonModule,
     MatListModule,
     MatToolbarModule,
     MatSliderModule,
+    MatInputModule,
     RouterModule.forRoot([{
       path: '',
       redirectTo: 'sheep',

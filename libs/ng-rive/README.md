@@ -92,6 +92,10 @@ The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag :
 #### Input
 - `[riv]`: The `.riv` file or it's name if in the asset. Full path is managed by the `RIVE_FOLDER` token.
 - `[artboard]`: The name of the artboard to used. If not specified, the default one is used.
+- `[width]`: The width of the canvas in pixel.
+- `[height]`: The height of the canvas in pixel.
+- `[fit]`: How the animation should fit inside the canvas.
+- `[alignment]`: Where the animation should be positioned inside the canvas.
 - `[lazy]`: If provided, the file will only be loaded when canvas is visible in the viewport.
 - `[viewbox]`: Enable zoom in the canvas. Expect a string `minX minY maxX maxY`. Default `0 0 100% 100%`.
 
