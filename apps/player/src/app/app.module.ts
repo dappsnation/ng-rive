@@ -13,11 +13,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterModule } from '@angular/router';
 import { PlayerComponent } from './player/player.component';
+import { UploaderComponent } from './uploader/uploader.component';
 
 @NgModule({
-  declarations: [AppComponent, PlayerComponent],
+  declarations: [AppComponent, PlayerComponent, UploaderComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -31,8 +33,12 @@ import { PlayerComponent } from './player/player.component';
     MatSelectModule,
     MatInputModule,
     MatToolbarModule,
+    MatSnackBarModule,
     FormsModule,
     RouterModule.forRoot([{
+      path: '',
+      component: UploaderComponent
+    }, {
       path: ':name',
       component: PlayerComponent
     }])

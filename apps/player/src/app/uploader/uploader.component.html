@@ -1,0 +1,23 @@
+<ng-container [ngSwitch]="state | async">
+  <ng-container *ngSwitchCase="'idle'">
+    <button type="button" mat-flat-button color="primary" (click)="fileInput.click()">
+      <mat-icon>attach_file</mat-icon>
+      <span>Select a .riv file</span>
+      <input #fileInput hidden (change)="file($event)" type="file" accept=".riv" />
+    </button>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'hover'">
+    <section class="hover">
+      <h3>Drop a .riv File</h3>
+    </section>
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'uploading'">
+
+  </ng-container>
+
+  <ng-container *ngSwitchCase="'selected'">
+
+  </ng-container>
+</ng-container>

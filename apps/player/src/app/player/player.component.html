@@ -1,7 +1,7 @@
 <ng-container *ngIf="file$ | async as file">
   <section>
-    <canvas [riv]="file.name" viewbox="0 0 100% 100%" width="500" height="500">
-      <ng-container *ngFor="let anim of file?.animations; trackBy: trackByName">
+    <canvas [riv]="file" [width]="500" [height]="500" (artboardChange)="setArtboard($event)">
+      <ng-container *ngFor="let anim of animations; trackBy: trackByName">
         <riv-player
           [name]="anim.name"
           [mode]="anim.mode"
@@ -16,7 +16,7 @@
   </section>
   <footer>
     <mat-divider></mat-divider>
-    <ng-container *ngFor="let anim of file?.animations; trackBy: trackByName">
+    <ng-container *ngFor="let anim of animations; trackBy: trackByName">
       <div class="row">
         <span class="name">{{ anim.name }}</span>
         <div class="timeline">

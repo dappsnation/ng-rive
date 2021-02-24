@@ -2,8 +2,13 @@
   <mat-sidenav mode="side" opened>
     <aside>
       <mat-nav-list>
-        <ng-container *ngFor="let file of files">
-          <a mat-list-item [routerLink]="file.name">{{ file.name }}</a>
+        <a mat-list-item routerLink="/">
+          <mat-icon mat-list-icon>backup</mat-icon>
+          <span mat-line>Upload File</span>
+        </a>
+        <mat-divider></mat-divider>
+        <ng-container *ngFor="let file of files | keyvalue">
+          <a mat-list-item [routerLink]="file.key">{{ file.key }}</a>
         </ng-container>
       </mat-nav-list>
       <mat-toolbar>

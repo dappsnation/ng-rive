@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { files } from './animations';
+import { Service } from './service';
 
 @Component({
   selector: 'ng-rive-root',
@@ -8,5 +8,7 @@ import { files } from './animations';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  files = files;
+  files = this.service.files;
+
+  constructor(private service: Service) {}
 }
