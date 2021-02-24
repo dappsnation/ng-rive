@@ -197,8 +197,8 @@ export class RivePlayer {
   }
 
   private moveFrame(state: RivePlayerState, time: number) {
-    if (!this.animation) throw new Error('Could not load animation before runningit');
-    if (!this.animationInstance) throw new Error('Could not load animation instance before runningit');
+    if (!this.animation) throw new Error('Could not load animation before running it');
+    if (!this.animationInstance) throw new Error('Could not load animation instance before running it');
     const { speed, autoreset, mode } = state;
 
     // Default mode, don't apply any logic
