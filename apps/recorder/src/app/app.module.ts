@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent, VideoFormatPipe } from './app.component';
-import { RiveModule } from 'ng-rive';
+import { RiveModule, RIVE_VERSION } from 'ng-rive';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatSliderModule } from '@angular/material/slider';
@@ -34,6 +34,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatToolbarModule,
     MatSnackBarModule,
   ],
+  providers: [{
+    provide: RIVE_VERSION,
+    useValue: '0.6.10'
+  }],
   bootstrap: [AppComponent],
 })
 export class AppModule { }
