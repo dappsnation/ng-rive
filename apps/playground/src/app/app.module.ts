@@ -24,7 +24,7 @@ import { ResizeComponent } from './resize/resize.component';
     ResizeComponent,
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     BrowserAnimationsModule,
     ReactiveFormsModule,
     RiveModule,
@@ -37,16 +37,18 @@ import { ResizeComponent } from './resize/resize.component';
     MatSliderModule,
     MatInputModule,
     RouterModule.forRoot([{
-      path: '',
-      redirectTo: 'sheep',
-      pathMatch: 'full'
+        path: '',
+        redirectTo: 'sheep',
+        pathMatch: 'full'
     }, {
-      path: 'sheep',
-      component: SheepComponent
+        path: 'sheep',
+        component: SheepComponent
     }, {
-      path: 'resize',
-      component: ResizeComponent
-    }])
+        path: 'resize',
+        component: ResizeComponent
+    }], {
+    initialNavigation: 'enabled'
+})
   ],
   providers: [{
     provide: RIVE_VERSION,
