@@ -11,6 +11,8 @@ export type CanvasAlignment = 'center' | 'topLeft' | 'topCenter' | 'topRight' | 
 
 // Observable that trigger once when element is visible
 const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber) => {
+  // SSR
+  if (typeof window === 'undefined') return subscriber.next(false);
   if (!('IntersectionObserver' in window)) return subscriber.next(true);
   let isVisible = false;
   const observer = new IntersectionObserver((entries) => {
@@ -45,10 +47,10 @@ export function enterZone(zone: NgZone) {
 export class RiveCanvasDirective {
   private url = new ReplaySubject<string | File>();
   private arboardName = new BehaviorSubject<string | null>(null);
+  private _ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
   private loaded: Observable<boolean>;
   private boxes: Record<string, AABB> = {};
   public canvas: HTMLCanvasElement | OffscreenCanvas;
-  public ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
   public rive?: RiveCanvas;
   public file?: RiveFile; 
   public artboard?: Artboard;
@@ -90,9 +92,6 @@ export class RiveCanvasDirective {
     element: ElementRef<HTMLCanvasElement>
   ) {
     this.canvas = element.nativeElement;
-    const ctx = this.canvas.getContext('2d');
-    if (!ctx) throw new Error('Could not find context of canvas');
-    this.ctx = ctx;
 
     this.isVisible = onVisible(element.nativeElement).pipe(
       shareReplay(1),
@@ -102,11 +101,12 @@ export class RiveCanvasDirective {
     this.loaded = this.url.pipe(
       filter(url => !!url),
       distinctUntilChanged(),
+      filter(() => typeof window !== 'undefined' && !!this.ctx),  // Make sure it's not ssr
       switchMap(async (url) => {
         this.file = await this.service.load(url);
         this.rive = this.service.rive;
         if (!this.rive) throw new Error('Service could not load rive');
-        this.renderer = new this.rive.CanvasRenderer(this.ctx);
+        this.renderer = new this.rive.CanvasRenderer(this.ctx)
       }),
       switchMap(_ => this.setArtboard()),
       shareReplay(1)
@@ -116,6 +116,13 @@ export class RiveCanvasDirective {
 
   ngOnInit() {
     this.onReady().pipe(take(1)).subscribe();
+  }
+
+  get ctx(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D {
+    if (!this._ctx) {
+      this._ctx = this.canvas.getContext('2d');
+    }
+    return this._ctx!;
   }
 
   private setArtboard() {

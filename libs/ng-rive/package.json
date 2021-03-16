@@ -1,12 +1,12 @@
 {
   "name": "ng-rive",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "peerDependencies": {
     "@angular/common": "^11.0.6",
-    "@angular/core": "^11.0.6",
-    "rive-canvas": "^0.6.10"
+    "@angular/core": "^11.0.6"
   },
   "dependencies": {
+    "rive-canvas": "^0.6.10",
     "tslib": "^2.0.0"
   },
   "author": {
