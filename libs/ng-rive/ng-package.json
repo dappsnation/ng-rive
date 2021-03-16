@@ -3,5 +3,9 @@
   "dest": "../../dist/libs/ng-rive",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "whitelistedNonPeerDependencies": [
+    "tslib",
+    "rive-canvas"
+  ]
 }
