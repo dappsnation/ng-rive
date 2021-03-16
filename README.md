@@ -15,7 +15,7 @@ A repository for Angular built around the [rive canvas runtime](https://help.riv
 ## Get started
 1. Install :
 ```
-npm install ng-rive rive-canvas
+npm install ng-rive
 ```
 
 2. Import `RiveModule`: 
