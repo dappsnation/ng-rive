@@ -1,5 +1,5 @@
-<canvas riv="sheep" width="500" height="500" (mousemove)="move($event)" (mouseleave)="reset()">
-  <riv-player name="idle" play></riv-player>
+<canvas lazy riv="sheep" width="500" height="500" (mousemove)="move($event)" (mouseleave)="reset()">
+  <riv-animation name="idle" play></riv-animation>
   <riv-node name="pupil_left" [x]="x" [y]="y"></riv-node>
   <riv-node name="pupil_right" [x]="x" [y]="y"></riv-node>
 </canvas>
