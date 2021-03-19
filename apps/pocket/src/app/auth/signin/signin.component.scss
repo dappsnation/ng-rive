@@ -1,0 +1,54 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+canvas {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  border-radius: 50%;
+  border: solid 1px var(--divider);
+}
+
+.divider {
+  width: 100%;
+  padding: 0 24px;
+}
+
+@import '~@angular/flex-layout/mq';
+
+@include layout-bp(gt-sm) {
+  form {
+    width: 40%;
+    padding: 24px;
+  }
+  .divider {
+    width: 40%;
+    margin-bottom: 24px;
+  }
+}
+
+@include layout-bp(lt-md) {
+  canvas {
+    width: 150px;
+    height: 150px;
+  }
+  form {
+    width: 60%;
+    padding: 16px;
+  }
+  .divider {
+    width: 60%;
+    margin-bottom: 16px;
+  }
+}
+
+@include layout-bp(xs) {
+  form {
+    width: 100%;
+  }
+}

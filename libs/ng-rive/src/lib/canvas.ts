@@ -8,6 +8,10 @@ import { toInt } from './utils';
 export type CanvasFit = 'cover' | 'contain' | 'fill' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
 export type CanvasAlignment = 'center' | 'topLeft' | 'topCenter' | 'topRight' | 'centerLeft' | 'centerRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
 
+export type RiveOrigin = string | File | Blob | null;
+
+const exist = <T>(v?: T | null): v is T => v !== null && v !== undefined;
+
 
 // Observable that trigger once when element is visible
 const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber) => {
@@ -45,7 +49,7 @@ export function enterZone(zone: NgZone) {
   exportAs: 'rivCanvas'
 })
 export class RiveCanvasDirective {
-  private url = new ReplaySubject<string | File>();
+  private url = new ReplaySubject<RiveOrigin>();
   private arboardName = new BehaviorSubject<string | null>(null);
   private _ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
   private loaded: Observable<boolean>;
@@ -58,7 +62,7 @@ export class RiveCanvasDirective {
 
   public isVisible: Observable<boolean>;
 
-  @Input('riv') set riv(url: string | File) {
+  @Input('riv') set riv(url: RiveOrigin) {
     this.url.next(url);
   }
 
@@ -99,7 +103,7 @@ export class RiveCanvasDirective {
     );
 
     this.loaded = this.url.pipe(
-      filter(url => !!url),
+      filter(exist),
       distinctUntilChanged(),
       filter(() => typeof window !== 'undefined' && !!this.ctx),  // Make sure it's not ssr
       switchMap(async (url) => {

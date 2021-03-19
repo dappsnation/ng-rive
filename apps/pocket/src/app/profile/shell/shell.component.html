@@ -1,0 +1,25 @@
+<ng-container *ngIf="profile$ | async as profile">
+  <mat-toolbar>
+    <h1>{{ profile.name }}</h1>
+    <a mat-button>Upload</a>
+  </mat-toolbar>
+  <ng-container *ngIf="files$ | async as files">
+    <ng-container *ngIf="files.length else empty">
+      <section [rivUploader]="profile.id">
+        <ng-container *ngFor="let file of files">
+          <rive-card [url]="file.url"></rive-card>
+        </ng-container>
+      </section>
+    </ng-container>
+  </ng-container>
+  
+  <ng-template #empty>
+    <section class="empty" [rivUploader]="profile.id" #uploader="rivUploader">
+      <p>You don't have any file yet</p>
+      <button type="button" mat-button (click)="fileInput.click()">
+        <span>Upload one now</span>
+        <input #fileInput hidden (change)="uploader.upload()" type="file" accept=".riv" />
+      </button>
+    </section>
+  </ng-template>
+</ng-container>

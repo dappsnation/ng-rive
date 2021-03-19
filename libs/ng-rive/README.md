@@ -75,13 +75,27 @@ This will load the file at the folder destination and attach it to the canvas.
 This will load the animation "idle" and play it. The default behaviour will apply (if the animation has been built in "loop" mode, the animation will loop).
 
 
-5. If you see the error `Error: Can't resolve 'fs'`
-Add this in your `package.json`: 
+5. Debug: 
+If you see the error `Error: Can't resolve 'fs'`, add this in your `package.json`: 
 ```json
 "browser": {
   "fs": false,
   "path": false
 }
+```
+
+If you see the error `No provider for HttpClient!`, add this in your `app.module.ts`:
+```
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  imports: [
+    ...,
+    HttpClientModule
+  ],
+  ...
+})
+export class AppModule {}
 ```
 
 ----

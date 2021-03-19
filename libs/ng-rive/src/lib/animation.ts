@@ -45,7 +45,7 @@ export class RiveAnimationDirective {
   state = new BehaviorSubject<RiveAnimationState>(getRiveAnimationState());
 
   @Input()
-  set name(name: string | undefined) {
+  set name(name: string | undefined | null) {
     if (typeof name !== 'string') return;
     this.zone.runOutsideAngular(() => {
       this.register(name);

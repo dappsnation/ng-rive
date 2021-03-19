@@ -13,6 +13,7 @@
     "test": "ng test",
     "lint": "nx workspace-lint && ng lint",
     "e2e": "ng e2e",
+    "emulators:start": "firebase emulators:start --import ./.firebase/firestore --export-on-exit",
     "affected:apps": "nx affected:apps",
     "affected:libs": "nx affected:libs",
     "affected:build": "nx affected:build",
@@ -41,6 +42,7 @@
     "@angular/compiler": "^11.0.0",
     "@angular/core": "^11.0.0",
     "@angular/fire": "^6.1.4",
+    "@angular/flex-layout": "^11.0.0-beta.33",
     "@angular/forms": "^11.0.0",
     "@angular/material": "^11.0.4",
     "@angular/platform-browser": "^11.0.0",
@@ -50,11 +52,11 @@
     "@nguniversal/express-engine": "^11.0.1",
     "@nrwl/angular": "11.1.5",
     "express": "^4.15.2",
+    "firebase": "^7.0 || ^8.0",
     "rive-canvas": "^0.6.10",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
-    "zone.js": "^0.10.2",
-    "firebase": "^7.0 || ^8.0"
+    "zone.js": "^0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1100.1",

@@ -13,7 +13,7 @@ export const environment = {
     appId: "1:950838646870:web:73f82ddd8ead92b2f6c3f7",
     measurementId: "G-FEE4L0BPP6"
   },
-  useEmulator: true
+  useEmulator: false
 };
 
 /*
@@ -24,3 +24,13 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+
+
+// Work around for https://github.com/firebase/firebase-js-sdk/issues/4110
+import firebase from 'firebase/app';
+import 'firebase/auth';
+
+if (environment.useEmulator) {
+  const app = firebase.initializeApp(environment.firebase, 'rive-pocket');
+  (app.auth() as any).useEmulator('http://localhost:9099', {disableWarnings: true});
+}

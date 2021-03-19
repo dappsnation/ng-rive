@@ -1,0 +1,14 @@
+<ng-container *ngIf="files$ | async as files">
+  <ng-container *ngIf="files.length; else empty">
+    <ng-container *ngFor="let file of files; trackBy: trackById">
+
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<ng-template #empty>
+  <section class="empty">
+    <p>There is no animations here. Be the first to upload yours</p>
+    <a routerLink="/auth" mat-flat-button color="primary">Get Started</a>
+  </section>
+</ng-template>

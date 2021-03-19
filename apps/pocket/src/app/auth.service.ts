@@ -126,9 +126,14 @@ export class FireAuth<Profile = unknown, Roles extends Record<string, any> = any
   protected idKey: string;
   protected path: string | undefined;
   protected verificationUrl: string | undefined;
-
-  profile$?: Observable<Profile | undefined>;
+  
   user = this.auth.authState;
+  profile$ = this.user.pipe(
+    switchMap(user => this.getDoc({ user })),
+    switchMap(doc => doc ? doc.snapshotChanges() : of(undefined)),
+    map(snapshot => snapshot?.payload ? this.fromFirestore(snapshot.payload) : undefined),
+    shareReplay(1)
+  );
 
   constructor(
     protected db: AngularFirestore,
@@ -270,19 +275,6 @@ export class FireAuth<Profile = unknown, Roles extends Record<string, any> = any
       return this.fromFirestore(snapshot);
     }
     return;
-  }
-
-  /** Listen on changes from the authenticated user */
-  valueChanges() {
-    if (!this.profile$) {
-      this.profile$ = this.auth.authState.pipe(
-        switchMap(user => this.getDoc({ user })),
-        switchMap(doc => doc ? doc.snapshotChanges() : of(undefined)),
-        map(snapshot => snapshot?.payload ? this.fromFirestore(snapshot.payload) : undefined),
-        shareReplay(1)
-      );
-    }
-    return this.profile$;
   }
 
   /**
