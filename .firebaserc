@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "rive-pocket": {
+      "hosting": {
+        "pocket": [
+          "rive-pocket"
+        ]
+      }
+    }
+  }
+}

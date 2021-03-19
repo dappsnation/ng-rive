@@ -30,7 +30,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/ng-rive"],
+          "outputs": [
+            "coverage/libs/ng-rive"
+          ],
           "options": {
             "jestConfig": "libs/ng-rive/jest.config.js",
             "passWithNoTests": true
@@ -121,7 +123,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/recorder"],
+          "outputs": [
+            "coverage/apps/recorder"
+          ],
           "options": {
             "jestConfig": "apps/recorder/jest.config.js",
             "passWithNoTests": true
@@ -144,8 +148,13 @@
             "polyfills": "apps/player/src/polyfills.ts",
             "tsConfig": "apps/player/tsconfig.app.json",
             "aot": true,
-            "assets": ["apps/player/src/favicon.ico", "apps/player/src/assets"],
-            "styles": ["apps/player/src/styles.scss"],
+            "assets": [
+              "apps/player/src/favicon.ico",
+              "apps/player/src/assets"
+            ],
+            "styles": [
+              "apps/player/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -206,7 +215,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/player"],
+          "outputs": [
+            "coverage/apps/player"
+          ],
           "options": {
             "jestConfig": "apps/player/jest.config.js",
             "passWithNoTests": true
@@ -233,7 +244,9 @@
               "apps/playground/src/favicon.ico",
               "apps/playground/src/assets"
             ],
-            "styles": ["apps/playground/src/styles.scss"],
+            "styles": [
+              "apps/playground/src/styles.scss"
+            ],
             "scripts": [],
             "webWorkerTsConfig": "apps/playground/tsconfig.worker.json"
           },
@@ -299,7 +312,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/playground"],
+          "outputs": [
+            "coverage/apps/playground"
+          ],
           "options": {
             "jestConfig": "apps/playground/jest.config.js",
             "passWithNoTests": true
@@ -344,7 +359,9 @@
           "options": {
             "browserTarget": "playground:build:production",
             "serverTarget": "playground:server:production",
-            "routes": ["/"]
+            "routes": [
+              "/"
+            ]
           },
           "configurations": {
             "production": {}
@@ -367,8 +384,13 @@
             "polyfills": "apps/pocket/src/polyfills.ts",
             "tsConfig": "apps/pocket/tsconfig.app.json",
             "aot": true,
-            "assets": ["apps/pocket/src/favicon.ico", "apps/pocket/src/assets"],
-            "styles": ["apps/pocket/src/styles.scss"],
+            "assets": [
+              "apps/pocket/src/favicon.ico",
+              "apps/pocket/src/assets"
+            ],
+            "styles": [
+              "apps/pocket/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -426,6 +448,10 @@
               "apps/pocket/src/**/*.html"
             ]
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }
