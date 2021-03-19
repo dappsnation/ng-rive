@@ -6,7 +6,7 @@
   <ng-container *ngIf="files$ | async as files">
     <ng-container *ngIf="files.length else empty">
       <section [rivUploader]="profile.id">
-        <ng-container *ngFor="let file of files">
+        <ng-container *ngFor="let file of files; trackBy: trackById">
           <rive-card [url]="file.url"></rive-card>
         </ng-container>
       </section>

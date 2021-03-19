@@ -11,6 +11,7 @@ import { switchMap, filter } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ShellComponent {
+  trackById = (i: number, item: {id: string}) => item.id;
   profile$ = this.auth.profile$;
   files$ = this.profile$.pipe(
     filter(exist),
