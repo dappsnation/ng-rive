@@ -344,12 +344,87 @@
           "options": {
             "browserTarget": "playground:build:production",
             "serverTarget": "playground:server:production",
-            "routes": [
-              "/"
-            ]
+            "routes": ["/"]
           },
           "configurations": {
             "production": {}
+          }
+        }
+      }
+    },
+    "pocket": {
+      "projectType": "application",
+      "root": "apps/pocket",
+      "sourceRoot": "apps/pocket/src",
+      "prefix": "rive",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/pocket",
+            "index": "apps/pocket/src/index.html",
+            "main": "apps/pocket/src/main.ts",
+            "polyfills": "apps/pocket/src/polyfills.ts",
+            "tsConfig": "apps/pocket/tsconfig.app.json",
+            "aot": true,
+            "assets": ["apps/pocket/src/favicon.ico", "apps/pocket/src/assets"],
+            "styles": ["apps/pocket/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/pocket/src/environments/environment.ts",
+                  "with": "apps/pocket/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "pocket:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "pocket:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "pocket:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/pocket/src/**/*.ts",
+              "apps/pocket/src/**/*.html"
+            ]
           }
         }
       }
