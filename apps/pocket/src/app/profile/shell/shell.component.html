@@ -9,7 +9,12 @@
     <ng-container *ngIf="files$ | async as files">
       <ng-container *ngIf="files.length else empty">
         <ng-container *ngFor="let file of files; trackBy: trackById">
-          <rive-card [file]="file"></rive-card>
+          <div class="card">
+            <rive-card [file]="file"></rive-card>
+            <footer>
+              <mat-slide-toggle [checked]="file.visible" (change)="publish(file)">Public</mat-slide-toggle>
+            </footer>
+          </div>
         </ng-container>
       </ng-container>
     </ng-container>

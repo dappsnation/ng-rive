@@ -6,6 +6,7 @@ import { RiveUploaderModule } from '../../file/uploader'
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RiveCardModule } from '../../file/card/card.module';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { RiveCardModule } from '../../file/card/card.module';
     MatIconModule,
     RiveUploaderModule,
     RiveCardModule,
+    MatSlideToggleModule,
     RouterModule.forChild([{
       path: '',
       component: ShellComponent,

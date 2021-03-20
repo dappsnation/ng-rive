@@ -14,12 +14,20 @@ section {
   display: flex;
   flex-wrap: wrap;
 
-  rive-card {
+  .card {
+    display: flex;
+    flex-direction: column;
     margin: 24px;
+  }
+  rive-card {
     width: 200px;
     height: 200px;
   }
-
+  footer {
+    display: flex;
+    justify-content: center;
+    padding: 8px;
+  }
 }
 
 

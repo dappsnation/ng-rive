@@ -24,12 +24,8 @@ export class ShellComponent {
     private riveFiles: RiveFilesService,
   ) { }
 
-  remove(file: RiveFile, event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    Promise.all([
-      this.storage.ref(file.path).delete().toPromise(),
-      this.riveFiles.remove(file.id)
-    ]);
+
+  publish(file: RiveFile) {
+    this.riveFiles.update(file.id, { visible: !file.visible });
   }
 }
