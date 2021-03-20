@@ -26,6 +26,9 @@ aside {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    h1 {
+      flex: 1;
+    }
   }
 
   section {

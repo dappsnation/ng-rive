@@ -1,4 +1,4 @@
-import { Component, Directive, HostListener, Inject, Input, NgModule } from '@angular/core';
+import { Component, Directive, ElementRef, HostListener, Inject, Input, NgModule } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { MatSnackBar, MatSnackBarModule, MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,11 +18,13 @@ export class RiveUploader {
   @HostListener('dragover', ['$event'])
   onDragOver($event: DragEvent) {
     $event.preventDefault();
+    this.el.nativeElement.style.backgroundColor = 'rgba(0, 0, 0, 0.12)';
   }
   
   @HostListener('dragleave', ['$event'])
   onDragLeave($event: DragEvent) {
     $event.preventDefault();
+    this.el.nativeElement.style.backgroundColor = 'transparent';
   }
   
   @HostListener('drop', ['$event'])
@@ -63,7 +65,8 @@ export class RiveUploader {
     private storage: AngularFireStorage,
     private service: RiveFilesService,
     private auth: AuthService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private el: ElementRef<HTMLElement>,
   ) { }
 
 }

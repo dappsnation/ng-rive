@@ -19,7 +19,8 @@ footer {
   justify-content: flex-end;
   align-items: center;
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.12);
+  background-color: var(--background);
+  border-top: solid 1px var(--divider);
   bottom: 0;
   width: 100%;
   transform: translateY(100%);

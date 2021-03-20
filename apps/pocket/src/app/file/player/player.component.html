@@ -22,8 +22,11 @@
   <aside *ngIf="riveFile$ | async as riveFile">
     <mat-toolbar>
       <h1>{{ riveFile.path | filename }}</h1>
+      <a mat-icon-button [href]="riveFile.url" download>
+        <mat-icon>download</mat-icon>
+      </a>
       <button mat-icon-button (click)="copy(riveFile)">
-        <mat-icon>content_copy</mat-icon>
+        <mat-icon>link</mat-icon>
       </button>
     </mat-toolbar>
     <section class="canvas-form">
@@ -69,17 +72,15 @@
     <mat-divider></mat-divider>
     <section>
       <h2>Animations</h2>
-      <ng-container *ngFor="let anim of animations; trackBy: trackByName">
+      <ng-container *ngFor="let anim of animations; trackBy: trackByName; let i = index; let last = last">
         <div class="row">
           <span class="name">{{ anim.name }}</span>
           <div class="slider">
-            <button mat-icon-button (click)="anim.playing = !anim.playing">
+            <button mat-icon-button (click)="toggle(i)">
               <mat-icon *ngIf="!anim.playing">play_arrow</mat-icon>
               <mat-icon *ngIf="anim.playing">pause</mat-icon>
             </button>
-            <mat-slider mat-line step="0.1"
-              [min]="anim.start" [max]="anim.end"
-              [value]="anim.time" (change)="anim.time = $event.value">
+            <mat-slider [(ngModel)]="anim.time" step="0.1" [min]="anim.start" [max]="anim.end">
             </mat-slider>
           </div>
           <mat-form-field>
@@ -87,7 +88,7 @@
             <input matInput type="number" step="0.1" [(ngModel)]="anim.speed" />
           </mat-form-field>
         </div>
-        <mat-divider></mat-divider>
+        <mat-divider *ngIf="!last"></mat-divider>
       </ng-container>
     </section>
   </aside>

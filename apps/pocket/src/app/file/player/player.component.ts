@@ -80,7 +80,9 @@ export class PlayerComponent {
       .fill(null)
       .map((_, i) => arboard.animationAt(i))
       .map(createAnim);
-    this.cdr.markForCheck();
+    if (this.animations.length) {
+      this.toggle(0);
+    }
   }
 
   setDuration(state: AnimationState, animation: LinearAnimation) {
@@ -96,5 +98,10 @@ export class PlayerComponent {
   copy(riveFile: RiveFile) {
     this.clipboard.copy(`${environment.baseUrl}/player/${riveFile.id}`);
     this.snackbar.open('Link copied 🎈', '', { duration: 1500 });
+  }
+
+  toggle(index: number) {
+    this.animations[index].playing = !this.animations[index].playing;
+    this.cdr.detectChanges();
   }
 }
