@@ -9,14 +9,7 @@
     <ng-container *ngIf="files$ | async as files">
       <ng-container *ngIf="files.length else empty">
         <ng-container *ngFor="let file of files; trackBy: trackById">
-          <a [routerLink]="['/player', file.id]" class="card">
-            <rive-card [url]="file.url"></rive-card>
-            <footer>
-              <button mat-icon-button (click)="remove(file, $event)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </footer>
-          </a>
+          <rive-card [file]="file"></rive-card>
         </ng-container>
       </ng-container>
     </ng-container>

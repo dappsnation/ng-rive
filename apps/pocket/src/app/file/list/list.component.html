@@ -1,8 +1,10 @@
 <ng-container *ngIf="files$ | async as files">
   <ng-container *ngIf="files.length; else empty">
-    <ng-container *ngFor="let file of files; trackBy: trackById">
-
-    </ng-container>
+    <section class="card-list">
+      <ng-container *ngFor="let file of files; trackBy: trackById">
+        <rive-card [file]="file"></rive-card>
+      </ng-container>
+    </section>
   </ng-container>
 </ng-container>
 

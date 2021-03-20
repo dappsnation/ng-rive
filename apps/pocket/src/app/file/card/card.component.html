@@ -1,5 +1,22 @@
-<ng-container *ngIf="file$ | async as file">
-  <canvas [riv]="file" width="500" height="500" (artboardChange)="setArtboard($event)" fit="cover">
-    <riv-player [name]="animation$ | async" [play]="hover$ | async" mode="loop" [time]="1"></riv-player>
-  </canvas>
+<ng-container *ngIf="file">
+  <ng-container *ngIf="file.url | getBlob | async as blob">
+    <a [routerLink]="['/player', file.id]" matRipple>
+      <canvas [riv]="blob" width="500" height="500" (artboardChange)="setArtboard($event)" fit="cover">
+        <riv-player [name]="animation$ | async" [play]="hover$ | async" mode="loop" [time]="1"></riv-player>
+      </canvas>
+    </a>
+    <footer>
+      <ng-container *ngIf="users$ | async as user">
+        <button *ngIf="user.uid === file.uid" mat-icon-button (click)="remove()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </ng-container>
+      <a mat-icon-button [routerLink]="['/player', file.id]">
+        <mat-icon>visibility</mat-icon>
+      </a>
+      <button mat-icon-button (click)="copy()">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </footer>
+  </ng-container>
 </ng-container>

@@ -33,6 +33,9 @@ const FIREBASE_EMUTLATORS = environment.useEmulator ? [
     RouterModule.forRoot([{
       path: '',
       loadChildren: () => import('./file/list/list.module').then(m => m.ListModule)
+    },{
+      path: 'player/:fileId',
+      loadChildren: () => import('./file/player/player.module').then(m => m.PlayerModule)
     }, {
       path: 'auth',
       loadChildren: () => import('./auth/signin/signin.module').then(m => m.SigninModule)

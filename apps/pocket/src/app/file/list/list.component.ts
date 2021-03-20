@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { RiveFilesService } from '../service';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'files-list',
@@ -10,6 +9,6 @@ import { of } from 'rxjs';
 })
 export class ListComponent {
   trackById = (i: number, item: {id: string}) => item.id;
-  files$ = of([]); //this.service.valueChanges();
+  files$ = this.service.valueChanges();
   constructor(private service: RiveFilesService) { }
 }

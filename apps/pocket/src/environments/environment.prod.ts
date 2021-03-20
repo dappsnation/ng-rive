@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  baseUrl: 'https://rive-pocket.web.app',
   firebase: {
     apiKey: "AIzaSyBIMf_0PYvuDiP5DiU1_fGA0i8O3BwS6DM",
     authDomain: "rive-pocket.firebaseapp.com",

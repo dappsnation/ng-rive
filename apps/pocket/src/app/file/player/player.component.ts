@@ -43,8 +43,8 @@ function createAnim(animation: LinearAnimation): AnimationState {
 export class PlayerComponent {
   trackByName = (i: number, state: AnimationState) => state.name;
   file$ = this.route.paramMap.pipe(
-    map(params => params.get('name')),
-    switchMap(path => this.service.valueChanges(path)),
+    map(params => params.get('fileId')),
+    switchMap(fileId => this.service.valueChanges(fileId)),
     switchMap(file => file ? this.http.get(file.url, { responseType: 'blob' }) : of(undefined))
   );
   animations: AnimationState[] = [];
