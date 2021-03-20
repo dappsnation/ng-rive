@@ -16,6 +16,22 @@ $theme: mat-light-theme((
 ));
 @include angular-material-theme($theme);
 
+:root {
+  --primary: #{mat-color(map-get($theme, primary), default)};
+  --primary-contrast: #{mat-color(map-get($theme, primary), default-contrast)};
+  --accent: #{mat-color(map-get($theme, accent), default)};
+  --accent-contrast: #{mat-color(map-get($theme, accent), default-contrast)};
+  --background: #{mat-color(map-get($theme, background), background)};
+  --background-toolbar: #{mat-color(map-get($theme, background), app-bar)};
+  --background-hover: #{mat-color(map-get($theme, background), hover)};
+  --surface: #{mat-color(map-get($theme, background), card)};
+  --text: #{mat-color(map-get($theme, foreground), text)};
+  --secondary-text: #{mat-color(map-get($theme, foreground), secondary-text)};
+  --divider: #{mat-color(map-get($theme, foreground), divider)};
+  // Specific to cropper
+  --cropper-overlay-color: var(--background);
+}
+
 html, body { height: 100%; }
 body {
   margin: 0;

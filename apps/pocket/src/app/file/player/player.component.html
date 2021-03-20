@@ -1,6 +1,10 @@
 <ng-container *ngIf="file$ | async as file">
-  <section>
-    <canvas [ngClass]="{ rounded: rounded }" [riv]="file" [width]="width" [height]="height" (artboardChange)="setArtboard($event)">
+  <section class="canvas-container">
+    <canvas [riv]="file" [width]="width" [height]="height" [fit]="fit" [alignment]="alignment"
+      [style.borderRadius]="radius + '%'"
+      [style.backgroundColor]="transparent ? 'transparent' : color"
+      (artboardChange)="setArtboard($event)"
+      >
       <ng-container *ngFor="let anim of animations; trackBy: trackByName">
         <riv-player
           [name]="anim.name"
@@ -15,10 +19,16 @@
     </canvas>
   </section>
   <mat-divider></mat-divider>
-  <footer>
-    <header class="row canvas-form">
+  <aside *ngIf="riveFile$ | async as riveFile">
+    <mat-toolbar>
+      <h1>{{ riveFile.path | filename }}</h1>
+      <button mat-icon-button (click)="copy(riveFile)">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+    </mat-toolbar>
+    <section class="canvas-form">
       <h2>Canvas</h2>
-      <div>
+      <div class="size">
         <mat-form-field>
           <mat-label>Width</mat-label>
           <input matInput type="number" [(ngModel)]="width" />
@@ -29,48 +39,56 @@
           <input matInput type="number" [(ngModel)]="height" />
           <span matSuffix>px</span>
         </mat-form-field>
-        <mat-slide-toggle [(ngModel)]="rounded">Rounded</mat-slide-toggle>
       </div>
-    </header>
-    <mat-divider></mat-divider>
-    <ng-container *ngFor="let anim of animations; trackBy: trackByName">
-      <div class="row">
-        <span class="name">{{ anim.name }}</span>
-        <div class="timeline">
-          <button mat-icon-button (click)="anim.playing = !anim.playing">
-            <mat-icon *ngIf="!anim.playing">play_arrow</mat-icon>
-            <mat-icon *ngIf="anim.playing">pause</mat-icon>
-          </button>
-          <mat-slider mat-line step="0.1"
-            [min]="anim.start" [max]="anim.end"
-            [value]="anim.time" (change)="anim.time = $event.value">
-          </mat-slider>
-        </div>
+      <div class="size">
         <mat-form-field>
-          <mat-label>Mode</mat-label>
-          <mat-select [(value)]="anim.mode">
-            <mat-option>Default</mat-option>
-            <mat-option value="one-shot">
-              <span>One Shot (autoreset)</span>
-            </mat-option>
-            <mat-option value="ping-pong">
-              <span>Ping Pong</span>
-            </mat-option>
-            <mat-option value="loop">
-              <span>Loop</span>
-            </mat-option>
+          <mat-label>Fit</mat-label>
+          <mat-select [(ngModel)]="fit">
+            <mat-option *ngFor="let value of canvasFit" [value]="value">{{ value }}</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field>
-          <mat-label>Speed</mat-label>
-          <input matInput type="number" step="0.1" [(ngModel)]="anim.speed" />
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Mix</mat-label>
-          <input matInput type="number" min="0" max="1" step="0.1" [(ngModel)]="anim.mix" />
+          <mat-label>Alignment</mat-label>
+          <mat-select [(ngModel)]="alignment">
+            <mat-option *ngFor="let value of canvasAlignment" [value]="value">{{ value }}</mat-option>
+          </mat-select>
         </mat-form-field>
       </div>
-      <mat-divider></mat-divider>
-    </ng-container>
-  </footer>
+      <div class="radius">
+        <span>Radius (%)</span>
+        <mat-slider class="slider" [(ngModel)]="radius" min="0" max="50" step="1" thumbLabel></mat-slider>
+      </div>
+      <div class="color">
+        <div>
+          <label for="color">Background Color</label>
+          <input [(ngModel)]="color" name="color" id="color" type="color"/>
+        </div>
+        <mat-slide-toggle [(ngModel)]="transparent">Transparent</mat-slide-toggle>
+      </div>
+    </section>
+    <mat-divider></mat-divider>
+    <section>
+      <h2>Animations</h2>
+      <ng-container *ngFor="let anim of animations; trackBy: trackByName">
+        <div class="row">
+          <span class="name">{{ anim.name }}</span>
+          <div class="slider">
+            <button mat-icon-button (click)="anim.playing = !anim.playing">
+              <mat-icon *ngIf="!anim.playing">play_arrow</mat-icon>
+              <mat-icon *ngIf="anim.playing">pause</mat-icon>
+            </button>
+            <mat-slider mat-line step="0.1"
+              [min]="anim.start" [max]="anim.end"
+              [value]="anim.time" (change)="anim.time = $event.value">
+            </mat-slider>
+          </div>
+          <mat-form-field>
+            <mat-label>Speed</mat-label>
+            <input matInput type="number" step="0.1" [(ngModel)]="anim.speed" />
+          </mat-form-field>
+        </div>
+        <mat-divider></mat-divider>
+      </ng-container>
+    </section>
+  </aside>
 </ng-container>

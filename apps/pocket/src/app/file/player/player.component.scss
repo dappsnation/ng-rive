@@ -1,28 +1,69 @@
 :host {
   height: 100%;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
 }
 
-section {
-  flex: 1;
+.canvas-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
+  background-color: var(--background);
 
   canvas {
-    border: solid 1px black;
-  }
-  canvas.rounded {
-    border-radius: 50%;
+    border: solid 1px var(--divider);
   }
 }
 
-footer {
-  max-height: 300px;
+aside {
+  border-left: 1px solid var(--divider);
+  width: 500px;
+  box-sizing: border-box;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+
+  mat-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .size {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    mat-form-field {
+      width: calc(50% - 8px);
+    }
+  }
+  
+  .radius {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25em;
+    mat-slider {
+      margin-left: 8px;
+      flex: 1;
+    }
+  }
+
+  .color {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25em;
+    input[type="color"] {
+      margin-left: 8px;
+      background-color: transparent;
+      border: none;
+    }
+  }
 }
 
 .row {
@@ -30,11 +71,12 @@ footer {
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
+  box-sizing: border-box;
   .name {
-    width: 150px;
+    width: 100px;
   }
 
-  .timeline {
+  .slider {
     margin: 0 16px;
     flex: 1;
     display: flex;
@@ -45,14 +87,6 @@ footer {
   }
 
   mat-form-field {
-    margin-right: 8px;
-  }
-}
-
-.canvas-form {
-  color: black;
-  background-color: #f5f5f5;
-  h2 {
-    font: 500 20px/32px Roboto, "Helvetica Neue", sans-serif
+    width: 40px;
   }
 }

@@ -2,8 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
-import { RiveModule, RIVE_VERSION } from 'ng-rive';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { RiveModule } from 'ng-rive';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,15 +13,17 @@ import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+
 import { RouterModule } from '@angular/router';
 import { PlayerComponent } from './player.component';
+import { RiveFilePipeModule } from '../pipes';
 
 @NgModule({
   declarations: [PlayerComponent],
   imports: [
     CommonModule,
     RiveModule,
-    MatSidenavModule,
     MatListModule,
     MatIconModule,
     MatButtonModule,
@@ -34,6 +35,8 @@ import { PlayerComponent } from './player.component';
     MatSnackBarModule,
     MatSlideToggleModule,
     FormsModule,
+    RiveFilePipeModule,
+    ClipboardModule,
     RouterModule.forChild([{ path: '', component: PlayerComponent }])
   ]
 })

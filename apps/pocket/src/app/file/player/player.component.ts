@@ -1,10 +1,14 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { HttpClient } from '@angular/common/http';
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from 'apps/pocket/src/environments/environment';
 import { LinearAnimation, Artboard } from 'rive-canvas';
+import { CanvasFit, CanvasAlignment } from 'ng-rive';
 import { of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { RiveFilesService } from '../service';
+import { map, shareReplay, switchMap } from 'rxjs/operators';
+import { RiveFile, RiveFilesService } from '../service';
 
 export interface AnimationState {
   name: string;
@@ -42,21 +46,33 @@ function createAnim(animation: LinearAnimation): AnimationState {
 })
 export class PlayerComponent {
   trackByName = (i: number, state: AnimationState) => state.name;
-  file$ = this.route.paramMap.pipe(
+  riveFile$ = this.route.paramMap.pipe(
     map(params => params.get('fileId')),
     switchMap(fileId => this.service.valueChanges(fileId)),
+    shareReplay(1)
+  );
+  file$ = this.riveFile$.pipe(
     switchMap(file => file ? this.http.get(file.url, { responseType: 'blob' }) : of(undefined))
   );
+
+  canvasFit: CanvasFit[] = ['cover', 'contain', 'fill', 'fitWidth', 'fitHeight', 'none', 'scaleDown'];
+  canvasAlignment: CanvasAlignment[] = ['center', 'topLeft', 'topCenter', 'topRight', 'centerLeft', 'centerRight', 'bottomLeft', 'bottomCenter', 'bottomRight'];
   animations: AnimationState[] = [];
+  fit: CanvasFit = 'cover';
+  alignment: CanvasAlignment = 'center';
   height = 500;
   width = 500;
-  rounded = false;
+  radius = 0;
+  transparent = false;
+  color = '#ffffff';
 
   constructor(
     private service: RiveFilesService,
     private http: HttpClient,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private clipboard: Clipboard,
+    private snackbar: MatSnackBar
   ) { }
 
   setArtboard(arboard: Artboard) {
@@ -75,5 +91,10 @@ export class PlayerComponent {
     state.end = end;
     state.time = start;
     this.cdr.detectChanges();
+  }
+
+  copy(riveFile: RiveFile) {
+    this.clipboard.copy(`${environment.baseUrl}/player/${riveFile.id}`);
+    this.snackbar.open('Link copied 🎈', '', { duration: 1500 });
   }
 }
