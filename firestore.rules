@@ -6,11 +6,10 @@ service cloud.firestore {
     	match /profiles/{uid} {
       	allow read: if true;
         allow write: if request.auth.uid == uid;
-        
-        match /files/{fileId} {
-          allow read: if true;
-        	allow write: if request.auth.uid == uid;
-        }
+      }
+      match /files/{fileId} {
+        allow read: if true;
+        allow write: if request.auth.uid == request;
       }
     }
   }

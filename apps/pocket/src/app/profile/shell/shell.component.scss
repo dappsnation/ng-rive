@@ -1,3 +1,6 @@
+@import '~@angular/material/theming';
+
+
 :host {
   height: 100%;
   display: flex;
@@ -13,15 +16,35 @@ section {
   flex: 1;
   display: flex;
 
-  rive-card {
+  .card {
+    position: relative;
+    margin: 24px;
     width: 200px;
     height: 200px;
-    margin: 24px;
+    @include mat-elevation-transition;
+    @include mat-elevation(2);
+  
+    &:hover {
+      @include mat-elevation(4);
+    }
+    rive-card {
+      width: 100%;
+      height: 100%;
+    }
+    footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+
   }
 }
 
 
 .empty {
+  height: 100%;
+  width: 100%;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;

@@ -34,9 +34,6 @@ export class CardComponent {
 
 
   setArtboard(artboard: Artboard) {
-    // const names = new Array(artboard.animationCount())
-    //   .fill(null)
-    //   .map((_, i) => artboard.animationAt(i).name)
     this.animation$.next(artboard.animationAt(0).name);
   }
 }

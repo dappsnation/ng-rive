@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AuthService } from '../../auth/service';
-import { RiveFilesService } from '../../file/service';
+import { RiveFile, RiveFilesService } from '../../file/service';
 import { exist } from '../../utils';
 import { switchMap, filter } from 'rxjs/operators';
+import { AngularFireStorage } from '@angular/fire/storage';
 
 @Component({
   selector: 'profile-shell',
@@ -15,11 +16,20 @@ export class ShellComponent {
   profile$ = this.auth.profile$;
   files$ = this.profile$.pipe(
     filter(exist),
-    switchMap(profile => this.riveFiles.valueChanges({ uid: profile?.id }))
+    switchMap(profile => this.riveFiles.valueChanges(ref => ref.where('uid', '==', profile.id))),
   );
   constructor(
     private auth: AuthService,
+    private storage: AngularFireStorage,
     private riveFiles: RiveFilesService,
   ) { }
 
+  remove(file: RiveFile, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    Promise.all([
+      this.storage.ref(file.path).delete().toPromise(),
+      this.riveFiles.remove(file.id)
+    ]);
+  }
 }

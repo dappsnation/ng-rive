@@ -134,6 +134,10 @@ export abstract class FireCollection<E extends DocumentData> {
     }
   }
 
+  protected getMeta() {
+    return { lastUpdate: new Date() };
+  }
+
 
   batch() {
     return this.db.firestore.batch();
@@ -373,10 +377,12 @@ export abstract class FireCollection<E extends DocumentData> {
     const docs = Array.isArray(documents) ? documents : [documents];
     const { write = this.batch(), ctx } = options;
     const path = this.getPath(options.params);
+    const _meta = await this.getMeta();
     const operations = docs.map(async doc => {
       const id = doc[this.idKey] || this.db.createId();
-      const data = this.toFirestore({ ...doc, [this.idKey]: id });
+      const result = this.toFirestore({ ...doc, [this.idKey]: id });
       const { ref } = this.db.doc(getDocPath(path, id));
+      const data = {...result, _meta};
       (write as WriteBatch).set(ref, (data));
       if (this.onCreate) {
         await this.onCreate(data, { write, ctx });
@@ -447,6 +453,7 @@ export abstract class FireCollection<E extends DocumentData> {
       return Array.isArray(values) && values.every(value => isEntity(value));
     };
 
+    const _meta = await this.getMeta();
     if (isEntity(idsOrEntity)) {
       ids = [idsOrEntity[this.idKey] as string];
       getData = () => idsOrEntity;
@@ -481,7 +488,8 @@ export abstract class FireCollection<E extends DocumentData> {
           const snapshot = (await tx.get(ref)) as QueryDocumentSnapshot<E>;
           const doc = this.fromFirestore(snapshot);
           if (doc && stateFunction) {
-            const data = await stateFunction(Object.freeze(doc), tx);
+            const result = await stateFunction(Object.freeze(doc), tx);
+            const data = { ...result, _meta };
             tx.update(ref, this.toFirestore(data));
             if (this.onUpdate) {
               await this.onUpdate(data, { write: tx, ctx });
@@ -499,9 +507,10 @@ export abstract class FireCollection<E extends DocumentData> {
           throw new Error(`Document should have an unique id to be updated, but none was found in ${doc}`);
         }
         const { ref } = this.db.doc(getDocPath(path, docId));
-        write.update(ref, this.toFirestore(doc));
+        const data = { ...doc, _meta };
+        write.update(ref, this.toFirestore(data));
         if (this.onUpdate) {
-          await this.onUpdate(doc, { write, ctx });
+          await this.onUpdate(data, { write, ctx });
         }
       });
       await Promise.all(operations);

@@ -1,5 +1,5 @@
 <ng-container *ngIf="file$ | async as file">
-  <canvas [riv]="file" width="500" height="500" (artboardChange)="setArtboard($event)">
+  <canvas [riv]="file" width="500" height="500" (artboardChange)="setArtboard($event)" fit="cover">
     <riv-player [name]="animation$ | async" [play]="hover$ | async" mode="loop" [time]="1"></riv-player>
   </canvas>
 </ng-container>
