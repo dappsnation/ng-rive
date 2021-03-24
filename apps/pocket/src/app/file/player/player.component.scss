@@ -1,0 +1,95 @@
+:host {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.canvas-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background-color: var(--background);
+
+  canvas {
+    border: solid 1px var(--divider);
+  }
+}
+
+aside {
+  border-left: 1px solid var(--divider);
+  width: 500px;
+  box-sizing: border-box;
+  overflow-y: auto;
+
+  mat-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    h1 {
+      flex: 1;
+    }
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .size {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    mat-form-field {
+      width: calc(50% - 8px);
+    }
+  }
+  
+  .radius {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.25em;
+    mat-slider {
+      margin-left: 8px;
+      flex: 1;
+    }
+  }
+
+  .color {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25em;
+    input[type="color"] {
+      margin-left: 8px;
+      background-color: transparent;
+      border: none;
+    }
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  box-sizing: border-box;
+  .name {
+    width: 100px;
+  }
+
+  .slider {
+    margin: 0 16px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    mat-slider {
+      flex: 1;
+    }
+  }
+
+  mat-form-field {
+    width: 40px;
+  }
+}

@@ -30,7 +30,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/ng-rive"],
+          "outputs": [
+            "coverage/libs/ng-rive"
+          ],
           "options": {
             "jestConfig": "libs/ng-rive/jest.config.js",
             "passWithNoTests": true
@@ -121,7 +123,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/recorder"],
+          "outputs": [
+            "coverage/apps/recorder"
+          ],
           "options": {
             "jestConfig": "apps/recorder/jest.config.js",
             "passWithNoTests": true
@@ -144,8 +148,13 @@
             "polyfills": "apps/player/src/polyfills.ts",
             "tsConfig": "apps/player/tsconfig.app.json",
             "aot": true,
-            "assets": ["apps/player/src/favicon.ico", "apps/player/src/assets"],
-            "styles": ["apps/player/src/styles.scss"],
+            "assets": [
+              "apps/player/src/favicon.ico",
+              "apps/player/src/assets"
+            ],
+            "styles": [
+              "apps/player/src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -206,7 +215,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/player"],
+          "outputs": [
+            "coverage/apps/player"
+          ],
           "options": {
             "jestConfig": "apps/player/jest.config.js",
             "passWithNoTests": true
@@ -233,7 +244,9 @@
               "apps/playground/src/favicon.ico",
               "apps/playground/src/assets"
             ],
-            "styles": ["apps/playground/src/styles.scss"],
+            "styles": [
+              "apps/playground/src/styles.scss"
+            ],
             "scripts": [],
             "webWorkerTsConfig": "apps/playground/tsconfig.worker.json"
           },
@@ -299,7 +312,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/playground"],
+          "outputs": [
+            "coverage/apps/playground"
+          ],
           "options": {
             "jestConfig": "apps/playground/jest.config.js",
             "passWithNoTests": true
@@ -353,6 +368,92 @@
           }
         }
       }
+    },
+    "pocket": {
+      "projectType": "application",
+      "root": "apps/pocket",
+      "sourceRoot": "apps/pocket/src",
+      "prefix": "rive",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/pocket",
+            "index": "apps/pocket/src/index.html",
+            "main": "apps/pocket/src/main.ts",
+            "polyfills": "apps/pocket/src/polyfills.ts",
+            "tsConfig": "apps/pocket/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/pocket/src/favicon.ico",
+              "apps/pocket/src/assets"
+            ],
+            "styles": [
+              "apps/pocket/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/pocket/src/environments/environment.ts",
+                  "with": "apps/pocket/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "pocket:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "pocket:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "pocket:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/pocket/src/**/*.ts",
+              "apps/pocket/src/**/*.html"
+            ]
+          }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
+        }
+      }
     }
   },
   "cli": {
@@ -383,5 +484,5 @@
       "style": "scss"
     }
   },
-  "defaultProject": "playground"
+  "defaultProject": "pocket"
 }

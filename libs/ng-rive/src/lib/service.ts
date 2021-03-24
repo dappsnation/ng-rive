@@ -30,7 +30,7 @@ export class RiveService {
     return this.rive;
   }
 
-  async load(file: string | File) {
+  async load(file: string | File | Blob) {
     if (typeof file !== 'string') {
       const [ rive, buffer ] = await Promise.all([
         this.getRive(),

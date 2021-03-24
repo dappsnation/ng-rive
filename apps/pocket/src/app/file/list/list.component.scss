@@ -1,0 +1,17 @@
+.card-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+rive-card {
+  width: 200px;
+  height: 200px;
+  margin: 24px;
+}
+
+.empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,16 @@
+<ng-container *ngIf="files$ | async as files">
+  <ng-container *ngIf="files.length; else empty">
+    <section class="card-list">
+      <ng-container *ngFor="let file of files; trackBy: trackById">
+        <rive-card [file]="file"></rive-card>
+      </ng-container>
+    </section>
+  </ng-container>
+</ng-container>
+
+<ng-template #empty>
+  <section class="empty">
+    <p>There is no animations here. Be the first to upload yours</p>
+    <a routerLink="/auth" mat-flat-button color="primary">Get Started</a>
+  </section>
+</ng-template>

@@ -1,0 +1,45 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+@include mat-core();
+$primary: mat-palette($mat-indigo);
+$accent: mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$warn: mat-palette($mat-red);
+$theme: mat-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  )
+));
+@include angular-material-theme($theme);
+
+:root {
+  --primary: #{mat-color(map-get($theme, primary), default)};
+  --primary-contrast: #{mat-color(map-get($theme, primary), default-contrast)};
+  --accent: #{mat-color(map-get($theme, accent), default)};
+  --accent-contrast: #{mat-color(map-get($theme, accent), default-contrast)};
+  --background: #{mat-color(map-get($theme, background), background)};
+  --background-toolbar: #{mat-color(map-get($theme, background), app-bar)};
+  --background-hover: #{mat-color(map-get($theme, background), hover)};
+  --surface: #{mat-color(map-get($theme, background), card)};
+  --text: #{mat-color(map-get($theme, foreground), text)};
+  --secondary-text: #{mat-color(map-get($theme, foreground), secondary-text)};
+  --divider: #{mat-color(map-get($theme, foreground), divider)};
+  // Specific to cropper
+  --cropper-overlay-color: var(--background);
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  scroll-behavior: smooth;
+}
+
+
+span + mat-icon, mat-icon + span {
+  margin-left: 8px;
+}

@@ -1,0 +1,33 @@
+<ng-container *ngIf="profile$ | async as profile">
+  <mat-toolbar>
+    <h1>{{ profile.name }}</h1>
+    <button type="button" mat-button (click)="fileInput.click()">
+      <span>Upload</span>
+    </button>
+  </mat-toolbar>
+  <section [rivUploader]="profile.id" #uploader="rivUploader">
+    <ng-container *ngIf="files$ | async as files">
+      <ng-container *ngIf="files.length else empty">
+        <ng-container *ngFor="let file of files; trackBy: trackById">
+          <div class="card">
+            <rive-card [file]="file"></rive-card>
+            <footer>
+              <mat-slide-toggle [checked]="file.visible" (change)="publish(file)">Public</mat-slide-toggle>
+            </footer>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-template #empty>
+      <div class="empty">
+        <p>You don't have any file yet</p>
+        <button type="button" mat-button (click)="fileInput.click()">
+          <span>Upload one now</span>
+        </button>
+      </div>
+    </ng-template>
+  </section>
+  <input #fileInput hidden (change)="uploader.upload($any($event.target).files)" type="file" accept=".riv"
+  multiple />
+</ng-container>
+

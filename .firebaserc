@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "rive-pocket": {
+      "hosting": {
+        "pocket": [
+          "rive-pocket"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "rive-pocket"
+  }
+}
