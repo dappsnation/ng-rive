@@ -78,7 +78,7 @@ export class PlayerComponent {
   setArtboard(arboard: Artboard) {
     this.animations = new Array(arboard.animationCount())
       .fill(null)
-      .map((_, i) => arboard.animationAt(i))
+      .map((_, i) => arboard.animationByIndex(i))
       .map(createAnim);
     if (this.animations.length) {
       this.toggle(0);

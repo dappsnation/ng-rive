@@ -120,8 +120,8 @@ export class RiveAnimationDirective {
     if (!this.canvas.rive) throw new Error('Could not load animation instance before rive');
     if (!this.canvas.artboard) throw new Error('Could not load animation instance before artboard');
     this.animation = typeof name === 'string'
-      ? this.canvas.artboard.animation(name)
-      : this.canvas.artboard.animationAt(name);
+      ? this.canvas.artboard.animationByName(name)
+      : this.canvas.artboard.animationByIndex(name);
 
     this.animationInstance = new this.canvas.rive.LinearAnimationInstance(this.animation);
     this.load.emit(this.animation);

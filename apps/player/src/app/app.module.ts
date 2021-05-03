@@ -3,7 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
-import { RiveModule, RIVE_VERSION } from 'ng-rive';
+import { RiveModule } from 'ng-rive';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -45,10 +45,6 @@ import { UploaderComponent } from './uploader/uploader.component';
       component: PlayerComponent
     }])
   ],
-  providers: [{
-    provide: RIVE_VERSION,
-    useValue: '0.6.10'
-  }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

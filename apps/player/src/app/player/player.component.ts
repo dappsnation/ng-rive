@@ -58,9 +58,9 @@ export class PlayerComponent {
   setArtboard(arboard: Artboard) {
     this.animations = new Array(arboard.animationCount())
       .fill(null)
-      .map((_, i) => arboard.animationAt(i))
+      .map((_, i) => arboard.animationByIndex(i))
       .map(createAnim);
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   setDuration(state: AnimationState, animation: LinearAnimation) {
@@ -70,6 +70,10 @@ export class PlayerComponent {
     state.start = start;
     state.end = end;
     state.time = start;
+    this.cdr.detectChanges();
+  }
+  toggle(index: number) {
+    this.animations[index].playing = !this.animations[index].playing;
     this.cdr.detectChanges();
   }
 }

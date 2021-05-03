@@ -40,7 +40,7 @@ export class CardComponent {
 
 
   setArtboard(artboard: Artboard) {
-    this.animation$.next(artboard.animationAt(0).name);
+    this.animation$.next(artboard.animationByIndex(0).name);
   }
 
   copy() {

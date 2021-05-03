@@ -149,8 +149,8 @@ export class RivePlayer {
     if (!this.canvas.rive) throw new Error('Could not load animation instance before rive');
     if (!this.canvas.artboard) throw new Error('Could not load animation instance before artboard');
     this.animation = typeof name === 'string'
-      ? this.canvas.artboard.animation(name)
-      : this.canvas.artboard.animationAt(name);
+      ? this.canvas.artboard.animationByName(name)
+      : this.canvas.artboard.animationByIndex(name);
 
     this.animationInstance = new this.canvas.rive.LinearAnimationInstance(this.animation);
     this.load.emit(this.animation);
@@ -200,15 +200,14 @@ export class RivePlayer {
     if (!this.animation) throw new Error('Could not load animation before running it');
     if (!this.animationInstance) throw new Error('Could not load animation instance before running it');
     const { speed, autoreset, mode } = state;
-
     // Default mode, don't apply any logic
-    if (!mode) return time / 1000;
+    if (!mode) return time / 1000 * speed;
 
     let delta = (time / 1000) * speed;
     
     // Round to avoid JS error on division
-    const start = round(this.animation.workStart / this.animation.fps);
-    const end = round((this.animation.workEnd || this.animation.duration) / this.animation.fps);
+    const start = round((this.animation.workStart === -1 ? 0 : this.animation.workStart) / this.animation.fps);
+    const end = round((this.animation.workEnd === -1 ? this.animation.duration : this.animation.workEnd) / this.animation.fps);
     const currentTime = round(this.animationInstance.time);
 
     // When player hit floor

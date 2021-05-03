@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { RiveModule, RIVE_VERSION } from 'ng-rive';
+import { RiveModule } from 'ng-rive';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -50,10 +50,6 @@ import { ResizeComponent } from './resize/resize.component';
     initialNavigation: 'enabled'
 })
   ],
-  providers: [{
-    provide: RIVE_VERSION,
-    useValue: '0.6.10'
-  }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
