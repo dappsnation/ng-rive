@@ -16,8 +16,17 @@ const exist = <T>(v?: T | null): v is T => v !== null && v !== undefined;
 // Observable that trigger once when element is visible
 const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber) => {
   // SSR
-  if (typeof window === 'undefined') return subscriber.next(false);
-  if (!('IntersectionObserver' in window)) return subscriber.next(true);
+  if (typeof window === 'undefined') {
+    subscriber.next(false);
+    subscriber.complete();
+    return;
+  }
+  // Compatibility
+  if (!('IntersectionObserver' in window)) {
+    subscriber.next(true);
+    subscriber.complete();
+    return;
+  }
   let isVisible = false;
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -25,6 +34,7 @@ const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber)
       if (visible !== isVisible) {
         isVisible = !isVisible;
         subscriber.next(isVisible);
+        subscriber.complete();
       }
     });
   }, { threshold: [0] });
