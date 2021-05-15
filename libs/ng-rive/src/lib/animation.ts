@@ -127,12 +127,6 @@ export class RiveAnimationDirective {
     this.load.emit(this.animation);
   }
 
-  private getTime() {
-    if (!this.animationInstance) throw new Error('Could not load animation instance before running it');
-    return this.animationInstance.time;
-  }
-
-
   private getFrame(state: RiveAnimationState) {
     if (state.playing) {
       return this.service.frame.pipe(map((time) => [state, time] as const));
@@ -162,8 +156,7 @@ export class RiveAnimationDirective {
   private moveFrame(state: RiveAnimationState, time: number) {
     if (!this.animation) throw new Error('Could not load animation before running it');
     if (!this.animationInstance) throw new Error('Could not load animation instance before running it');
-    const { speed, autoreset, mode } = state;
-    return (time / 1000) * speed;
+    return (time / 1000) * state.speed;
   }
 
   private applyChange(delta: number) {

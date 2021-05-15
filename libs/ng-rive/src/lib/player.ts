@@ -44,6 +44,8 @@ function exist<T>(v: T | undefined | null): v is T {
 })
 export class RivePlayer {
   private sub?: Subscription;
+  private startTime?: number;
+  private endTime?: number;
   distance = new BehaviorSubject<number | null>(null);
   state = new BehaviorSubject<RivePlayerState>(getRivePlayerState());
 
@@ -152,6 +154,9 @@ export class RivePlayer {
       ? this.canvas.artboard.animationByName(name)
       : this.canvas.artboard.animationByIndex(name);
 
+    this.startTime = round((this.animation.workStart === -1 ? 0 : this.animation.workStart) / this.animation.fps);
+    this.endTime = round((this.animation.workEnd === -1 ? this.animation.duration : this.animation.workEnd) / this.animation.fps);
+    
     this.animationInstance = new this.canvas.rive.LinearAnimationInstance(this.animation);
     this.load.emit(this.animation);
   }
@@ -206,8 +211,8 @@ export class RivePlayer {
     let delta = (time / 1000) * speed;
     
     // Round to avoid JS error on division
-    const start = round((this.animation.workStart === -1 ? 0 : this.animation.workStart) / this.animation.fps);
-    const end = round((this.animation.workEnd === -1 ? this.animation.duration : this.animation.workEnd) / this.animation.fps);
+    const start = this.startTime ?? 0;
+    const end = this.endTime ?? (this.animation.duration / this.animation.fps);
     const currentTime = round(this.animationInstance.time);
 
     // When player hit floor
