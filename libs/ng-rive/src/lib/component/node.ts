@@ -2,8 +2,6 @@ import { Directive, Input, NgZone } from '@angular/core';
 import { RiveCanvasDirective } from '../canvas';
 import { RiveTransformComponent } from './transform-component';
 import { Node } from 'rive-canvas';
-import { Subscription } from 'rxjs';
-
 
 @Directive({
   selector: 'riv-node, [rivNode]',
