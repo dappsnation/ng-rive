@@ -54,7 +54,6 @@
             "main": "apps/recorder/src/main.ts",
             "polyfills": "apps/recorder/src/polyfills.ts",
             "tsConfig": "apps/recorder/tsconfig.app.json",
-            "aot": true,
             "assets": [
               "apps/recorder/src/favicon.ico",
               "apps/recorder/src/assets"
@@ -63,7 +62,13 @@
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "apps/recorder/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -147,7 +152,6 @@
             "main": "apps/player/src/main.ts",
             "polyfills": "apps/player/src/polyfills.ts",
             "tsConfig": "apps/player/tsconfig.app.json",
-            "aot": true,
             "assets": [
               "apps/player/src/favicon.ico",
               "apps/player/src/assets"
@@ -155,7 +159,13 @@
             "styles": [
               "apps/player/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -239,7 +249,6 @@
             "main": "apps/playground/src/main.ts",
             "polyfills": "apps/playground/src/polyfills.ts",
             "tsConfig": "apps/playground/tsconfig.app.json",
-            "aot": true,
             "assets": [
               "apps/playground/src/favicon.ico",
               "apps/playground/src/assets"
@@ -248,7 +257,13 @@
               "apps/playground/src/styles.scss"
             ],
             "scripts": [],
-            "webWorkerTsConfig": "apps/playground/tsconfig.worker.json"
+            "webWorkerTsConfig": "apps/playground/tsconfig.worker.json",
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -325,7 +340,9 @@
           "options": {
             "outputPath": "dist/playground/server",
             "main": "apps/playground/server.ts",
-            "tsConfig": "apps/playground/tsconfig.server.json"
+            "tsConfig": "apps/playground/tsconfig.server.json",
+            "sourceMap": true,
+            "optimization": false
           },
           "configurations": {
             "production": {
@@ -383,7 +400,6 @@
             "main": "apps/pocket/src/main.ts",
             "polyfills": "apps/pocket/src/polyfills.ts",
             "tsConfig": "apps/pocket/tsconfig.app.json",
-            "aot": true,
             "assets": [
               "apps/pocket/src/favicon.ico",
               "apps/pocket/src/assets"
@@ -391,7 +407,13 @@
             "styles": [
               "apps/pocket/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
