@@ -10,7 +10,7 @@ export class RiveCanvas {
     const url = `assets/rive/${this.riv}.riv`;
     const animations = ['idle'];
     const canvas = this.el.nativeElement.transferControlToOffscreen();
-    const worker = new Worker('./rive.worker', { type: 'module'});
+    const worker = new Worker(new URL('./rive.worker', import.meta.url), { type: 'module'});
     worker.postMessage({ canvas, url, animations }, [canvas]);
   }
 }

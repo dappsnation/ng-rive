@@ -98,7 +98,7 @@ export declare class Artboard {
   animation(name: string): LinearAnimation;
   advance(sec: number): any;
   draw(renderer: CanvasRenderer): void;
-  animationAt(index: number): LinearAnimation;
+  animationByIndex(index: number): LinearAnimation;
   animationCount(): number;
   bone(name: string): Bone;
   node(name: string): Node;

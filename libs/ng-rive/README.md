@@ -12,7 +12,17 @@ A repository for Angular built around the [rive canvas runtime](https://help.riv
 - 🎥 [Animation Recorder](https://rive-video-recorder.netlify.app/)
 - ⛱️ [Playground](https://ng-rive-playground.netlify.app/)
 
-## Get started
+## Compatibility
+Animations built before version 0.7.0 rive-canvas will not work with new versions of ng-rive.
+
+| Angular | Rive-canvas  | ng-rive |
+| --------|--------------|---------|
+| 12      | 0.7.*        | 0.1.*   |
+| <12     | 0.6.*        | 0.0.*   |
+
+
+
+# Get started
 1. Install :
 ```
 npm install ng-rive
@@ -59,21 +69,9 @@ export class MyModule { }
 4. Use in template : 
 ```html
 <canvas riv="knight" width="500" height="500">
-  <riv-player name="idle" play></riv-player>
+  <riv-animation name="idle" play></riv-animation>
 </canvas>
 ```
-
-Let's take a quick look : 
-```html
-<canvas riv="knight" width="500" height="500">
-```
-This will load the file at the folder destination and attach it to the canvas.
-
-```html
-<riv-player name="idle" play></riv-player>
-```
-This will load the animation "idle" and play it. The default behaviour will apply (if the animation has been built in "loop" mode, the animation will loop).
-
 
 5. Debug: 
 If you see the error `Error: Can't resolve 'fs'`, add this in your `package.json`: 
@@ -84,21 +82,7 @@ If you see the error `Error: Can't resolve 'fs'`, add this in your `package.json
 }
 ```
 
-If you see the error `No provider for HttpClient!`, add this in your `app.module.ts`:
-```
-import { HttpClientModule } from '@angular/common/http';
-
-@NgModule({
-  imports: [
-    ...,
-    HttpClientModule
-  ],
-  ...
-})
-export class AppModule {}
-```
-
-----
+# API
 
 ## Canvas
 The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag : 
@@ -126,19 +110,46 @@ Canvas zoomed from "25% 25%" (top left), to "75% 75%" (bottom right).
 ```
 
 ----
+## Animation
+Run an animation inside a canvas based on `name` or `index`:
+```html
+<canvas riv="knight" width="500" height="500">
+  <riv-animation name="idle" play speed="0.5"></riv-animation>
+</canvas>
+```
 
+#### Input
+- `[name]`: The name of the animation in the file loaded by the canvas.
+- `[index]` The index of the animation in the file loaded by the canvas (used if name is not provided).
+- `[play]`: Bind the player to a boolean (playing: `true`, paused: `false`).
+- `[speed]`: The speed at which the animation should play. Negative values cause the animation to play backward.
+- `[mix]`: The weight of this application over another in the same `Artboard`.
+- `[autoreset]`: If `true`, will reset the animation to `start` when done (only for `one-shot` mode).
+
+#### Output
+- `(load)`: Emitted the loaded `LinearAnimation`.
+
+
+----
 ## Player
-You can use `riv-player` to manipulate the animation : 
+Provide more control over the animation
+```html
+<canvas riv="poison-loader" width="500" height="500">
+  <riv-player #player="rivPlayer" name="idle" [time]="time" mode="one-shot"></riv-player>
+</canvas>
+<input type="range" step="0.1" (input)="time = $event.target.value" [min]="player.startTime" [max]="player.endTime" />
+```
 
 #### Input / Output
 - `[(time)]`: Bind the animation to a specific time
 - `[(play)]`: Bind the player to a boolean (playing: `true`, paused: `false`).
 - `[(speed)]`: The speed at which the animation should play. Negative values cause the animation to play backward.
 
-⚠️ The speed only applies if `mode` is provided.
+Based on the mode, the play, time & speed might change automatically.
 
 #### Input
 - `[name]`: The name of the animation in the file loaded by the canvas.
+- `[index]` The index of the animation in the file loaded by the canvas (used if name is not provided).
 - `[mode]`: Force a mode: `"one-shot"`, `"loop"` or `"ping-pong"` (if `undefined`, default mode is used).
 - `[mix]`: The weight of this application over another in the same `Artboard`.
 - `[autoreset]`: If `true`, will reset the animation to `start` when done (only for `one-shot` mode).
@@ -153,29 +164,12 @@ Setting the `mode` property will override the default behavior.
 Using `mode` might create conflict with default behavior. Known conflicts are:
 - using a "loop" mode with an animation that is already a loop will fail if speed is negative
 
-### Play if canvas is visible
-To save ressources you can play the animation only when the canvas is visible in the viewport : 
-```html
-<canvas #canvas="rivCanvas" riv="knight" width="500" height="500">
-  <riv-player name="idle" [name]="canvas.isVisible | async"></riv-player>
-</canvas>
-```
-
-### Multiple Animations
-You can run multiple animations within the same canvas : 
-```html
-<canvas riv="knight">
-  <riv-player name="idle" play></riv-player>
-  <riv-player name="day_night" play mode="ping-pong" speed="0.5"></riv-player>
-</canvas>
-```
-
 ----
 ## Node
 The `RiveNode` directive give you access to one node :
 ```html
 <canvas riv="knight">
-  <riv-player name="idle" play></riv-player>
+  <riv-animation name="idle" play></riv-animation>
   <riv-node name="cloud" x="300"></riv-node>
 </canvas>
 ```
@@ -193,5 +187,67 @@ This example will set the position of the cloud to 300px of its origin.
 
 ⚠️ If the property of the node is updated by the animation, the animation wins.
 
-## Roadmap
-- Create two directives, `riv-player` with `mode` and `riv-anim` without to avoid conflicts.
+
+----
+## State Machine
+You can manipulate the state of a state machine animation though inputs: 
+```html
+<canvas riv="skills">
+  <riv-state-machine name="move" play>
+    <riv-input name="Level" [value]="level.value"><riv-input>
+  </riv-state-machine>
+</canvas>
+<input type="radio" formControl="level" value="0" > Beginner
+<input type="radio" formControl="level" value="1"> Intermediate
+<input type="radio" formControl="level" value="2"> Expert
+```
+
+### Input
+- `[name]` The name of the state machine in the file loaded by the canvas.
+- `[index]` The index of the state machine in the file loaded by the canvas (used if name is not provided).
+- `[play]`: Bind the player to a boolean (playing: `true`, paused: `false`).
+- `[speed]`: The speed at which the animation should play. Negative values cause the animation to play backward.
+
+#### Output
+- `(load)`: Emitted the loaded `StateMachine`.
+
+## State Machine Input
+The `riv-input` enables you to manipulated the state machine: 
+```html
+<canvas riv="skills">
+  <riv-state-machine name="move" play>
+    <riv-input #trigger="rivInput" name="Level"><riv-input>
+  </riv-state-machine>
+</canvas>
+<button (click)="tigger.fire()">Trigger change</button>
+```
+
+### Input
+- `[name]` The name of the input
+- `[value]` The value of the input, only if the type of the input is `Boolean` or `Number`
+
+### Ouput
+- `(load)` Emit the State Machine Input object when it's loaded from the rive file.
+- `(change)` Emit when the input value is changed or if fired.
+
+### Method
+- `fire()` Trigger a change, only if the type of the input is `Trigger`
+
+# Technics
+
+### Play if canvas is visible
+To save ressources you can play the animation only when the canvas is visible in the viewport : 
+```html
+<canvas #canvas="rivCanvas" riv="knight" width="500" height="500">
+  <riv-animation name="idle" [name]="canvas.isVisible | async"></riv-animation>
+</canvas>
+```
+
+### Multiple Animations
+You can run multiple animations within the same canvas : 
+```html
+<canvas riv="knight">
+  <riv-player name="idle" play></riv-player>
+  <riv-player name="day_night" play mode="ping-pong" speed="0.5"></riv-player>
+</canvas>
+```

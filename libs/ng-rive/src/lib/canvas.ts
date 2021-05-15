@@ -82,7 +82,7 @@ export class RiveCanvasDirective {
 
   @Input() viewbox: string = '0 0 100% 100%';
   @Input() lazy: boolean | '' = false;
-  @Input() fit: CanvasFit = 'fill';
+  @Input() fit: CanvasFit = 'contain';
   @Input() alignment: CanvasAlignment = 'center';
   set width(w: number | string) {
     this.canvas.width = toInt(w) ?? this.canvas.width;
@@ -95,7 +95,7 @@ export class RiveCanvasDirective {
     this.canvas.height = toInt(h) ?? this.canvas.height;
   }
   get height() {
-    return this.canvas.width;
+    return this.canvas.height;
   }
 
   @Output() artboardChange = new EventEmitter<Artboard>();
@@ -141,7 +141,7 @@ export class RiveCanvasDirective {
 
   private setArtboard() {
     return this.arboardName.pipe(
-      map(name => this.artboard = name ? this.file?.artboard(name) : this.file?.defaultArtboard()),
+      map(name => this.artboard = name ? this.file?.artboardByName(name) : this.file?.defaultArtboard()),
       tap(_ => this.artboardChange.emit(this.artboard)),
       map(_ => true)
     );

@@ -19,7 +19,7 @@ export class RiveService {
     private http: HttpClient
   ) {
     this.folder = folder ?? 'assets/rive';
-    this.version = version ?? '0.6.10';
+    this.version = version ?? '0.7.3';
   }
 
   private async getRive() {

@@ -28,7 +28,7 @@ addEventListener('message', async ({ data }: { data: RiveMessage }) => {
 
   // Move frame of each animation
   const animate = animations.map((name: string) => {
-      const animation = artboard.animation(name);
+      const animation = artboard.animationByName(name);
       const instance = new rive.LinearAnimationInstance(animation);
       return (delta: number) => {
           instance.advance(delta);

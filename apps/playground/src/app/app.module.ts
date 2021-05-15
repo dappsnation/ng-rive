@@ -4,7 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { RiveModule, RIVE_VERSION } from 'ng-rive';
+import { RiveModule } from 'ng-rive';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -16,12 +16,16 @@ import { MatSliderModule } from '@angular/material/slider';
 import { RouterModule } from '@angular/router';
 import { SheepComponent } from './sheep/sheep.component';
 import { ResizeComponent } from './resize/resize.component';
+import { StateMachineComponent } from './state-machine/state-machine.component';
+import { PlayerComponent } from './player/player.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SheepComponent,
     ResizeComponent,
+    StateMachineComponent,
+    PlayerComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -38,7 +42,7 @@ import { ResizeComponent } from './resize/resize.component';
     MatInputModule,
     RouterModule.forRoot([{
         path: '',
-        redirectTo: 'sheep',
+        redirectTo: 'state-machine',
         pathMatch: 'full'
     }, {
         path: 'sheep',
@@ -46,14 +50,16 @@ import { ResizeComponent } from './resize/resize.component';
     }, {
         path: 'resize',
         component: ResizeComponent
+    }, {
+      path: 'state-machine',
+      component: StateMachineComponent
+    }, {
+      path: 'player',
+      component: PlayerComponent
     }], {
     initialNavigation: 'enabled'
 })
   ],
-  providers: [{
-    provide: RIVE_VERSION,
-    useValue: '0.6.10'
-  }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

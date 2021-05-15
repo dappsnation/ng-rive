@@ -4,8 +4,8 @@ import { TransformComponent } from 'rive-canvas';
 
 @Directive()
 export abstract class RiveTransformComponent<T extends TransformComponent> {
-  private component?: T;
-  private state: Partial<T> = {};
+  protected component?: T;
+  protected state: Partial<T> = {};
 
   @Input() set name(name: string) {
     if (typeof name !== 'string') return;
