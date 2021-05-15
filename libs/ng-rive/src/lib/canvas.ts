@@ -141,7 +141,7 @@ export class RiveCanvasDirective {
 
   private setArtboard() {
     return this.arboardName.pipe(
-      map(name => this.artboard = name ? this.file?.artboard(name) : this.file?.defaultArtboard()),
+      map(name => this.artboard = name ? this.file?.artboardByName(name) : this.file?.defaultArtboard()),
       tap(_ => this.artboardChange.emit(this.artboard)),
       map(_ => true)
     );
