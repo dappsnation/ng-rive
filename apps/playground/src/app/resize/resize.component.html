@@ -1,6 +1,6 @@
 <section *ngIf="value$ | async as v">
   <canvas riv="poison-loader" [width]="v.width" [height]="v.height" [fit]="v.fit" [alignment]="v.alignment">
-    <riv-player name="idle" play speed="0.1"></riv-player>
+    <riv-player name="idle" play></riv-player>
   </canvas>
 </section>
 <form [formGroup]="form">

@@ -17,6 +17,7 @@ import { RouterModule } from '@angular/router';
 import { SheepComponent } from './sheep/sheep.component';
 import { ResizeComponent } from './resize/resize.component';
 import { StateMachineComponent } from './state-machine/state-machine.component';
+import { PlayerComponent } from './player/player.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { StateMachineComponent } from './state-machine/state-machine.component';
     SheepComponent,
     ResizeComponent,
     StateMachineComponent,
+    PlayerComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -51,6 +53,9 @@ import { StateMachineComponent } from './state-machine/state-machine.component';
     }, {
       path: 'state-machine',
       component: StateMachineComponent
+    }, {
+      path: 'player',
+      component: PlayerComponent
     }], {
     initialNavigation: 'enabled'
 })

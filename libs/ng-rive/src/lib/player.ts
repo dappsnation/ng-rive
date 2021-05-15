@@ -44,8 +44,8 @@ function exist<T>(v: T | undefined | null): v is T {
 })
 export class RivePlayer {
   private sub?: Subscription;
-  private startTime?: number;
-  private endTime?: number;
+  startTime?: number;
+  endTime?: number;
   distance = new BehaviorSubject<number | null>(null);
   state = new BehaviorSubject<RivePlayerState>(getRivePlayerState());
 

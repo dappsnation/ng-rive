@@ -48,24 +48,31 @@ export class RiveSMInput {
     const value = typeof rawValue === 'string'
       ? parseFloat(rawValue)
       : rawValue;
-    this.input
-      ? this.input.value = value
-      : this._value = value;
+    if (this.input) {
+      this.input.value = value;
+      this.change.emit(this.input);
+    } else {
+      this._value = value;
+    }
   }
   get value() {
     return this.input?.value ?? this._value;
   }
 
-  @Output() fired = new EventEmitter<SMIInput>();
+  @Output() change = new EventEmitter<SMIInput>();
+  @Output() load = new EventEmitter<SMIInput>();
 
   constructor(private stateMachine: RiveStateMachine) {}
 
   /** @internal: Used by the RiveStateMachine */
   public init(input?: SMIInput) {
-    if (!input) return;
+    if (!input || input.name === this.input?.name) return;
     this.input = getInput(input);
-    if (typeof this._value === 'undefined') return;
-    this.input.value = this._value;
+    this.load.emit(input);
+    if (typeof this._value !== 'undefined') {
+      this.input.value = this._value;
+      this.change.emit(this.input);
+    }
     if (this.shouldFire) {
       this.shouldFire(input);
       delete this.shouldFire;
@@ -76,7 +83,7 @@ export class RiveSMInput {
     const fire = (input: SMIInput) => {
       if (input.type === InputTypes.Trigger) {
         input.fire();
-        this.fired.emit(input);
+        this.change.emit(input);
       }
     }
     this.input

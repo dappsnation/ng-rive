@@ -84,8 +84,6 @@ export class RiveAnimationDirective {
     return this.state.getValue().playing;
   }
   
-  @Output() playChange = new EventEmitter<boolean>();
-  @Output() speedChange = new EventEmitter<number>();
   @Output() load = new EventEmitter<LinearAnimation>();
 
   constructor(
