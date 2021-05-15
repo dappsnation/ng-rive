@@ -16,12 +16,14 @@ import { MatSliderModule } from '@angular/material/slider';
 import { RouterModule } from '@angular/router';
 import { SheepComponent } from './sheep/sheep.component';
 import { ResizeComponent } from './resize/resize.component';
+import { StateMachineComponent } from './state-machine/state-machine.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SheepComponent,
     ResizeComponent,
+    StateMachineComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -38,7 +40,7 @@ import { ResizeComponent } from './resize/resize.component';
     MatInputModule,
     RouterModule.forRoot([{
         path: '',
-        redirectTo: 'sheep',
+        redirectTo: 'state-machine',
         pathMatch: 'full'
     }, {
         path: 'sheep',
@@ -46,6 +48,9 @@ import { ResizeComponent } from './resize/resize.component';
     }, {
         path: 'resize',
         component: ResizeComponent
+    }, {
+      path: 'state-machine',
+      component: StateMachineComponent
     }], {
     initialNavigation: 'enabled'
 })

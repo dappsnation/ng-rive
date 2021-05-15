@@ -10,10 +10,6 @@ interface RiveAnimationState {
   playing: boolean;
   /** Weight of this animation over another */
   mix: number;
-  /** Reset automatically to 0 when play is down if mode is "one-shot" */
-  autoreset: boolean;
-  /** override mode of the animation */
-  mode?: 'loop' | 'ping-pong' | 'one-shot';
 }
 
 function getRiveAnimationState(state: Partial<RiveAnimationState> = {}): RiveAnimationState {
@@ -21,15 +17,10 @@ function getRiveAnimationState(state: Partial<RiveAnimationState> = {}): RiveAni
     speed: 1,
     playing: false,
     mix: 1,
-    autoreset: false,
     ...state
   }
 }
 
-
-function round(value: number) {
-  return Math.round((value + Number.EPSILON) * 10000) / 10000;
-}
 
 function exist<T>(v: T | undefined | null): v is T {
   return v !== undefined && v !== null;
@@ -41,6 +32,8 @@ function exist<T>(v: T | undefined | null): v is T {
 })
 export class RiveAnimationDirective {
   private sub?: Subscription;
+  private animation?: LinearAnimation;
+  private instance?: LinearAnimationInstance;
   distance = new BehaviorSubject<number | null>(null);
   state = new BehaviorSubject<RiveAnimationState>(getRiveAnimationState());
 
@@ -70,7 +63,6 @@ export class RiveAnimationDirective {
     return this.state.getValue().mix;
   }
 
-
   // NUMBERS
   @Input()
   set speed(value: number | string | undefined | null) {
@@ -97,8 +89,7 @@ export class RiveAnimationDirective {
   @Output() speedChange = new EventEmitter<number>();
   @Output() load = new EventEmitter<LinearAnimation>();
 
-  private animation?: LinearAnimation;
-  private animationInstance?: LinearAnimationInstance;
+
 
   constructor(
     private zone: NgZone,
@@ -123,7 +114,7 @@ export class RiveAnimationDirective {
       ? this.canvas.artboard.animationByName(name)
       : this.canvas.artboard.animationByIndex(name);
 
-    this.animationInstance = new this.canvas.rive.LinearAnimationInstance(this.animation);
+    this.instance = new this.canvas.rive.LinearAnimationInstance(this.animation);
     this.load.emit(this.animation);
   }
 
@@ -155,7 +146,7 @@ export class RiveAnimationDirective {
 
   private moveFrame(state: RiveAnimationState, time: number) {
     if (!this.animation) throw new Error('Could not load animation before running it');
-    if (!this.animationInstance) throw new Error('Could not load animation instance before running it');
+    if (!this.instance) throw new Error('Could not load animation instance before running it');
     return (time / 1000) * state.speed;
   }
 
@@ -163,11 +154,11 @@ export class RiveAnimationDirective {
     if (!this.canvas.rive) throw new Error('Could not load rive before registrating animation');
     if (!this.canvas.artboard) throw new Error('Could not load artboard before registrating animation');
     if (!this.canvas.renderer) throw new Error('Could not load renderer before registrating animation');
-    if (!this.animationInstance) throw new Error('Could not load animation instance before runningit');
+    if (!this.instance) throw new Error('Could not load animation instance before runningit');
     const { rive, artboard, renderer, ctx, fit, alignment } = this.canvas;
     // Move frame
-    this.animationInstance.advance(delta);
-    this.animationInstance.apply(artboard, this.state.getValue().mix);
+    this.instance.advance(delta);
+    this.instance.apply(artboard, this.state.getValue().mix);
     artboard.advance(delta);
     // Render frame on canvas
     const box = this.canvas.box;

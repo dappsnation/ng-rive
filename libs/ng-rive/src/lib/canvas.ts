@@ -82,7 +82,7 @@ export class RiveCanvasDirective {
 
   @Input() viewbox: string = '0 0 100% 100%';
   @Input() lazy: boolean | '' = false;
-  @Input() fit: CanvasFit = 'fill';
+  @Input() fit: CanvasFit = 'contain';
   @Input() alignment: CanvasAlignment = 'center';
   set width(w: number | string) {
     this.canvas.width = toInt(w) ?? this.canvas.width;
@@ -95,7 +95,7 @@ export class RiveCanvasDirective {
     this.canvas.height = toInt(h) ?? this.canvas.height;
   }
   get height() {
-    return this.canvas.width;
+    return this.canvas.height;
   }
 
   @Output() artboardChange = new EventEmitter<Artboard>();

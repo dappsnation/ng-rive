@@ -128,7 +128,7 @@ export class RivePlayer {
   @Output() load = new EventEmitter<LinearAnimation>();
 
   private animation?: LinearAnimation;
-  private animationInstance?: LinearAnimationInstance;
+  private instance?: LinearAnimationInstance;
 
   constructor(
     private zone: NgZone,
@@ -157,13 +157,13 @@ export class RivePlayer {
     this.startTime = round((this.animation.workStart === -1 ? 0 : this.animation.workStart) / this.animation.fps);
     this.endTime = round((this.animation.workEnd === -1 ? this.animation.duration : this.animation.workEnd) / this.animation.fps);
     
-    this.animationInstance = new this.canvas.rive.LinearAnimationInstance(this.animation);
+    this.instance = new this.canvas.rive.LinearAnimationInstance(this.animation);
     this.load.emit(this.animation);
   }
 
   private getTime() {
-    if (!this.animationInstance) throw new Error('Could not load animation instance before running it');
-    return this.animationInstance.time;
+    if (!this.instance) throw new Error('Could not load animation instance before running it');
+    return this.instance.time;
   }
 
 
@@ -203,7 +203,7 @@ export class RivePlayer {
 
   private moveFrame(state: RivePlayerState, time: number) {
     if (!this.animation) throw new Error('Could not load animation before running it');
-    if (!this.animationInstance) throw new Error('Could not load animation instance before running it');
+    if (!this.instance) throw new Error('Could not load animation instance before running it');
     const { speed, autoreset, mode } = state;
     // Default mode, don't apply any logic
     if (!mode) return time / 1000 * speed;
@@ -213,7 +213,7 @@ export class RivePlayer {
     // Round to avoid JS error on division
     const start = this.startTime ?? 0;
     const end = this.endTime ?? (this.animation.duration / this.animation.fps);
-    const currentTime = round(this.animationInstance.time);
+    const currentTime = round(this.instance.time);
 
     // When player hit floor
     if (currentTime + delta < start) {
@@ -262,11 +262,11 @@ export class RivePlayer {
     if (!this.canvas.rive) throw new Error('Could not load rive before registrating animation');
     if (!this.canvas.artboard) throw new Error('Could not load artboard before registrating animation');
     if (!this.canvas.renderer) throw new Error('Could not load renderer before registrating animation');
-    if (!this.animationInstance) throw new Error('Could not load animation instance before runningit');
+    if (!this.instance) throw new Error('Could not load animation instance before runningit');
     const { rive, artboard, renderer, ctx, fit, alignment } = this.canvas;
     // Move frame
-    this.animationInstance.advance(delta);
-    this.animationInstance.apply(artboard, this.state.getValue().mix);
+    this.instance.advance(delta);
+    this.instance.apply(artboard, this.state.getValue().mix);
     artboard.advance(delta);
     this.zone.run(() => this.timeChange.next(this.getTime()));
     // Render frame on canvas
