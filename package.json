@@ -7,6 +7,7 @@
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main",
     "nx": "nx",
     "start": "ng serve",
+    "build": "nx build ng-rive --prod",
     "build:recorder": "ng build recorder --prod",
     "build:player": "ng build player --prod",
     "build:playground": "ng build playground --prod",

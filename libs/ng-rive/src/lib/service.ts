@@ -1,11 +1,9 @@
 import Rive, { RiveCanvas, File as RiveFile } from 'rive-canvas';
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { animationFrame } from './frame';
 import { share } from 'rxjs/operators';
-
-export const RIVE_FOLDER = new InjectionToken<string>('Folder with Rive files');
-export const RIVE_VERSION = new InjectionToken<string>('Version used to load rive WASM');
+import { RIVE_FOLDER, RIVE_VERSION } from './tokens';
 
 @Injectable()
 export class RiveService {
