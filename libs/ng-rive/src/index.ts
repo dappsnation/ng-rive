@@ -1,5 +1,6 @@
 export * from './lib/module';
 export * from './lib/types';
+export * from './lib/tokens';
 export * from './lib/canvas';
 export * from './lib/player';
 export * from './lib/state-machine';
