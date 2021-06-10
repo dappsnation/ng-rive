@@ -210,6 +210,7 @@ You can manipulate the state of a state machine animation though inputs:
 
 #### Output
 - `(load)`: Emitted the loaded `StateMachine`.
+- `(stateChange)`: Emitted the names of the states that have changed.
 
 ## State Machine Input
 The `riv-input` enables you to manipulated the state machine: 

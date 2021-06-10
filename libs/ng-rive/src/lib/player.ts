@@ -139,6 +139,7 @@ export class RivePlayer {
   
   ngOnDestroy() {
     this.sub?.unsubscribe();
+    this.instance?.delete();
   }
 
 

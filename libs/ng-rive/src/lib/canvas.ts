@@ -132,6 +132,10 @@ export class RiveCanvasDirective {
     this.onReady().pipe(take(1)).subscribe();
   }
 
+  ngOnDestroy() {
+    this.artboard?.delete();
+  }
+
   get ctx(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D {
     if (!this._ctx) {
       this._ctx = this.canvas.getContext('2d');
@@ -141,9 +145,11 @@ export class RiveCanvasDirective {
 
   private setArtboard() {
     return this.arboardName.pipe(
-      map(name => this.artboard = name ? this.file?.artboardByName(name) : this.file?.defaultArtboard()),
-      tap(_ => this.artboardChange.emit(this.artboard)),
-      map(_ => true)
+      tap(() => this.artboard?.delete()), // Remove previous artboard if any
+      map(name => name ? this.file?.artboardByName(name) : this.file?.defaultArtboard()),
+      tap(artboard => this.artboard = artboard?.instance()),
+      tap(() => this.artboardChange.emit(this.artboard)),
+      map(() => true)
     );
   }
 

@@ -122,6 +122,7 @@ export class RiveStateMachine implements OnDestroy {
   @ContentChildren(RiveSMInput) private riveInputs?: QueryList<RiveSMInput>;
 
   @Output() load = new EventEmitter<StateMachine>();
+  @Output() stateChange = new EventEmitter<string[]>();
 
   @Input()
   set name(name: string | undefined | null) {
@@ -160,7 +161,6 @@ export class RiveStateMachine implements OnDestroy {
     return this.state.getValue().playing;
   }
   
-
   constructor(
     private zone: NgZone,
     private canvas: RiveCanvasDirective,
@@ -169,6 +169,7 @@ export class RiveStateMachine implements OnDestroy {
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
+    this.instance?.delete();
   }
 
   private update(state: Partial<StateMachineState>) {
@@ -236,8 +237,7 @@ export class RiveStateMachine implements OnDestroy {
     if (!this.instance) throw new Error('Could not load state machin instance before runningit');
     const { rive, artboard, renderer, ctx, fit, alignment } = this.canvas;
     // Move frame
-    this.instance.advance(delta);
-    this.instance.apply(artboard);
+    this.instance.advance(artboard, delta);
     artboard.advance(delta);
     // Render frame on canvas
     const box = this.canvas.box;
@@ -245,6 +245,14 @@ export class RiveStateMachine implements OnDestroy {
     ctx.save();
     renderer.align(rive.Fit[fit], rive.Alignment[alignment], box, artboard.bounds);
     artboard.draw(renderer);
+
+    // Check for any state machines that had a state change
+    const changeCount = this.instance.stateChangedCount();
+    if (changeCount) {
+      const states = new Array(changeCount).fill(null).map((_, i) => this.instance!.stateChangedNameByIndex(i));
+      this.stateChange.emit(states);
+    }
+
     ctx.restore();
   }
 

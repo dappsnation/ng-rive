@@ -15,4 +15,8 @@ export class StateMachineComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  change(states: string[]) {
+    console.log('Change', states)
+  }
+
 }

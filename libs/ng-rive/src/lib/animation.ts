@@ -94,6 +94,7 @@ export class RiveAnimationDirective {
   
   ngOnDestroy() {
     this.sub?.unsubscribe();
+    this.instance?.delete();
   }
 
   private update(state: Partial<RiveAnimationState>) {
