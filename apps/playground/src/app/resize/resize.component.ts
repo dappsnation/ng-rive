@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Artboard } from 'rive-canvas';
 import { startWith } from 'rxjs/operators';
 
 const fits = ['cover', 'contain', 'fill', 'fitWidth', 'fitHeight', 'none', 'scaleDown'];
@@ -20,4 +21,10 @@ export class ResizeComponent {
   value$ = this.form.valueChanges.pipe(startWith(this.form.value));
   fits = fits;
   alignments = alignments;
+
+  update(artboard: Artboard) {
+    const width = artboard.bounds.maxX - artboard.bounds.minX;
+    const height = artboard.bounds.maxY - artboard.bounds.minY;
+    this.form.patchValue({ width, height });
+  }
 }
