@@ -55,7 +55,7 @@
     "@nrwl/angular": "12.3.3",
     "express": "^4.15.2",
     "firebase": "^7.0 || ^8.0",
-    "rive-canvas": "^0.7.3",
+    "rive-canvas": "^0.7.6",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.4"
