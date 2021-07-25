@@ -49,7 +49,7 @@ export class PlayerComponent {
   riveFile$ = this.route.paramMap.pipe(
     map(params => params.get('fileId')),
     switchMap(fileId => this.service.valueChanges(fileId)),
-    shareReplay(1)
+    shareReplay({ bufferSize: 1, refCount: true })
   );
   file$ = this.riveFile$.pipe(
     switchMap(file => file ? this.http.get(file.url, { responseType: 'blob' }) : of(undefined))

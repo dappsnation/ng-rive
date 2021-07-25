@@ -132,7 +132,7 @@ export class FireAuth<Profile = unknown, Roles extends Record<string, any> = any
     switchMap(user => this.getDoc({ user })),
     switchMap(doc => doc ? doc.snapshotChanges() : of(undefined)),
     map(snapshot => snapshot?.payload ? this.fromFirestore(snapshot.payload) : undefined),
-    shareReplay(1)
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   constructor(

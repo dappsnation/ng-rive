@@ -108,7 +108,7 @@ export class RiveCanvasDirective {
     this.canvas = element.nativeElement;
 
     this.isVisible = onVisible(element.nativeElement).pipe(
-      shareReplay(1),
+      shareReplay({ bufferSize: 1, refCount: true }),
       enterZone(this.zone),
     );
 
@@ -123,7 +123,7 @@ export class RiveCanvasDirective {
         this.renderer = new this.rive.CanvasRenderer(this.ctx)
       }),
       switchMap(_ => this.setArtboard()),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 

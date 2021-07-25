@@ -107,7 +107,7 @@ export abstract class FireCollection<E extends DocumentData> {
     if (!this.memo[id]) {
       this.memo[id] = this.db.doc<E>(getDocPath(path, id)).snapshotChanges().pipe(
         map(action => this.fromFirestore(action.payload)),
-        shareReplay(1)
+        shareReplay({ bufferSize: 1, refCount: true })
       );
     }
     return this.memo[id];
