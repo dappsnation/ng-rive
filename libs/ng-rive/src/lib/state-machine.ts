@@ -228,32 +228,9 @@ export class RiveStateMachine implements OnDestroy {
     return (time / 1000) * state.speed;
   }
 
-  // TODO: move this logic to the canvas by registering an hook
-
   private applyChange(delta: number) {
-    if (!this.canvas.rive) throw new Error('Could not load rive before registrating state machine');
-    if (!this.canvas.artboard) throw new Error('Could not load artboard before registrating state machin');
-    if (!this.canvas.renderer) throw new Error('Could not load renderer before registrating state machin');
     if (!this.instance) throw new Error('Could not load state machin instance before runningit');
-    const { rive, artboard, renderer, ctx, fit, alignment } = this.canvas;
-    // Move frame
-    this.instance.advance(artboard, delta);
-    artboard.advance(delta);
-    // Render frame on canvas
-    const box = this.canvas.box;
-    ctx.clearRect(0, 0, this.canvas.width as number, this.canvas.height as number);
-    ctx.save();
-    renderer.align(rive.Fit[fit], rive.Alignment[alignment], box, artboard.bounds);
-    artboard.draw(renderer);
-
-    // Check for any state machines that had a state change
-    const changeCount = this.instance.stateChangedCount();
-    if (changeCount) {
-      const states = new Array(changeCount).fill(null).map((_, i) => this.instance!.stateChangedNameByIndex(i));
-      this.stateChange.emit(states);
-    }
-
-    ctx.restore();
+    this.canvas.draw(this.instance, delta);
   }
 
 }

@@ -2,7 +2,7 @@ import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@ang
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { RiveService } from './service';
-import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB } from 'rive-canvas';
+import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from 'rive-canvas';
 import { toInt } from './utils';
 
 export type CanvasFit = 'cover' | 'contain' | 'fill' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
@@ -195,5 +195,34 @@ export class RiveCanvasDirective {
     return this.loaded;
   }
 
+  draw(instance: LinearAnimationInstance, delta: number, mix: number): void
+  draw(instance: StateMachineInstance, delta: number): void
+  draw(instance: StateMachineInstance | LinearAnimationInstance, delta: number, mix?: number) {
+    if (!this.rive) throw new Error('Could not load rive before registrating instance');
+    if (!this.artboard) throw new Error('Could not load artboard before registrating instance');
+    if (!this.renderer) throw new Error('Could not load renderer before registrating instance');
+    // Move frame
+    if (isLinearAnimation(instance)) {
+      instance.advance(delta);
+      instance.apply(this.artboard, mix!);
+    } else {
+      console.log(instance);
+      instance.advance(this.artboard, delta);
+    }
+    this.artboard.advance(delta);
+    // Render frame on canvas
+    const fit = this.rive.Fit[this.fit];
+    const alignment = this.rive.Alignment[this.alignment];
+    const box = this.box;
+    const bounds = this.artboard.bounds;
+    this.ctx.clearRect(0, 0, this.width as number, this.height as number);
+    this.ctx.save();
+    this.renderer.align(fit, alignment, box, bounds);
+    this.artboard.draw(this.renderer);
+    this.ctx.restore();
+  }
 }
 
+function isLinearAnimation(instance: StateMachineInstance | LinearAnimationInstance): instance is LinearAnimationInstance {
+  return 'didLoop' in instance;
+}

@@ -146,22 +146,8 @@ export class RiveAnimationDirective {
   }
 
   private applyChange(delta: number) {
-    if (!this.canvas.rive) throw new Error('Could not load rive before registrating animation');
-    if (!this.canvas.artboard) throw new Error('Could not load artboard before registrating animation');
-    if (!this.canvas.renderer) throw new Error('Could not load renderer before registrating animation');
-    if (!this.instance) throw new Error('Could not load animation instance before runningit');
-    const { rive, artboard, renderer, ctx, fit, alignment } = this.canvas;
-    // Move frame
-    this.instance.advance(delta);
-    this.instance.apply(artboard, this.state.getValue().mix);
-    artboard.advance(delta);
-    // Render frame on canvas
-    const box = this.canvas.box;
-    ctx.clearRect(0, 0, this.canvas.width as number, this.canvas.height as number);
-    ctx.save();
-    renderer.align(rive.Fit[fit], rive.Alignment[alignment], box, artboard.bounds);
-    artboard.draw(renderer);
-    ctx.restore();
+    if (!this.instance) throw new Error('Could not load animation instance before running it');
+    this.canvas.draw(this.instance, delta, this.state.getValue().mix);
   }
 
 }
