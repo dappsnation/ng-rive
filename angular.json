@@ -30,9 +30,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/ng-rive"
-          ],
+          "outputs": ["coverage/libs/ng-rive"],
           "options": {
             "jestConfig": "libs/ng-rive/jest.config.js",
             "passWithNoTests": true
@@ -128,9 +126,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/recorder"
-          ],
+          "outputs": ["coverage/apps/recorder"],
           "options": {
             "jestConfig": "apps/recorder/jest.config.js",
             "passWithNoTests": true
@@ -152,13 +148,8 @@
             "main": "apps/player/src/main.ts",
             "polyfills": "apps/player/src/polyfills.ts",
             "tsConfig": "apps/player/tsconfig.app.json",
-            "assets": [
-              "apps/player/src/favicon.ico",
-              "apps/player/src/assets"
-            ],
-            "styles": [
-              "apps/player/src/styles.scss"
-            ],
+            "assets": ["apps/player/src/favicon.ico", "apps/player/src/assets"],
+            "styles": ["apps/player/src/styles.scss"],
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -225,9 +216,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/player"
-          ],
+          "outputs": ["coverage/apps/player"],
           "options": {
             "jestConfig": "apps/player/jest.config.js",
             "passWithNoTests": true
@@ -253,9 +242,7 @@
               "apps/playground/src/favicon.ico",
               "apps/playground/src/assets"
             ],
-            "styles": [
-              "apps/playground/src/styles.scss"
-            ],
+            "styles": ["apps/playground/src/styles.scss"],
             "scripts": [],
             "webWorkerTsConfig": "apps/playground/tsconfig.worker.json",
             "vendorChunk": true,
@@ -327,9 +314,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/playground"
-          ],
+          "outputs": ["coverage/apps/playground"],
           "options": {
             "jestConfig": "apps/playground/jest.config.js",
             "passWithNoTests": true
@@ -376,9 +361,7 @@
           "options": {
             "browserTarget": "playground:build:production",
             "serverTarget": "playground:server:production",
-            "routes": [
-              "/"
-            ]
+            "routes": ["/"]
           },
           "configurations": {
             "production": {}
@@ -400,13 +383,8 @@
             "main": "apps/pocket/src/main.ts",
             "polyfills": "apps/pocket/src/polyfills.ts",
             "tsConfig": "apps/pocket/tsconfig.app.json",
-            "assets": [
-              "apps/pocket/src/favicon.ico",
-              "apps/pocket/src/assets"
-            ],
-            "styles": [
-              "apps/pocket/src/styles.scss"
-            ],
+            "assets": ["apps/pocket/src/favicon.ico", "apps/pocket/src/assets"],
+            "styles": ["apps/pocket/src/styles.scss"],
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -476,6 +454,95 @@
           "options": {}
         }
       }
+    },
+    "icons": {
+      "projectType": "application",
+      "root": "apps/icons",
+      "sourceRoot": "apps/icons/src",
+      "prefix": "ng-rive",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/icons",
+            "index": "apps/icons/src/index.html",
+            "main": "apps/icons/src/main.ts",
+            "polyfills": "apps/icons/src/polyfills.ts",
+            "tsConfig": "apps/icons/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["apps/icons/src/favicon.ico", "apps/icons/src/assets"],
+            "styles": ["apps/icons/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "apps/icons/src/environments/environment.ts",
+                  "with": "apps/icons/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "icons:build:production"
+            },
+            "development": {
+              "browserTarget": "icons:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "icons:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/icons/src/**/*.ts",
+              "apps/icons/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/icons"],
+          "options": {
+            "jestConfig": "apps/icons/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {
@@ -494,11 +561,15 @@
       }
     },
     "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress",
       "strict": true
     },
     "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest",
       "strict": true
     },

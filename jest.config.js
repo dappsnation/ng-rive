@@ -4,5 +4,6 @@ module.exports = {
     '<rootDir>/libs/ng-rive',
     '<rootDir>/apps/player',
     '<rootDir>/apps/playground',
+    '<rootDir>/apps/icons',
   ],
 };
