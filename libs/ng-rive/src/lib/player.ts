@@ -260,7 +260,7 @@ export class RivePlayer {
   }
 
   private applyChange(delta: number) {
-    if (!this.instance) throw new Error('Could not load animation instance before runningit');
+    if (!this.instance) throw new Error('Could not load animation instance before running it');
     this.canvas.draw(this.instance, delta, this.state.getValue().mix);
   }
 

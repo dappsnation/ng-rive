@@ -43,8 +43,8 @@ export class RiveSMInput {
   }
 
   @Input()
-  set value(rawValue: string | boolean | number | undefined) {
-    if (typeof rawValue === 'undefined') return;
+  set value(rawValue: string | boolean | number | undefined | null) {
+    if (typeof rawValue === 'undefined' || rawValue === null) return;
     const value = typeof rawValue === 'string'
       ? parseFloat(rawValue)
       : rawValue;
@@ -207,7 +207,7 @@ export class RiveStateMachine implements OnDestroy {
     }
     this.load.emit(this.stateMachine);
   }
-
+  
   private setInput(input: SMIInput) {
     this.inputs[input.name] = input;
     const riveInput = this.riveInputs?.find(item => item.name === input.name);
@@ -229,8 +229,17 @@ export class RiveStateMachine implements OnDestroy {
   }
 
   private applyChange(delta: number) {
-    if (!this.instance) throw new Error('Could not load state machin instance before runningit');
+    if (!this.instance) throw new Error('Could not load state machin instance before running it');
     this.canvas.draw(this.instance, delta);
+    // Check for any state machines that had a state change
+    const changeCount = this.instance.stateChangedCount();
+    if (changeCount) {
+      const states = [];
+      for (let i = 0; i < changeCount; i++) {
+        states.push(this.instance.stateChangedNameByIndex(i));
+      }
+      this.stateChange.emit(states);
+    }
   }
 
 }

@@ -206,7 +206,6 @@ export class RiveCanvasDirective {
       instance.advance(delta);
       instance.apply(this.artboard, mix!);
     } else {
-      console.log(instance);
       instance.advance(this.artboard, delta);
     }
     this.artboard.advance(delta);
@@ -215,11 +214,15 @@ export class RiveCanvasDirective {
     const alignment = this.rive.Alignment[this.alignment];
     const box = this.box;
     const bounds = this.artboard.bounds;
+
+    // Align renderer if needed
+    this.ctx.restore();
     this.ctx.clearRect(0, 0, this.width as number, this.height as number);
     this.ctx.save();
     this.renderer.align(fit, alignment, box, bounds);
+
+    this.ctx.clearRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
     this.artboard.draw(this.renderer);
-    this.ctx.restore();
   }
 }
 
