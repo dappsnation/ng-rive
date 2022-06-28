@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, NgZone, Output } from "@angular/core";
+import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, merge, of, Subscription } from "rxjs";
 import { distinctUntilChanged, filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
@@ -42,7 +42,7 @@ function exist<T>(v: T | undefined | null): v is T {
   selector: 'riv-player, [rivPlayer]',
   exportAs: 'rivPlayer'
 })
-export class RivePlayer {
+export class RivePlayer implements OnDestroy {
   private sub?: Subscription;
   startTime?: number;
   endTime?: number;
@@ -122,10 +122,11 @@ export class RivePlayer {
   }
 
 
+  // eslint-disable-next-line @angular-eslint/no-output-native
+  @Output() load = new EventEmitter<LinearAnimation>();
   @Output() timeChange = new EventEmitter<number>();
   @Output() playChange = new EventEmitter<boolean>();
   @Output() speedChange = new EventEmitter<number>();
-  @Output() load = new EventEmitter<LinearAnimation>();
 
   private animation?: LinearAnimation;
   private instance?: LinearAnimationInstance;
@@ -260,23 +261,8 @@ export class RivePlayer {
   }
 
   private applyChange(delta: number) {
-    if (!this.canvas.rive) throw new Error('Could not load rive before registrating animation');
-    if (!this.canvas.artboard) throw new Error('Could not load artboard before registrating animation');
-    if (!this.canvas.renderer) throw new Error('Could not load renderer before registrating animation');
-    if (!this.instance) throw new Error('Could not load animation instance before runningit');
-    const { rive, artboard, renderer, ctx, fit, alignment } = this.canvas;
-    // Move frame
-    this.instance.advance(delta);
-    this.instance.apply(artboard, this.state.getValue().mix);
-    artboard.advance(delta);
-    this.zone.run(() => this.timeChange.next(this.getTime()));
-    // Render frame on canvas
-    const box = this.canvas.box;
-    ctx.clearRect(0, 0, this.canvas.width as number, this.canvas.height as number);
-    ctx.save();
-    renderer.align(rive.Fit[fit], rive.Alignment[alignment], box, artboard.bounds);
-    artboard.draw(renderer);
-    ctx.restore();
+    if (!this.instance) throw new Error('Could not load animation instance before running it');
+    this.canvas.draw(this.instance, delta, this.state.getValue().mix);
   }
 
 }

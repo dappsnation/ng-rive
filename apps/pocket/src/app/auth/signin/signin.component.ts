@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Pipe, PipeTransform, TemplateRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IconService } from '../../utils/icon.service';
 import { FireProvider } from '../../auth.service';
@@ -9,8 +9,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { RivePlayer } from 'ng-rive';
 import { MatInput } from '@angular/material/input';
 
+interface FirebaseError {
+  code: string;
+  message: string;
+}
+
 @Component({
-  selector: 'auth-signin',
+  selector: 'rive-auth-signin',
   templateUrl: './signin.component.html',
   styleUrls: ['./signin.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -21,9 +26,9 @@ export class SigninComponent {
   showPwd = false;
   signing = false;
   passwordFocus?: boolean;
-  form = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required]),
+  form = new UntypedFormGroup({
+    email: new UntypedFormControl('', [Validators.required, Validators.email]),
+    password: new UntypedFormControl('', [Validators.required]),
   });
 
   constructor(
@@ -55,8 +60,8 @@ export class SigninComponent {
       await this.auth.signin(provider);
       const redirect = this.guard.redirectUrl || '/profile';
       await this.router.navigate([redirect]);
-    } catch(err) {
-      this.showError(err);
+    } catch(err: unknown) {
+      this.showError(err as FirebaseError);
       this.signing = false;
       this.errorAnim.play = true;
     }
@@ -72,7 +77,7 @@ export class SigninComponent {
         const redirect = this.guard.redirectUrl || '/profile';
         await this.router.navigate([redirect]);
       } catch (err) {
-        this.showError(err);
+        this.showError(err as FirebaseError);
         this.signing = false;
         this.errorAnim.play = true;
       }
@@ -88,7 +93,7 @@ export class SigninComponent {
         await this.auth.signup(email, password);
         await this.router.navigate(['/auth/verification']);
       } catch (err) {
-        this.showError(err);
+        this.showError(err as FirebaseError);
         this.signing = false;
       }
       this.cdr.markForCheck();
@@ -106,7 +111,7 @@ export class SigninComponent {
         await this.auth.auth.sendPasswordResetEmail(email);
         await this.router.navigate(['/auth/change-password', email]);
       } catch (err) {
-        this.showError(err);
+        this.showError(err as FirebaseError);
       }
     } else {
       this.errorAnim.play = true;

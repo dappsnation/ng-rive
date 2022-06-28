@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "include": ["**/*.ts"],
   "compilerOptions": {
-    "types": ["jest", "node"]
-  }
+    "types": ["jest", "node", "offscreencanvas"]
+  },
+  "exclude": ["jest.config.ts"]
 }

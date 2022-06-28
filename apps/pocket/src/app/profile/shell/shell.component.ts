@@ -3,10 +3,9 @@ import { AuthService } from '../../auth/service';
 import { RiveFile, RiveFilesService } from '../../file/service';
 import { exist } from '../../utils';
 import { switchMap, filter } from 'rxjs/operators';
-import { AngularFireStorage } from '@angular/fire/storage';
 
 @Component({
-  selector: 'profile-shell',
+  selector: 'rive-profile-shell',
   templateUrl: './shell.component.html',
   styleUrls: ['./shell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -20,7 +19,6 @@ export class ShellComponent {
   );
   constructor(
     private auth: AuthService,
-    private storage: AngularFireStorage,
     private riveFiles: RiveFilesService,
   ) { }
 

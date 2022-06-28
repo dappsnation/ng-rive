@@ -1,8 +1,8 @@
-import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { RiveService } from './service';
-import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB } from 'rive-canvas';
+import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from 'rive-canvas';
 import { toInt } from './utils';
 
 export type CanvasFit = 'cover' | 'contain' | 'fill' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
@@ -58,13 +58,13 @@ export function enterZone(zone: NgZone) {
   selector: 'canvas[riv]',
   exportAs: 'rivCanvas'
 })
-export class RiveCanvasDirective {
+export class RiveCanvasDirective implements OnInit, OnDestroy {
   private url = new ReplaySubject<RiveOrigin>();
   private arboardName = new BehaviorSubject<string | null>(null);
-  private _ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
+  private _ctx?: CanvasRenderingContext2D | null;
   private loaded: Observable<boolean>;
   private boxes: Record<string, AABB> = {};
-  public canvas: HTMLCanvasElement | OffscreenCanvas;
+  public canvas: HTMLCanvasElement;
   public rive?: RiveCanvas;
   public file?: RiveFile; 
   public artboard?: Artboard;
@@ -72,7 +72,7 @@ export class RiveCanvasDirective {
 
   public isVisible: Observable<boolean>;
 
-  @Input('riv') set riv(url: RiveOrigin) {
+  @Input() set riv(url: RiveOrigin) {
     this.url.next(url);
   }
 
@@ -80,7 +80,7 @@ export class RiveCanvasDirective {
     this.arboardName.next(name);
   }
 
-  @Input() viewbox: string = '0 0 100% 100%';
+  @Input() viewbox = '0 0 100% 100%';
   @Input() lazy: boolean | '' = false;
   @Input() fit: CanvasFit = 'contain';
   @Input() alignment: CanvasAlignment = 'center';
@@ -108,7 +108,7 @@ export class RiveCanvasDirective {
     this.canvas = element.nativeElement;
 
     this.isVisible = onVisible(element.nativeElement).pipe(
-      shareReplay(1),
+      shareReplay({ bufferSize: 1, refCount: true }),
       enterZone(this.zone),
     );
 
@@ -123,7 +123,7 @@ export class RiveCanvasDirective {
         this.renderer = new this.rive.CanvasRenderer(this.ctx)
       }),
       switchMap(_ => this.setArtboard()),
-      shareReplay(1)
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
@@ -136,11 +136,11 @@ export class RiveCanvasDirective {
     this.artboard?.delete();
   }
 
-  get ctx(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D {
+  get ctx(): CanvasRenderingContext2D {
     if (!this._ctx) {
       this._ctx = this.canvas.getContext('2d');
     }
-    return this._ctx!;
+    return this._ctx as CanvasRenderingContext2D;
   }
 
   private setArtboard() {
@@ -195,5 +195,37 @@ export class RiveCanvasDirective {
     return this.loaded;
   }
 
+  draw(instance: LinearAnimationInstance, delta: number, mix: number): void
+  draw(instance: StateMachineInstance, delta: number): void
+  draw(instance: StateMachineInstance | LinearAnimationInstance, delta: number, mix?: number) {
+    if (!this.rive) throw new Error('Could not load rive before registrating instance');
+    if (!this.artboard) throw new Error('Could not load artboard before registrating instance');
+    if (!this.renderer) throw new Error('Could not load renderer before registrating instance');
+    // Move frame
+    if (isLinearAnimation(instance)) {
+      instance.advance(delta);
+      instance.apply(this.artboard, mix ?? 1);
+    } else {
+      instance.advance(this.artboard, delta);
+    }
+    this.artboard.advance(delta);
+    // Render frame on canvas
+    const fit = this.rive.Fit[this.fit];
+    const alignment = this.rive.Alignment[this.alignment];
+    const box = this.box;
+    const bounds = this.artboard.bounds;
+
+    // Align renderer if needed
+    this.ctx.restore();
+    this.ctx.clearRect(0, 0, this.width as number, this.height as number);
+    this.ctx.save();
+    this.renderer.align(fit, alignment, box, bounds);
+
+    this.ctx.clearRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
+    this.artboard.draw(this.renderer);
+  }
 }
 
+function isLinearAnimation(instance: StateMachineInstance | LinearAnimationInstance): instance is LinearAnimationInstance {
+  return 'didLoop' in instance;
+}
