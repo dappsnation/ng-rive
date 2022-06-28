@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="signin()" fxLayout="column" fxLayoutGap="16px" autocomplete="on">
+<form [formGroup]="form" (ngSubmit)="signin()" autocomplete="on">
   <canvas riv="login" width="500" height="500" (click)="clickAnim.play = true">
     <riv-player name="idle" [play]="!signing" mix="0.5"></riv-player>
     <riv-player name="loading" [play]="signing" mix="0.5"></riv-player>
@@ -33,13 +33,13 @@
   </button>
 </form>
 
-<div class="divider" fxLayout fxLayoutAlign="center center" fxLayoutGap="16px">
-  <mat-divider fxFlex></mat-divider>
+<div class="divider">
+  <mat-divider></mat-divider>
   <span>Or</span>
-  <mat-divider fxFlex></mat-divider>
+  <mat-divider></mat-divider>
 </div>
 
-<div fxLayout="column" fxLayoutGap="16px">
+<div class="signin">
   <button test="with-google" mat-flat-button (click)="signinWith('google')" [disabled]="signing">
     <mat-icon svgIcon="google"></mat-icon>
     <span>Signin with Google</span>

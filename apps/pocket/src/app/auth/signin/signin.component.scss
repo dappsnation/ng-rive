@@ -6,6 +6,12 @@
   align-items: center;
 }
 
+form, .signin {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 canvas {
   width: 200px;
   height: 200px;
@@ -17,11 +23,16 @@ canvas {
 .divider {
   width: 100%;
   padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  mat-divider {
+    flex: 1;
+  }
 }
 
-@import '~@angular/flex-layout/mq';
-
-@include layout-bp(gt-sm) {
+@media (min-width: 960px) {
   form {
     width: 40%;
     padding: 24px;
@@ -32,7 +43,7 @@ canvas {
   }
 }
 
-@include layout-bp(lt-md) {
+@media (max-width: 959.9px) {
   canvas {
     width: 150px;
     height: 150px;
@@ -47,7 +58,7 @@ canvas {
   }
 }
 
-@include layout-bp(xs) {
+@media (max-width: 599.9px) {
   form {
     width: 100%;
   }

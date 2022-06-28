@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,7 +16,6 @@ import { RiveModule } from 'ng-rive';
   declarations: [SigninComponent, PupilPositionPipe],
   imports: [
     CommonModule,
-    FlexLayoutModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
