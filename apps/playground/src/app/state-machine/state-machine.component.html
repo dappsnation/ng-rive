@@ -1,7 +1,32 @@
-<canvas riv="state-machine" width="960" height="540" fit="cover">
-  <riv-state-machine name="Designer's Test" play (stateChange)="change($event)">
-    <riv-input name="Level" [value]="value$ | async"></riv-input>
-  </riv-state-machine>
-  <riv-node name="Beginner"></riv-node>
-</canvas>
-<input [formControl]="form" type="number" />
+<section>
+  <canvas riv="state-machine" width="960" height="540" fit="cover">
+    <riv-state-machine name="Designer's Test" play (stateChange)="change($event)">
+      <riv-input name="Level" [value]="value$ | async"></riv-input>
+    </riv-state-machine>
+    <riv-node name="Beginner"></riv-node>
+  </canvas>
+  <input [formControl]="form" type="number" />
+</section>
+
+<section>
+  <canvas riv="login" width="500" height="500" (click)="clickAnim.fire()">
+    <riv-state-machine name="base" play (stateChange)="change($event)">
+      <riv-input name="fail" #errorAnim="rivInput"></riv-input>
+      <riv-input name="click" #clickAnim="rivInput" (change)="change($event)"></riv-input>
+      <riv-input name="success" #successAnim="rivInput"></riv-input>
+      <riv-input name="hide" [value]="hide$ | async"></riv-input>
+      <!-- move eyes -->
+      <riv-input name="check" [value]="eyes$ | async"></riv-input>
+      <riv-input name="look" [value]="look$ | async"></riv-input>
+    </riv-state-machine>
+  </canvas>
+  <form [formGroup]="loginForm">
+    <mat-slide-toggle formControlName="loading">Loading</mat-slide-toggle>
+    <mat-slide-toggle formControlName="hide">Hide</mat-slide-toggle>
+    <mat-slide-toggle formControlName="eyes">Eyes</mat-slide-toggle>
+    <mat-slider formControlName="look" min="0" max="100"></mat-slider>
+    <button mat-button (click)="successAnim.fire()">Success</button>
+    <button mat-button (click)="errorAnim.fire()">Error</button>
+    <button mat-button (click)="clickAnim.fire()">click</button>
+  </form>
+</section>

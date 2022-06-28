@@ -13,11 +13,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterModule } from '@angular/router';
 import { SheepComponent } from './sheep/sheep.component';
 import { ResizeComponent } from './resize/resize.component';
 import { StateMachineComponent } from './state-machine/state-machine.component';
 import { PlayerComponent } from './player/player.component';
+import { WorkerComponent } from './worker/worker.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,7 @@ import { PlayerComponent } from './player/player.component';
     ResizeComponent,
     StateMachineComponent,
     PlayerComponent,
+    WorkerComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -39,6 +42,7 @@ import { PlayerComponent } from './player/player.component';
     MatListModule,
     MatToolbarModule,
     MatSliderModule,
+    MatSlideToggleModule,
     MatInputModule,
     RouterModule.forRoot([{
         path: '',
@@ -56,6 +60,9 @@ import { PlayerComponent } from './player/player.component';
     }, {
       path: 'player',
       component: PlayerComponent
+    }, {
+      path: 'worker',
+      component: WorkerComponent
     }], {
     initialNavigation: 'enabled'
 })

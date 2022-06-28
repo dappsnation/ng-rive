@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { startWith } from 'rxjs/operators';
+import { FormControl, FormGroup } from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'ng-rive-state-machine',
@@ -10,13 +10,24 @@ import { startWith } from 'rxjs/operators';
 export class StateMachineComponent implements OnInit {
   form = new FormControl(0);
   value$ = this.form.valueChanges.pipe(startWith(this.form.value));
+
+  loginForm = new FormGroup({
+    loading: new FormControl(false),
+    hide: new FormControl(false),
+    eyes: new FormControl(false),
+    look: new FormControl(0),
+  });
+  login$ = this.loginForm.valueChanges.pipe(startWith(this.loginForm.value));
+  loading$ = this.login$.pipe(map(v => v.loading));
+  hide$ = this.login$.pipe(map(v => v.hide));
+  eyes$ = this.login$.pipe(map(v => v.eyes));
+  look$ = this.login$.pipe(map(v => v.look));
+
   constructor() { }
 
   ngOnInit(): void {
   }
-
-  change(states: string[]) {
+  change(states: any) {
     console.log('Change', states)
   }
-
 }

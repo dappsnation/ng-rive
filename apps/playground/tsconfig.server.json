@@ -5,7 +5,8 @@
     "outDir": "../../out-tsc/server",
     "target": "es2016",
     "types": [
-      "node"
+      "node",
+      "offscreencanvas"
     ]
   },
   "files": [

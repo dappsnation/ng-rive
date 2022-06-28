@@ -1,23 +1,42 @@
 /// <reference lib="webworker" />
 
-// @ts-ignore
-import Rive from 'rive-canvas';
+import Rive, { File, RiveCanvas } from 'rive-canvas';
+
 
 interface RiveMessage {
   canvas: OffscreenCanvas;
   url: string;
+  version?: string;
   animations: string[];
 }
 
-addEventListener('message', async ({ data }: { data: RiveMessage }) => {
-  const { canvas, url, animations } = data;
+let rive: RiveCanvas;
+async function getRive(version: string = 'latest') {
+  if (!rive) {
+    rive = await Rive({ locateFile: (file: string) => `https://unpkg.com/rive-canvas@${version}/${file}` });
+  }
+  return rive;
+}
 
-  // Load .riv file
+async function loadFile(url: string) {
   const req = new Request(url);
-  const loadRive = Rive({ locateFile: (file: string) => 'https://unpkg.com/rive-canvas@latest/' + file, });
-  const loadFile = fetch(req).then((res) => res.arrayBuffer());
-  const [ rive, buf ] = await Promise.all([ loadRive, loadFile ]);
-  const file = rive.load(new Uint8Array(buf));
+  const res = await fetch(req);
+  const buffer = await res.arrayBuffer();
+  return new Uint8Array(buffer);
+}
+
+const files: Record<string, File> = {};
+async function getFile(url: string, version: string = 'latest') {
+  if (!files[url]) {
+    const [ rive, blob ] = await Promise.all([ getRive(version), loadFile(url) ]);
+    files[url] = rive.load(blob);
+  }
+  return files[url];
+}
+
+addEventListener('message', async ({ data }: { data: RiveMessage }) => {
+  const { canvas, url, version, animations } = data;
+  const file = await getFile(url, version);
   const artboard = file.defaultArtboard();
 
   // Associate CanvasRenderer with offset context
@@ -28,12 +47,12 @@ addEventListener('message', async ({ data }: { data: RiveMessage }) => {
 
   // Move frame of each animation
   const animate = animations.map((name: string) => {
-      const animation = artboard.animationByName(name);
-      const instance = new rive.LinearAnimationInstance(animation);
-      return (delta: number) => {
-          instance.advance(delta);
-          instance.apply(artboard, 1.0);
-      }
+    const animation = artboard.animationByName(name);
+    const instance = new rive.LinearAnimationInstance(animation);
+    return (delta: number) => {
+      instance.advance(delta);
+      instance.apply(artboard, 1.0);
+    }
   });
 
   // Draw of the canvas

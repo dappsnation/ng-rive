@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   playing = false;
-  list = new Array(50).fill(null);
+  list = new Array(10).fill(null);
 }
