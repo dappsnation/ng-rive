@@ -5,6 +5,10 @@ import firebase from 'firebase/app';
 import { Observable, of } from 'rxjs';
 import { switchMap, map, take, shareReplay } from 'rxjs/operators';
 
+interface FirebaseError {
+  code: string;
+  message: string;
+}
 
 export type User = firebase.User;
 export type Snapshot<T> = DocumentSnapshot<T>;
@@ -403,7 +407,7 @@ export class FireAuth<Profile = unknown, Roles extends Record<string, any> = any
       this.state.user = cred.user;
       return cred;
     } catch (err) {
-      if (err.code === 'auth/operation-not-allowed') {
+      if ((err as FirebaseError).code === 'auth/operation-not-allowed') {
         console.warn('You tried to connect with a disabled auth provider. Enable it in Firebase console');
       }
       throw err;

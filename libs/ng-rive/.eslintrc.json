@@ -8,9 +8,6 @@
         "plugin:@nrwl/nx/angular",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
-      "parserOptions": {
-        "project": ["libs/ng-rive/tsconfig.*?.json"]
-      },
       "rules": {
         "@angular-eslint/no-input-rename": false,
         "@angular-eslint/directive-class-suffix": false,

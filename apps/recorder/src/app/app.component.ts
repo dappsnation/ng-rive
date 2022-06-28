@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Pipe, PipeTransform, TemplateRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { RiveCanvasDirective } from 'ng-rive';
@@ -45,16 +45,16 @@ export class AppComponent {
   dragging = false;
   downloadUrl?: SafeUrl;
 
-  form = new FormGroup({
-    canvas: new FormGroup({
-      width: new FormControl(500),
-      height: new FormControl(500),
+  form = new UntypedFormGroup({
+    canvas: new UntypedFormGroup({
+      width: new UntypedFormControl(500),
+      height: new UntypedFormControl(500),
     }),
-    output: new FormGroup({
-      name: new FormControl('rive'),
-      format: new FormControl(this.formats[0]),
+    output: new UntypedFormGroup({
+      name: new UntypedFormControl('rive'),
+      format: new UntypedFormControl(this.formats[0]),
     }),
-    animations: new FormControl([]),
+    animations: new UntypedFormControl([]),
   });
 
   constructor(

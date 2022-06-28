@@ -66,8 +66,8 @@ addEventListener('message', async ({ data }: { data: RiveMessage }) => {
     animate.forEach(cb => cb(delta))
     artboard.advance(delta);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
+    (ctx as any).clearRect(0, 0, canvas.width, canvas.height);
+    (ctx as any).save();
     renderer.align(rive.Fit.contain, rive.Alignment.center, {
         minX: 0,
         minY: 0,
@@ -75,7 +75,7 @@ addEventListener('message', async ({ data }: { data: RiveMessage }) => {
         maxY: canvas.height
     }, artboard.bounds);
     artboard.draw(renderer);
-    ctx.restore();
+    (ctx as any).restore();
     requestAnimationFrame(draw);
   }
 
