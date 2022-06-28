@@ -1,5 +1,8 @@
-module.exports = {
+const { getJestProjects } = require('@nrwl/jest');
+
+export default {
   projects: [
+    ...getJestProjects(),
     '<rootDir>/apps/recorder',
     '<rootDir>/libs/ng-rive',
     '<rootDir>/apps/player',

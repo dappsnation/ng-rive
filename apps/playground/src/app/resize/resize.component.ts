@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Artboard } from 'rive-canvas';
 import { startWith } from 'rxjs/operators';
 
@@ -12,11 +12,11 @@ const alignments = ['center', 'topLeft', 'topCenter', 'topRight', 'centerLeft', 
   styleUrls: ['./resize.component.scss']
 })
 export class ResizeComponent {
-  form = new FormGroup({
-    width: new FormControl(400),
-    height: new FormControl(400),
-    fit: new FormControl('contain'),
-    alignment: new FormControl('center'),
+  form = new UntypedFormGroup({
+    width: new UntypedFormControl(400),
+    height: new UntypedFormControl(400),
+    fit: new UntypedFormControl('contain'),
+    alignment: new UntypedFormControl('center'),
   })
   value$ = this.form.valueChanges.pipe(startWith(this.form.value));
   fits = fits;

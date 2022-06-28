@@ -44,28 +44,38 @@ import { WorkerComponent } from './worker/worker.component';
     MatSliderModule,
     MatSlideToggleModule,
     MatInputModule,
-    RouterModule.forRoot([{
-        path: '',
-        redirectTo: 'state-machine',
-        pathMatch: 'full'
-    }, {
-        path: 'sheep',
-        component: SheepComponent
-    }, {
-        path: 'resize',
-        component: ResizeComponent
-    }, {
-      path: 'state-machine',
-      component: StateMachineComponent
-    }, {
-      path: 'player',
-      component: PlayerComponent
-    }, {
-      path: 'worker',
-      component: WorkerComponent
-    }], {
-    initialNavigation: 'enabled'
-})
+    RouterModule.forRoot(
+      [
+        {
+          path: '',
+          redirectTo: 'state-machine',
+          pathMatch: 'full',
+        },
+        {
+          path: 'sheep',
+          component: SheepComponent,
+        },
+        {
+          path: 'resize',
+          component: ResizeComponent,
+        },
+        {
+          path: 'state-machine',
+          component: StateMachineComponent,
+        },
+        {
+          path: 'player',
+          component: PlayerComponent,
+        },
+        {
+          path: 'worker',
+          component: WorkerComponent,
+        },
+      ],
+      {
+        initialNavigation: 'enabledBlocking',
+      }
+    ),
   ],
   bootstrap: [AppComponent],
 })

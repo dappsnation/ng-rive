@@ -61,10 +61,10 @@ export function enterZone(zone: NgZone) {
 export class RiveCanvasDirective implements OnInit, OnDestroy {
   private url = new ReplaySubject<RiveOrigin>();
   private arboardName = new BehaviorSubject<string | null>(null);
-  private _ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
+  private _ctx?: CanvasRenderingContext2D | null;
   private loaded: Observable<boolean>;
   private boxes: Record<string, AABB> = {};
-  public canvas: HTMLCanvasElement | OffscreenCanvas;
+  public canvas: HTMLCanvasElement;
   public rive?: RiveCanvas;
   public file?: RiveFile; 
   public artboard?: Artboard;
@@ -136,11 +136,11 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
     this.artboard?.delete();
   }
 
-  get ctx(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D {
+  get ctx(): CanvasRenderingContext2D {
     if (!this._ctx) {
       this._ctx = this.canvas.getContext('2d');
     }
-    return this._ctx as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+    return this._ctx as CanvasRenderingContext2D;
   }
 
   private setArtboard() {
