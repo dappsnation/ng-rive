@@ -12,6 +12,9 @@
         "project": ["apps/pocket/tsconfig.*?.json"]
       },
       "rules": {
+        "@angular-eslint/no-input-rename": false,
+        "@angular-eslint/directive-class-suffix": false,
+        "@angular-eslint/no-output-native": false,
         "@angular-eslint/directive-selector": [
           "error",
           {

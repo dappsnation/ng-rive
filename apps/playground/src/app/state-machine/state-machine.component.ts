@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 
@@ -7,7 +7,7 @@ import { map, startWith } from 'rxjs/operators';
   templateUrl: './state-machine.component.html',
   styleUrls: ['./state-machine.component.scss']
 })
-export class StateMachineComponent implements OnInit {
+export class StateMachineComponent {
   form = new FormControl(0);
   value$ = this.form.valueChanges.pipe(startWith(this.form.value));
 
@@ -23,11 +23,7 @@ export class StateMachineComponent implements OnInit {
   eyes$ = this.login$.pipe(map(v => v.eyes));
   look$ = this.login$.pipe(map(v => v.look));
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-  change(states: any) {
+  change(states: unknown) {
     console.log('Change', states)
   }
 }

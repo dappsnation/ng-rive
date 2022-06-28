@@ -15,7 +15,7 @@ interface FirebaseError {
 }
 
 @Component({
-  selector: 'auth-signin',
+  selector: 'rive-auth-signin',
   templateUrl: './signin.component.html',
   styleUrls: ['./signin.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
