@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, Pipe, PipeTransform, TemplateRef, ViewChild } from '@angular/core';
-import {  FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { Artboard, RiveCanvasDirective } from 'ng-rive';
-import { cpuUsage } from 'process';
-import type { MediaRecorder } from './type-media-recorder';
+import { RiveCanvasDirective } from 'ng-rive';
+import { Artboard } from 'rive-canvas';
+
 interface CanvasElement extends HTMLCanvasElement {
   captureStream(frameRate?: number): MediaStream;
 }
@@ -13,12 +13,12 @@ function getMimeTypes() {
   if (!('MediaRecorder' in window)) return [];
   const VIDEO_TYPES = [ "webm",  "ogg", "mp4", "x-matroska" ];
   const VIDEO_CODECS = [  "h265", "h.265", "h264", "h.264", "vp9", "vp8", "avc1", "av1", "opus" ];
-  const types = [];
+  const types: string[] = [];
   VIDEO_TYPES.forEach((videoType) => {
     const type = `video/${videoType}`;
     VIDEO_CODECS.forEach((codec) => types.push(`${type};codecs:${codec}`));
   });
-  return types.filter(type => window['MediaRecorder'].isTypeSupported(type));
+  return types.filter(type => window.MediaRecorder.isTypeSupported(type));
 }
 
 const extensions = {
@@ -34,13 +34,13 @@ const extensions = {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  @ViewChild('download') download: TemplateRef<any>;
-  @ViewChild(RiveCanvasDirective) rivCanvas: RiveCanvasDirective;
+  @ViewChild('download') download!: TemplateRef<unknown>;
+  @ViewChild(RiveCanvasDirective) rivCanvas!: RiveCanvasDirective;
   animations: number[] = [];
   formats = getMimeTypes();
-  file?: File;
-  snackRef: MatSnackBarRef<any>;
-  recorder: MediaRecorder;
+  file?: File | null;
+  snackRef?: MatSnackBarRef<unknown>;
+  recorder?: MediaRecorder;
   recording = false;
   dragging = false;
   downloadUrl?: SafeUrl;
@@ -68,19 +68,19 @@ export class AppComponent {
   }
 
   get filename() {
-    const { name, format } = this.form.get('output').value;
+    const { name, format } = this.form.get('output')?.value;
     const [ type ] = format.split(';');
-    const extension = extensions[type];
+    const extension = extensions[type as keyof typeof extensions];
     return `${name}.${extension}`;
   }
 
-  upload(event: DragEvent) {
+  upload(event: Event) {
     const input = event.target as HTMLInputElement;
     this.file = input.files?.item(0);
   }
 
   setArtboard(artboard: Artboard) {
-    this.form.get('animations').reset();
+    this.form.get('animations')?.reset();
     this.animations = new Array(artboard.animationCount()).fill(null).map((_, i) => i);
     this.cdr.markForCheck();
   }
@@ -89,21 +89,21 @@ export class AppComponent {
     if (!('MediaRecorder' in window)) return;
     this.revokeUrl();
     this.recording = true;
-    const mimeType = this.form.get('output.format').value;
+    const mimeType = this.form.get('output.format')?.value;
     const [ type ] = mimeType.split(';');
-    const recordedChunks = [];
+    const recordedChunks: Blob[] = [];
     const url: string = await new Promise((res, rej) => {
       const stream = (this.rivCanvas.canvas as CanvasElement).captureStream(60);
       const options = {
         videoBitsPerSecond: 2_500_000,
         mimeType
       };
-      this.recorder = new window['MediaRecorder'](stream, options);
+      this.recorder = new window.MediaRecorder(stream, options);
 
       this.recorder.ondataavailable = (e) => {
         recordedChunks.push(e.data);
         // after stop data avilable event run one more time
-        if (this.recorder.state === 'recording') {
+        if (this.recorder?.state === 'recording') {
           this.recorder.stop();
         }
       }
@@ -135,7 +135,7 @@ export class AppComponent {
 export class VideoFormatPipe implements PipeTransform {
   transform(format: string) {
     const [ type, codec ] = format.split(';');
-    const extension = extensions[type];
+    const extension = extensions[type as keyof typeof extensions];
     return `${extension} (${codec.split(':').pop()})`;
   }
 }

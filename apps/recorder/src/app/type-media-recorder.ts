@@ -73,6 +73,7 @@ export declare class MediaRecorder extends EventTarget {
   pause(): void;
   requestData(): void;
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   static isTypeSupported(type: string): boolean;
 }
 

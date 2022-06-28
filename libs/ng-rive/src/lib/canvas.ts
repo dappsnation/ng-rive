@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { RiveService } from './service';
@@ -58,7 +58,7 @@ export function enterZone(zone: NgZone) {
   selector: 'canvas[riv]',
   exportAs: 'rivCanvas'
 })
-export class RiveCanvasDirective {
+export class RiveCanvasDirective implements OnInit, OnDestroy {
   private url = new ReplaySubject<RiveOrigin>();
   private arboardName = new BehaviorSubject<string | null>(null);
   private _ctx?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
@@ -72,7 +72,7 @@ export class RiveCanvasDirective {
 
   public isVisible: Observable<boolean>;
 
-  @Input('riv') set riv(url: RiveOrigin) {
+  @Input() set riv(url: RiveOrigin) {
     this.url.next(url);
   }
 
@@ -80,7 +80,7 @@ export class RiveCanvasDirective {
     this.arboardName.next(name);
   }
 
-  @Input() viewbox: string = '0 0 100% 100%';
+  @Input() viewbox = '0 0 100% 100%';
   @Input() lazy: boolean | '' = false;
   @Input() fit: CanvasFit = 'contain';
   @Input() alignment: CanvasAlignment = 'center';
@@ -140,7 +140,7 @@ export class RiveCanvasDirective {
     if (!this._ctx) {
       this._ctx = this.canvas.getContext('2d');
     }
-    return this._ctx!;
+    return this._ctx as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
   }
 
   private setArtboard() {
@@ -204,7 +204,7 @@ export class RiveCanvasDirective {
     // Move frame
     if (isLinearAnimation(instance)) {
       instance.advance(delta);
-      instance.apply(this.artboard, mix!);
+      instance.apply(this.artboard, mix ?? 1);
     } else {
       instance.advance(this.artboard, delta);
     }

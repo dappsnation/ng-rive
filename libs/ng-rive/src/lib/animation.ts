@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, NgZone, Output } from "@angular/core";
+import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
@@ -30,7 +30,7 @@ function exist<T>(v: T | undefined | null): v is T {
   selector: 'riv-animation, [rivAnimation]',
   exportAs: 'rivAnimation'
 })
-export class RiveAnimationDirective {
+export class RiveAnimationDirective implements OnDestroy {
   private sub?: Subscription;
   private animation?: LinearAnimation;
   private instance?: LinearAnimationInstance;

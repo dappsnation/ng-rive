@@ -9,6 +9,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { RivePlayer } from 'ng-rive';
 import { MatInput } from '@angular/material/input';
 
+interface FirebaseError {
+  code: string;
+  message: string;
+}
+
 @Component({
   selector: 'auth-signin',
   templateUrl: './signin.component.html',
@@ -55,8 +60,8 @@ export class SigninComponent {
       await this.auth.signin(provider);
       const redirect = this.guard.redirectUrl || '/profile';
       await this.router.navigate([redirect]);
-    } catch(err) {
-      this.showError(err);
+    } catch(err: unknown) {
+      this.showError(err as FirebaseError);
       this.signing = false;
       this.errorAnim.play = true;
     }
@@ -72,7 +77,7 @@ export class SigninComponent {
         const redirect = this.guard.redirectUrl || '/profile';
         await this.router.navigate([redirect]);
       } catch (err) {
-        this.showError(err);
+        this.showError(err as FirebaseError);
         this.signing = false;
         this.errorAnim.play = true;
       }
@@ -88,7 +93,7 @@ export class SigninComponent {
         await this.auth.signup(email, password);
         await this.router.navigate(['/auth/verification']);
       } catch (err) {
-        this.showError(err);
+        this.showError(err as FirebaseError);
         this.signing = false;
       }
       this.cdr.markForCheck();
@@ -106,7 +111,7 @@ export class SigninComponent {
         await this.auth.auth.sendPasswordResetEmail(email);
         await this.router.navigate(['/auth/change-password', email]);
       } catch (err) {
-        this.showError(err);
+        this.showError(err as FirebaseError);
       }
     } else {
       this.errorAnim.play = true;

@@ -12,11 +12,14 @@
         "project": ["libs/ng-rive/tsconfig.*?.json"]
       },
       "rules": {
+        "@angular-eslint/no-input-rename": false,
+        "@angular-eslint/directive-class-suffix": false,
+        "@angular-eslint/no-output-native": false,
         "@angular-eslint/directive-selector": [
           "error",
           {
             "type": "attribute",
-            "prefix": "ng-rive",
+            "prefix": "riv",
             "style": "camelCase"
           }
         ],
@@ -24,7 +27,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "ng-rive",
+            "prefix": "riv",
             "style": "kebab-case"
           }
         ]

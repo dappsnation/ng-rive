@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, NgZone, Output } from "@angular/core";
+import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, merge, of, Subscription } from "rxjs";
 import { distinctUntilChanged, filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
@@ -42,7 +42,7 @@ function exist<T>(v: T | undefined | null): v is T {
   selector: 'riv-player, [rivPlayer]',
   exportAs: 'rivPlayer'
 })
-export class RivePlayer {
+export class RivePlayer implements OnDestroy {
   private sub?: Subscription;
   startTime?: number;
   endTime?: number;
@@ -122,10 +122,11 @@ export class RivePlayer {
   }
 
 
+  // eslint-disable-next-line @angular-eslint/no-output-native
+  @Output() load = new EventEmitter<LinearAnimation>();
   @Output() timeChange = new EventEmitter<number>();
   @Output() playChange = new EventEmitter<boolean>();
   @Output() speedChange = new EventEmitter<number>();
-  @Output() load = new EventEmitter<LinearAnimation>();
 
   private animation?: LinearAnimation;
   private instance?: LinearAnimationInstance;
