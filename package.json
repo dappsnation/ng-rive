@@ -54,6 +54,7 @@
     "@angular/router": "14.0.3",
     "@nguniversal/express-engine": "^14.0.2",
     "@nrwl/angular": "14.3.6",
+    "@rive-app/canvas-advanced": "^1.0.68",
     "express": "^4.15.2",
     "firebase": "^7.0 || ^8.0",
     "rive-canvas": "^0.7.6",

@@ -2,7 +2,7 @@ import { Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, 
 import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 import { RiveService } from './service';
-import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from 'rive-canvas';
+import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from '@rive-app/canvas-advanced';
 import { toInt } from './utils';
 
 export type CanvasFit = 'cover' | 'contain' | 'fill' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
@@ -120,7 +120,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
         this.file = await this.service.load(url);
         this.rive = this.service.rive;
         if (!this.rive) throw new Error('Service could not load rive');
-        this.renderer = new this.rive.CanvasRenderer(this.ctx)
+        this.renderer = this.rive.makeRenderer(this.canvas, true);
       }),
       switchMap(_ => this.setArtboard()),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -147,7 +147,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
     return this.arboardName.pipe(
       tap(() => this.artboard?.delete()), // Remove previous artboard if any
       map(name => name ? this.file?.artboardByName(name) : this.file?.defaultArtboard()),
-      tap(artboard => this.artboard = artboard?.instance()),
+      tap(artboard => this.artboard = artboard),
       tap(() => this.artboardChange.emit(this.artboard)),
       map(() => true)
     );
@@ -201,12 +201,15 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
     if (!this.rive) throw new Error('Could not load rive before registrating instance');
     if (!this.artboard) throw new Error('Could not load artboard before registrating instance');
     if (!this.renderer) throw new Error('Could not load renderer before registrating instance');
+    
+    // TODO clear
+    
     // Move frame
     if (isLinearAnimation(instance)) {
       instance.advance(delta);
-      instance.apply(this.artboard, mix ?? 1);
+      instance.apply(mix ?? 1);
     } else {
-      instance.advance(this.artboard, delta);
+      instance.advance(delta);
     }
     this.artboard.advance(delta);
     // Render frame on canvas
@@ -223,6 +226,9 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
 
     this.ctx.clearRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
     this.artboard.draw(this.renderer);
+
+    // TODO restore
+    // TODO flush
   }
 }
 

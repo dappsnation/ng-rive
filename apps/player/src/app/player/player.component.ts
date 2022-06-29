@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { LinearAnimation, Artboard } from 'rive-canvas';
+import { LinearAnimation, Artboard } from '@rive-app/canvas-advanced';
 import { map } from 'rxjs/operators';
 import { Service } from '../service';
 

@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from 'apps/pocket/src/environments/environment';
-import { LinearAnimation, Artboard } from 'rive-canvas';
+import { LinearAnimation, Artboard } from '@rive-app/canvas-advanced';
 import { CanvasFit, CanvasAlignment } from 'ng-rive';
 import { of } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';

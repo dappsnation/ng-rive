@@ -1,7 +1,7 @@
 import { Directive, Input, NgZone } from '@angular/core';
 import { RiveCanvasDirective } from '../canvas';
 import { RiveTransformComponent } from './transform-component';
-import { Node } from 'rive-canvas';
+import { Node } from '@rive-app/canvas-advanced';
 
 @Directive({
   selector: 'riv-node, [rivNode]',
@@ -29,6 +29,7 @@ export class RiveNode extends RiveTransformComponent<Node> {
   }
 
   getComponent(name: string) {
+    console.log(this.canvas.artboard);
     return this.canvas.artboard?.node(name);
   }
 

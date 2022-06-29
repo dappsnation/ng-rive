@@ -15,7 +15,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "ng-rive": ["libs/ng-rive/src/index.ts"]
+      "ng-rive": ["libs/ng-rive/src/index.ts"],
+      "@rive-app/canvas-advanced": [
+        "node_modules/@rive-app/canvas-advanced",
+        "libs/ng-rive/src/lib/types.d.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -13,9 +13,9 @@ A repository for Angular built around the [rive canvas runtime](https://help.riv
 - ⛱️ [Playground](https://ng-rive-playground.netlify.app/)
 
 ## Compatibility
-Animations built before version 0.7.0 rive-canvas will not work with new versions of ng-rive.
+Animations built before version 0.7.0 @rive-app/canvas-advanced will not work with new versions of ng-rive.
 
-| Angular | Rive-canvas  | ng-rive |
+| Angular | @rive-app/canvas-advanced  | ng-rive |
 | --------|--------------|---------|
 | 12      | 0.7.*        | 0.1.*   |
 | <12     | 0.6.*        | 0.0.*   |

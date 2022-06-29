@@ -6,6 +6,6 @@
   },
   "allowedNonPeerDependencies": [
     "tslib",
-    "rive-canvas"
+    "@rive-app/canvas-advanced"
   ]
 }

@@ -1,5 +1,5 @@
 import { EventEmitter, Directive, NgZone, OnDestroy, Output, Input, ContentChildren, QueryList } from '@angular/core';
-import { SMIInput, StateMachine, StateMachineInstance } from 'rive-canvas';
+import { SMIInput, StateMachine, StateMachineInstance } from '@rive-app/canvas-advanced';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { RiveCanvasDirective } from './canvas';
@@ -200,7 +200,7 @@ export class RiveStateMachine implements OnDestroy {
     this.stateMachine = typeof name === 'string'
       ? this.canvas.artboard.stateMachineByName(name)
       : this.canvas.artboard.stateMachineByIndex(name);
-    this.instance = new this.canvas.rive.StateMachineInstance(this.stateMachine);
+    this.instance = new this.canvas.rive.StateMachineInstance(this.stateMachine, this.canvas.artboard);
     // Fetch the inputs from the runtime if we don't have them
     for (let i = 0; i < this.instance.inputCount(); i++) {
       this.setInput(this.instance.input(i));

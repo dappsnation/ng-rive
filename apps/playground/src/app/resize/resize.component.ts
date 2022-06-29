@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { Artboard } from 'rive-canvas';
+import { Artboard } from '@rive-app/canvas-advanced';
 import { startWith } from 'rxjs/operators';
 
 const fits = ['cover', 'contain', 'fill', 'fitWidth', 'fitHeight', 'none', 'scaleDown'];

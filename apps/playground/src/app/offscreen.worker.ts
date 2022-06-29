@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import Rive, { File, RiveCanvas } from 'rive-canvas';
+import Rive, { File, RiveCanvas } from '@rive-app/canvas-advanced';
 
 
 interface RiveMessage {
@@ -13,7 +13,7 @@ interface RiveMessage {
 let rive: RiveCanvas;
 async function getRive(version: string = 'latest') {
   if (!rive) {
-    rive = await Rive({ locateFile: (file: string) => `https://unpkg.com/rive-canvas@${version}/${file}` });
+    rive = await Rive({ locateFile: (file: string) => `https://unpkg.com/@rive-app/canvas-advanced@${version}/${file}` });
   }
   return rive;
 }
@@ -29,7 +29,7 @@ const files: Record<string, File> = {};
 async function getFile(url: string, version: string = 'latest') {
   if (!files[url]) {
     const [ rive, blob ] = await Promise.all([ getRive(version), loadFile(url) ]);
-    files[url] = rive.load(blob);
+    files[url] = await rive.load(blob);
   }
   return files[url];
 }
@@ -43,15 +43,15 @@ addEventListener('message', async ({ data }: { data: RiveMessage }) => {
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Cannot find context of offscreen canvas');
 
-  const renderer = new rive.CanvasRenderer(ctx);
+  const renderer = new rive.CanvasRenderer(ctx as any);
 
   // Move frame of each animation
   const animate = animations.map((name: string) => {
     const animation = artboard.animationByName(name);
-    const instance = new rive.LinearAnimationInstance(animation);
+    const instance = new rive.LinearAnimationInstance(animation, artboard);
     return (delta: number) => {
       instance.advance(delta);
-      instance.apply(artboard, 1.0);
+      instance.apply(1.0);
     }
   });
 

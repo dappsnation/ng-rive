@@ -1,4 +1,5 @@
-import Rive, { RiveCanvas, File as RiveFile } from 'rive-canvas';
+import Rive from '@rive-app/canvas-advanced';
+import { RiveCanvas, File as RiveFile } from '@rive-app/canvas-advanced';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { animationFrame } from './frame';
@@ -17,12 +18,12 @@ export class RiveService {
     private http: HttpClient
   ) {
     this.folder = folder ?? 'assets/rive';
-    this.version = version ?? '0.7.6';
+    this.version = version ?? '1.0.67';
   }
 
   private async getRive() {
     if (!this.rive) {
-      const locateFile = (file: string) => `https://unpkg.com/rive-canvas@${this.version}/${file}`;
+      const locateFile = () => `https://unpkg.com/@rive-app/canvas-advanced@${this.version}/rive.wasm`;
       this.rive = await Rive({ locateFile });
     }
     return this.rive;
@@ -43,7 +44,7 @@ export class RiveService {
         this.http.get(asset, { responseType: 'arraybuffer' }).toPromise(),
       ]);
       if (!rive) throw new Error('Could not load rive');
-      this.files[file] = rive.load(new Uint8Array(buffer));
+      this.files[file] = await rive.load(new Uint8Array(buffer));
     }
     return this.files[file];
   }

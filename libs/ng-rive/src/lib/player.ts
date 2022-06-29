@@ -3,7 +3,7 @@ import { BehaviorSubject, merge, of, Subscription } from "rxjs";
 import { distinctUntilChanged, filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
-import { LinearAnimation, LinearAnimationInstance } from "rive-canvas";
+import { LinearAnimation, LinearAnimationInstance } from "@rive-app/canvas-advanced";
 
 interface RivePlayerState {
   speed: number;
@@ -159,7 +159,7 @@ export class RivePlayer implements OnDestroy {
     this.startTime = round((this.animation.workStart === -1 ? 0 : this.animation.workStart) / this.animation.fps);
     this.endTime = round((this.animation.workEnd === -1 ? this.animation.duration : this.animation.workEnd) / this.animation.fps);
     
-    this.instance = new this.canvas.rive.LinearAnimationInstance(this.animation);
+    this.instance = new this.canvas.rive.LinearAnimationInstance(this.animation, this.canvas.artboard);
     this.load.emit(this.animation);
   }
 

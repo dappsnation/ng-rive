@@ -3,7 +3,7 @@ import { BehaviorSubject, of, Subscription } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
-import { LinearAnimation, LinearAnimationInstance } from "rive-canvas";
+import { LinearAnimation, LinearAnimationInstance } from "@rive-app/canvas-advanced";
 
 interface RiveAnimationState {
   speed: number;
@@ -109,7 +109,7 @@ export class RiveAnimationDirective implements OnDestroy {
       ? this.canvas.artboard.animationByName(name)
       : this.canvas.artboard.animationByIndex(name);
 
-    this.instance = new this.canvas.rive.LinearAnimationInstance(this.animation);
+    this.instance = new this.canvas.rive.LinearAnimationInstance(this.animation, this.canvas.artboard);
     this.load.emit(this.animation);
   }
 
