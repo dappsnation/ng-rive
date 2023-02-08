@@ -3,7 +3,7 @@ import { BehaviorSubject, of, Subscription } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
-import { LinearAnimation, LinearAnimationInstance } from "@rive-app/canvas-advanced";
+import type { LinearAnimationInstance } from "@rive-app/canvas-advanced";
 
 interface RiveAnimationState {
   speed: number;
@@ -32,11 +32,14 @@ function exist<T>(v: T | undefined | null): v is T {
 })
 export class RiveAnimationDirective implements OnDestroy {
   private sub?: Subscription;
-  private animation?: LinearAnimation;
   private instance?: LinearAnimationInstance;
   distance = new BehaviorSubject<number | null>(null);
   state = new BehaviorSubject<RiveAnimationState>(getRiveAnimationState());
 
+  /**
+   * Name of the rive animation in the current Artboard
+   * Either use name or index to select an animation
+   */
   @Input()
   set name(name: string | undefined | null) {
     if (typeof name !== 'string') return;
@@ -45,6 +48,10 @@ export class RiveAnimationDirective implements OnDestroy {
     });
   }
 
+  /**
+   * Index of the rive animation in the current Artboard 
+   * Either use index of name to select an animation
+   */
   @Input()
   set index(value: number | string | undefined | null) {
     const index = typeof value === 'string' ? parseInt(value) : value;
@@ -54,6 +61,7 @@ export class RiveAnimationDirective implements OnDestroy {
     });
   }
 
+  /** The mix of this animation in the current arboard */
   @Input()
   set mix(value: number | string | undefined | null) {
     const mix = typeof value === 'string' ? parseFloat(value) : value; 
@@ -63,7 +71,7 @@ export class RiveAnimationDirective implements OnDestroy {
     return this.state.getValue().mix;
   }
 
-  // NUMBERS
+  /** Multiplicator for the speed of the animation */
   @Input()
   set speed(value: number | string | undefined | null) {
     const speed = typeof value === 'string' ? parseFloat(value) : value;
@@ -73,6 +81,7 @@ export class RiveAnimationDirective implements OnDestroy {
     return this.state.getValue().speed;
   }
 
+  /** If true, this animation is playing */
   @Input() set play(playing: boolean | '' | undefined | null) {
     if (playing === true || playing === '') {
       this.update({ playing: true });
@@ -84,7 +93,8 @@ export class RiveAnimationDirective implements OnDestroy {
     return this.state.getValue().playing;
   }
   
-  @Output() load = new EventEmitter<LinearAnimation>();
+  /** Emit when the LinearAnimation has been instantiated */
+  @Output() load = new EventEmitter<LinearAnimationInstance>();
 
   constructor(
     private zone: NgZone,
@@ -105,16 +115,16 @@ export class RiveAnimationDirective implements OnDestroy {
   private initAnimation(name: string | number) {
     if (!this.canvas.rive) throw new Error('Could not load animation instance before rive');
     if (!this.canvas.artboard) throw new Error('Could not load animation instance before artboard');
-    this.animation = typeof name === 'string'
+    const ref = typeof name === 'string'
       ? this.canvas.artboard.animationByName(name)
       : this.canvas.artboard.animationByIndex(name);
 
-    this.instance = new this.canvas.rive.LinearAnimationInstance(this.animation, this.canvas.artboard);
-    this.load.emit(this.animation);
+    this.instance = new this.canvas.rive.LinearAnimationInstance(ref, this.canvas.artboard);
+    this.load.emit(this.instance);
   }
 
   private getFrame(state: RiveAnimationState) {
-    if (state.playing) {
+    if (state.playing && this.service.frame) {
       return this.service.frame.pipe(map((time) => [state, time] as const));
     } else {
       return of(null)
@@ -140,7 +150,6 @@ export class RiveAnimationDirective implements OnDestroy {
   }
 
   private moveFrame(state: RiveAnimationState, time: number) {
-    if (!this.animation) throw new Error('Could not load animation before running it');
     if (!this.instance) throw new Error('Could not load animation instance before running it');
     return (time / 1000) * state.speed;
   }

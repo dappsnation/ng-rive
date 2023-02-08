@@ -13,7 +13,7 @@ interface RiveMessage {
 let rive: RiveCanvas;
 async function getRive(version: string = 'latest') {
   if (!rive) {
-    rive = await Rive({ locateFile: (file: string) => `https://unpkg.com/@rive-app/canvas-advanced@${version}/${file}` });
+    rive = await Rive({ locateFile: () => `https://unpkg.com/@rive-app/canvas-advanced@${version}/rive.wasm` });
   }
   return rive;
 }
@@ -40,10 +40,10 @@ addEventListener('message', async ({ data }: { data: RiveMessage }) => {
   const artboard = file.defaultArtboard();
 
   // Associate CanvasRenderer with offset context
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('Cannot find context of offscreen canvas');
+  // const ctx = canvas.getContext('2d');
+  // if (!ctx) throw new Error('Cannot find context of offscreen canvas');
 
-  const renderer = new rive.CanvasRenderer(ctx as any);
+  const renderer = rive.makeRenderer(canvas, true);
 
   // Move frame of each animation
   const animate = animations.map((name: string) => {
@@ -59,15 +59,16 @@ addEventListener('message', async ({ data }: { data: RiveMessage }) => {
   let lastTime = 0;
   const draw = (time: number) => {
     if (!lastTime) lastTime = time;
-
-    const delta = (time - lastTime) / 1000;
+    const elapsedTimeMs = time - lastTime;
+    const delta = elapsedTimeMs / 1000;
     lastTime = time;
+    
+    renderer.clear();
 
     animate.forEach(cb => cb(delta))
     artboard.advance(delta);
 
-    (ctx as any).clearRect(0, 0, canvas.width, canvas.height);
-    (ctx as any).save();
+    renderer.save();
     renderer.align(rive.Fit.contain, rive.Alignment.center, {
         minX: 0,
         minY: 0,
@@ -75,10 +76,11 @@ addEventListener('message', async ({ data }: { data: RiveMessage }) => {
         maxY: canvas.height
     }, artboard.bounds);
     artboard.draw(renderer);
-    (ctx as any).restore();
-    requestAnimationFrame(draw);
+    renderer.restore();
+    // renderer.flush();
+    rive.requestAnimationFrame(draw);
   }
 
   // Animation Frame run in the WebWorker
-  requestAnimationFrame(draw);
+  rive.requestAnimationFrame(draw);
 });

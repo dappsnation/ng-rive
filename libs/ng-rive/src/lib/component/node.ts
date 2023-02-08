@@ -29,7 +29,6 @@ export class RiveNode extends RiveTransformComponent<Node> {
   }
 
   getComponent(name: string) {
-    console.log(this.canvas.artboard);
     return this.canvas.artboard?.node(name);
   }
 

@@ -1,5 +1,5 @@
 import { EventEmitter, Directive, NgZone, OnDestroy, Output, Input, ContentChildren, QueryList } from '@angular/core';
-import { SMIInput, StateMachine, StateMachineInstance } from '@rive-app/canvas-advanced';
+import { SMIInput, StateMachineInstance } from '@rive-app/canvas-advanced';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { RiveCanvasDirective } from './canvas';
@@ -113,7 +113,6 @@ function exist<T>(v: T | undefined | null): v is T {
 })
 export class RiveStateMachine implements OnDestroy {
   private sub?: Subscription;
-  private stateMachine?: StateMachine;
   /** @internal: public only for RiveInput */
   public instance?: StateMachineInstance;
   public state = new BehaviorSubject<StateMachineState>({ speed: 1, playing: false });
@@ -121,7 +120,7 @@ export class RiveStateMachine implements OnDestroy {
   public inputs: Record<string, SMIInput> = {}; 
   @ContentChildren(RiveSMInput) private riveInputs?: QueryList<RiveSMInput>;
 
-  @Output() load = new EventEmitter<StateMachine>();
+  @Output() load = new EventEmitter<StateMachineInstance>();
   @Output() stateChange = new EventEmitter<string[]>();
 
   @Input()
@@ -197,15 +196,15 @@ export class RiveStateMachine implements OnDestroy {
   private initStateMachine(name: string | number) {
     if (!this.canvas.rive) throw new Error('Could not load state machine instance before rive');
     if (!this.canvas.artboard) throw new Error('Could not load state machine instance before artboard');
-    this.stateMachine = typeof name === 'string'
+    const ref = typeof name === 'string'
       ? this.canvas.artboard.stateMachineByName(name)
       : this.canvas.artboard.stateMachineByIndex(name);
-    this.instance = new this.canvas.rive.StateMachineInstance(this.stateMachine, this.canvas.artboard);
-    // Fetch the inputs from the runtime if we don't have them
+      // Fetch the inputs from the runtime if we don't have them
+    this.instance = new this.canvas.rive.StateMachineInstance(ref, this.canvas.artboard);
     for (let i = 0; i < this.instance.inputCount(); i++) {
       this.setInput(this.instance.input(i));
     }
-    this.load.emit(this.stateMachine);
+    this.load.emit(this.instance);
   }
   
   private setInput(input: SMIInput) {
@@ -217,7 +216,7 @@ export class RiveStateMachine implements OnDestroy {
   }
 
   private getFrame(state: StateMachineState) {
-    if (state.playing) {
+    if (state.playing && this.service.frame) {
       return this.service.frame.pipe(map((time) => [state, time] as const));
     } else {
       return of(null)

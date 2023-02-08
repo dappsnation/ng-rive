@@ -6,7 +6,8 @@
     "@angular/core": ">13.0.0"
   },
   "dependencies": {
-    "@rive-app/canvas-advanced": "1.0.67",
+    "@rive-app/canvas-advanced": "1.0.94",
+    "@rive-app/webgl-advanced": "1.0.94",
     "tslib": "^2.0.0"
   },
   "keywords": ["rive", "animation", "angular", "canvas", "wasm"],

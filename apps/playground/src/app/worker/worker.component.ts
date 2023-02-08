@@ -16,7 +16,7 @@ export class WorkerComponent implements AfterViewInit {
     /** Do not put the URL in a variable, it breaks */
     const worker = new Worker(new URL('../offscreen.worker', import.meta.url), { type: 'module' });
     const url = 'assets/rive/poison-loader.riv';
-    const version = '0.7.6';
+    const version = 'latest';
     const animations = ['idle'];
     worker.postMessage({ canvas, url, version, animations }, [canvas]);
   }

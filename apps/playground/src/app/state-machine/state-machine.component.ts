@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 
 @Component({
@@ -8,14 +8,14 @@ import { map, startWith } from 'rxjs/operators';
   styleUrls: ['./state-machine.component.scss']
 })
 export class StateMachineComponent {
-  form = new UntypedFormControl(0);
+  form = new FormControl(0);
   value$ = this.form.valueChanges.pipe(startWith(this.form.value));
 
-  loginForm = new UntypedFormGroup({
-    loading: new UntypedFormControl(false),
-    hide: new UntypedFormControl(false),
-    eyes: new UntypedFormControl(false),
-    look: new UntypedFormControl(0),
+  loginForm = new FormGroup({
+    loading: new FormControl(false),
+    hide: new FormControl(false),
+    eyes: new FormControl(false),
+    look: new FormControl(0),
   });
   login$ = this.loginForm.valueChanges.pipe(startWith(this.loginForm.value));
   loading$ = this.login$.pipe(map(v => v.loading));
