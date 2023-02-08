@@ -1,4 +1,4 @@
-declare module '@rive-app/canvas-advanced' {
+declare module '@rive-app/webgl-advanced' {
   declare function Rive(options: RiveOptions): Promise<RiveCanvas>;
   export default Rive;
 

@@ -1,7 +1,7 @@
 import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
-import { RiveCanvasDirective } from './canvas';
+import { enterZone, RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
 import type { LinearAnimationInstance } from "@rive-app/canvas-advanced";
 
@@ -112,6 +112,14 @@ export class RiveAnimationDirective implements OnDestroy {
     this.state.next(next);
   }
 
+  private getFrame(state: RiveAnimationState) {
+    if (state.playing && this.service.frame) {
+      return this.service.frame.pipe(map((time) => [state, time] as const));
+    } else {
+      return of(null)
+    }
+  }
+
   private initAnimation(name: string | number) {
     if (!this.canvas.rive) throw new Error('Could not load animation instance before rive');
     if (!this.canvas.artboard) throw new Error('Could not load animation instance before artboard');
@@ -123,14 +131,6 @@ export class RiveAnimationDirective implements OnDestroy {
     this.load.emit(this.instance);
   }
 
-  private getFrame(state: RiveAnimationState) {
-    if (state.playing && this.service.frame) {
-      return this.service.frame.pipe(map((time) => [state, time] as const));
-    } else {
-      return of(null)
-    }
-  }
-
   private register(name: string | number) {
     // Stop subscribing to previous animation if any
     this.sub?.unsubscribe(); 
@@ -139,7 +139,7 @@ export class RiveAnimationDirective implements OnDestroy {
     const onFrameChange = this.state.pipe(
       switchMap((state) => this.getFrame(state)),
       filter(exist),
-      map(([state, time]) => this.moveFrame(state, time))
+      map(([state, time]) => (time / 1000) * state.speed),
     );
 
     // Wait for canvas & animation to be loaded
@@ -147,11 +147,6 @@ export class RiveAnimationDirective implements OnDestroy {
       map(() => this.initAnimation(name)),
       switchMap(() => onFrameChange)
     ).subscribe((delta) => this.applyChange(delta));
-  }
-
-  private moveFrame(state: RiveAnimationState, time: number) {
-    if (!this.instance) throw new Error('Could not load animation instance before running it');
-    return (time / 1000) * state.speed;
   }
 
   private applyChange(delta: number) {

@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./player.component.scss']
 })
 export class PlayerComponent {
-  time: number | null = 0;
+  time: number | null = 0.3;
 }

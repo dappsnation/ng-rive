@@ -1,9 +1,10 @@
 import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, merge, of, Subscription } from "rxjs";
-import { distinctUntilChanged, filter, map, switchMap } from "rxjs/operators";
+import { distinctUntilChanged, filter, map, switchMap, take, tap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
 import { LinearAnimationInstance } from "@rive-app/canvas-advanced";
+import { nextFrame } from "./frame";
 
 interface RivePlayerState {
   speed: number;
@@ -89,7 +90,7 @@ export class RivePlayer implements OnDestroy {
     return this.state.getValue().mix;
   }
 
-  // NUMBERS
+  /** Multiplicator of the speed for the animation */
   @Input()
   set speed(value: number | string | undefined | null) {
     const speed = typeof value === 'string' ? parseFloat(value) : value;
@@ -121,8 +122,6 @@ export class RivePlayer implements OnDestroy {
   // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() load = new EventEmitter<LinearAnimationInstance>();
   @Output() timeChange = new EventEmitter<number>();
-  @Output() playChange = new EventEmitter<boolean>();
-  @Output() speedChange = new EventEmitter<number>();
 
   private instance?: LinearAnimationInstance;
 
@@ -138,7 +137,6 @@ export class RivePlayer implements OnDestroy {
     this.instance?.delete();
   }
 
-
   private update(state: Partial<RivePlayerState>) {
     const next = getRivePlayerState({...this.state.getValue(), ...state })
     this.state.next(next);
@@ -147,6 +145,7 @@ export class RivePlayer implements OnDestroy {
   private initAnimation(name: string | number) {
     if (!this.service.rive) throw new Error('Could not load animation instance before rive');
     if (!this.canvas.artboard) throw new Error('Could not load animation instance before artboard');
+    
     const ref = typeof name === 'string'
       ? this.canvas.artboard.animationByName(name)
       : this.canvas.artboard.animationByIndex(name);
@@ -158,12 +157,6 @@ export class RivePlayer implements OnDestroy {
     this.load.emit(this.instance);
   }
 
-  private getTime() {
-    if (!this.instance) throw new Error('Could not load animation instance before running it');
-    return this.instance.time;
-  }
-
-
   private getFrame(state: RivePlayerState) {
     if (state.playing && this.service.frame) {
       return this.service.frame.pipe(map((time) => [state, time] as const));
@@ -173,22 +166,25 @@ export class RivePlayer implements OnDestroy {
   }
 
   private register(name: string | number) {
-    // Stop subscribing to previous animation if any
-    this.sub?.unsubscribe(); 
+    this.sub?.unsubscribe();  // Stop subscribing to previous animation if any
+    this.instance?.delete();  // Remove old instance if any
 
     // Update if time have changed from the input
     const onTimeChange = this.distance.pipe(
       filter(exist),
-      filter(time => time !== this.getTime()),
+      filter(time => time !== this.instance?.time),
       distinctUntilChanged(),
-      map(time => time - this.getTime()),
+      map(time => time - this.instance!.time),
     );
 
     // Update on frame change if playing
     const onFrameChange = this.state.pipe(
       switchMap((state) => this.getFrame(state)),
       filter(exist),
-      map(([state, time]) => this.moveFrame(state, time))
+      map(([state, time]) => (time / 1000) * state.speed),
+      tap((delta) => {
+        this.zone.run(() => this.timeChange.emit(this.instance!.time + delta))
+      })
     );
 
     // Wait for canvas & animation to be loaded
@@ -198,14 +194,12 @@ export class RivePlayer implements OnDestroy {
     ).subscribe((delta) => this.applyChange(delta));
   }
 
-  private moveFrame(state: RivePlayerState, time: number) {
-    if (!this.instance) throw new Error('Could not load animation instance before running it');
-    return time / 1000 * state.speed;
-  }
-
   private applyChange(delta: number) {
-    if (!this.instance) throw new Error('Could not load animation instance before running it');
-    this.canvas.draw(this.instance, delta, this.state.getValue().mix);
+    // We need to use requestAnimationFrame in case we set the time
+    this.service.rive?.requestAnimationFrame(() => {
+      if (!this.instance) throw new Error('Could not load animation instance before running it');
+      this.canvas.draw(this.instance, delta, this.state.getValue().mix);
+    });
   }
 
 }

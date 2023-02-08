@@ -208,14 +208,15 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
       instance.advance(delta);
     }
     this.artboard.advance(delta);
+    
     // Render frame on canvas
+    this.renderer.save();
+
+    // Align renderer if needed
     const fit = this.rive.Fit[this.fit];
     const alignment = this.rive.Alignment[this.alignment];
     const box = this.box;
     const bounds = this.artboard.bounds;
-
-    // Align renderer if needed
-    this.renderer.save();
     this.renderer.align(fit, alignment, box, bounds);
 
     this.artboard.draw(this.renderer);
@@ -223,7 +224,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
     this.renderer.restore();
     
     // TODO: If context is WebGL Flush
-    this.renderer.flush();
+    // this.renderer.flush();
   }
 }
 

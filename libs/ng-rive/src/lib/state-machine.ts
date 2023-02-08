@@ -175,38 +175,6 @@ export class RiveStateMachine implements OnDestroy {
     this.state.next({...this.state.getValue(), ...state });
   }
 
-  private register(name: string | number) {
-    // Stop subscribing to previous animation if any
-    this.sub?.unsubscribe(); 
-
-    // Update on frame change if playing
-    const onFrameChange = this.state.pipe(
-      switchMap((state) => this.getFrame(state)),
-      filter(exist),
-      map(([state, time]) => this.moveFrame(state, time))
-    );
-
-    // Wait for canvas & animation to be loaded
-    this.sub = this.canvas.onReady().pipe(
-      map(() => this.initStateMachine(name)),
-      switchMap(() => onFrameChange)
-    ).subscribe((delta) => this.applyChange(delta));
-  }
-
-  private initStateMachine(name: string | number) {
-    if (!this.canvas.rive) throw new Error('Could not load state machine instance before rive');
-    if (!this.canvas.artboard) throw new Error('Could not load state machine instance before artboard');
-    const ref = typeof name === 'string'
-      ? this.canvas.artboard.stateMachineByName(name)
-      : this.canvas.artboard.stateMachineByIndex(name);
-      // Fetch the inputs from the runtime if we don't have them
-    this.instance = new this.canvas.rive.StateMachineInstance(ref, this.canvas.artboard);
-    for (let i = 0; i < this.instance.inputCount(); i++) {
-      this.setInput(this.instance.input(i));
-    }
-    this.load.emit(this.instance);
-  }
-  
   private setInput(input: SMIInput) {
     this.inputs[input.name] = input;
     const riveInput = this.riveInputs?.find(item => item.name === input.name);
@@ -223,8 +191,37 @@ export class RiveStateMachine implements OnDestroy {
     }
   }
 
-  private moveFrame(state: StateMachineState, time: number) {
-    return (time / 1000) * state.speed;
+  
+  private initStateMachine(name: string | number) {
+    if (!this.canvas.rive) throw new Error('Could not load state machine instance before rive');
+    if (!this.canvas.artboard) throw new Error('Could not load state machine instance before artboard');
+    const ref = typeof name === 'string'
+      ? this.canvas.artboard.stateMachineByName(name)
+      : this.canvas.artboard.stateMachineByIndex(name);
+      // Fetch the inputs from the runtime if we don't have them
+    this.instance = new this.canvas.rive.StateMachineInstance(ref, this.canvas.artboard);
+    for (let i = 0; i < this.instance.inputCount(); i++) {
+      this.setInput(this.instance.input(i));
+    }
+    this.load.emit(this.instance);
+  }
+
+  private register(name: string | number) {
+    // Stop subscribing to previous animation if any
+    this.sub?.unsubscribe(); 
+
+    // Update on frame change if playing
+    const onFrameChange = this.state.pipe(
+      switchMap((state) => this.getFrame(state)),
+      filter(exist),
+      map(([state, time]) => (time / 1000) * state.speed)
+    );
+
+    // Wait for canvas & animation to be loaded
+    this.sub = this.canvas.onReady().pipe(
+      map(() => this.initStateMachine(name)),
+      switchMap(() => onFrameChange)
+    ).subscribe((delta) => this.applyChange(delta));
   }
 
   private applyChange(delta: number) {
