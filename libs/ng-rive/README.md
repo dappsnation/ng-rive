@@ -13,10 +13,11 @@ A repository for Angular built around the [rive canvas runtime](https://help.riv
 - ⛱️ [Playground](https://ng-rive-playground.netlify.app/)
 
 ## Compatibility
-Animations built before version 0.7.0 @rive-app/canvas-advanced will not work with new versions of ng-rive.
+Animations built before version 0.7.0 rive-canvas will not work with new versions of ng-rive.
 
-| Angular | @rive-app/canvas-advanced  | ng-rive |
+| Angular | Rive-canvas  | ng-rive |
 | --------|--------------|---------|
+| >14     | 0.7.*        | 0.2.*   |
 | 12      | 0.7.*        | 0.1.*   |
 | <12     | 0.6.*        | 0.0.*   |
 
@@ -124,7 +125,6 @@ Run an animation inside a canvas based on `name` or `index`:
 - `[play]`: Bind the player to a boolean (playing: `true`, paused: `false`).
 - `[speed]`: The speed at which the animation should play. Negative values cause the animation to play backward.
 - `[mix]`: The weight of this application over another in the same `Artboard`.
-- `[autoreset]`: If `true`, will reset the animation to `start` when done (only for `one-shot` mode).
 
 #### Output
 - `(load)`: Emitted the loaded `LinearAnimation`.
@@ -150,19 +150,15 @@ Based on the mode, the play, time & speed might change automatically.
 #### Input
 - `[name]`: The name of the animation in the file loaded by the canvas.
 - `[index]` The index of the animation in the file loaded by the canvas (used if name is not provided).
-- `[mode]`: Force a mode: `"one-shot"`, `"loop"` or `"ping-pong"` (if `undefined`, default mode is used).
 - `[mix]`: The weight of this application over another in the same `Artboard`.
-- `[autoreset]`: If `true`, will reset the animation to `start` when done (only for `one-shot` mode).
+
+⚠️ **Deprecated**: These input will be remove in the next version
+- [mode]: Force a mode: "one-shot", "loop" or "ping-pong" (if undefined, default mode is used).
+- [autoreset]: If true, will reset the animation to start when done (only for one-shot mode).
 
 #### Output
 - `(load)`: Emitted the loaded `LinearAnimation`.
-
-### Player Mode or Default
-Rive automatically apply the loop, ping-pong, speed and other property by default in the runtime.
-Setting the `mode` property will override the default behavior.
-
-Using `mode` might create conflict with default behavior. Known conflicts are:
-- using a "loop" mode with an animation that is already a loop will fail if speed is negative
+- `(timeChange)`: Emitted just before refreshing the canvas when `play` is true. This output will be triggered for every frame if listened to. As every output create a rendering cycle, use it with care.
 
 ----
 ## Node
