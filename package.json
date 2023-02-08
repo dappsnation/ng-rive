@@ -58,7 +58,6 @@
     "@rive-app/webgl-advanced": "^1.0.94",
     "express": "^4.15.2",
     "firebase": "^7.0 || ^8.0",
-    "rive-canvas": "^0.7.6",
     "rxjs": "^7.5.5",
     "tslib": "^2.0.0",
     "zone.js": "0.11.6"

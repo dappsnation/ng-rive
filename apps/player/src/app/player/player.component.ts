@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { LinearAnimation, Artboard } from '@rive-app/canvas-advanced';
 import { map } from 'rxjs/operators';
 import { Service } from '../service';
+import type { LinearAnimationInstance, Artboard } from '@rive-app/canvas-advanced';
 
 export interface AnimationState {
   name: string;
@@ -19,7 +19,7 @@ function getMode(index: number) {
   return (['one-shot', 'loop', 'ping-pong'] as const)[index];
 }
 
-function createAnim(animation: LinearAnimation): AnimationState {
+function createAnim(animation: LinearAnimationInstance): AnimationState {
   return {
     name: animation.name,
     speed: animation.speed,
@@ -39,16 +39,16 @@ function createAnim(animation: LinearAnimation): AnimationState {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlayerComponent {
-  trackByName = (i: number, state: AnimationState) => state.name;
-  file$ = this.route.paramMap.pipe(
-    map(params => params.get('name')),
-    map(name => name ? this.service.files[name] : undefined)
-  );
   animations: AnimationState[] = [];
   height = 500;
   width = 500;
   rounded = false;
-
+  file$ = this.route.paramMap.pipe(
+    map(params => params.get('name')),
+    map(name => name ? this.service.files[name] : undefined)
+  );
+  trackByName = (i: number, state: AnimationState) => state.name;
+    
   constructor(
     private service: Service,
     private route: ActivatedRoute,
@@ -63,7 +63,7 @@ export class PlayerComponent {
     this.cdr.detectChanges();
   }
 
-  setDuration(state: AnimationState, animation: LinearAnimation) {
+  setDuration(state: AnimationState, animation: LinearAnimationInstance) {
     if (!animation) return;
     const start = animation.workStart / animation.fps;
     const end = (animation.workEnd || animation.duration) / animation.fps;

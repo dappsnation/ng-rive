@@ -1,7 +1,7 @@
 import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
-import { enterZone, RiveCanvasDirective } from './canvas';
+import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
 import type { LinearAnimationInstance } from "@rive-app/canvas-advanced";
 

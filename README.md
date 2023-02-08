@@ -152,8 +152,9 @@ Based on the mode, the play, time & speed might change automatically.
 - `[index]` The index of the animation in the file loaded by the canvas (used if name is not provided).
 - `[mix]`: The weight of this application over another in the same `Artboard`.
 
-⚠️ Breaking change: Since 0.2.0, the input `mode` & `autoreset` have been removed
-
+⚠️ **Deprecated**: These input will be remove in the next version
+- [mode]: Force a mode: "one-shot", "loop" or "ping-pong" (if undefined, default mode is used).
+- [autoreset]: If true, will reset the animation to start when done (only for one-shot mode).
 
 #### Output
 - `(load)`: Emitted the loaded `LinearAnimation`.

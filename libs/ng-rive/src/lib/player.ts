@@ -1,16 +1,19 @@
 import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, merge, of, Subscription } from "rxjs";
-import { distinctUntilChanged, filter, map, switchMap, take, tap } from "rxjs/operators";
+import { distinctUntilChanged, filter, map, switchMap, tap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
 import { LinearAnimationInstance } from "@rive-app/canvas-advanced";
-import { nextFrame } from "./frame";
 
 interface RivePlayerState {
   speed: number;
   playing: boolean;
   /** Weight of this animation over another */
   mix: number;
+  /** Reset automatically to 0 when play is down if mode is "one-shot" */
+  autoreset: boolean;
+  /** override mode of the animation */
+  mode?: 'loop' | 'ping-pong' | 'one-shot';
 }
 
 function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerState {
@@ -18,6 +21,7 @@ function getRivePlayerState(state: Partial<RivePlayerState> = {}): RivePlayerSta
     speed: 1,
     playing: false,
     mix: 1,
+    autoreset: false,
     ...state
   }
 }
@@ -50,6 +54,9 @@ function getEnd(animation: LinearAnimationInstance) {
 })
 export class RivePlayer implements OnDestroy {
   private sub?: Subscription;
+  private animation?: LinearAnimationInstance;  // this is the LinearAnimation
+  private instance?: LinearAnimationInstance;
+
   startTime?: number;
   endTime?: number;
   distance = new BehaviorSubject<number | null>(null);
@@ -118,12 +125,41 @@ export class RivePlayer implements OnDestroy {
     if (typeof time === 'number') this.distance.next(time);
   }
 
+  /**
+   * @deprecated This will be removed
+   * Consider using StateMachine instead
+   */
+  @Input()
+  set autoreset(autoreset: boolean | '' | undefined | null) {
+    if (autoreset === true || autoreset === '') {
+      this.update({ autoreset: true });
+    } else if (autoreset === false) {
+      this.update({ autoreset: false });
+    }
+  }
+  get autoreset() {
+    return this.state.getValue().autoreset;
+  }
+
+  /**
+   * @deprecated This will be removed
+   * Consider using StateMachine instead
+   */
+  @Input()
+  set mode(mode: RivePlayerState['mode']) {
+    if (mode) this.update({ mode });
+  }
+  get mode() {
+    return this.state.getValue().mode;
+  }
 
   // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() load = new EventEmitter<LinearAnimationInstance>();
   @Output() timeChange = new EventEmitter<number>();
-
-  private instance?: LinearAnimationInstance;
+  /** @deprecated will be removed */
+  @Output() playChange = new EventEmitter<boolean>();
+  /** @deprecated will be removed */
+  @Output() speedChange = new EventEmitter<number>();
 
   constructor(
     private zone: NgZone,
@@ -147,9 +183,10 @@ export class RivePlayer implements OnDestroy {
     if (!this.canvas.artboard) throw new Error('Could not load animation instance before artboard');
     
     const ref = typeof name === 'string'
-      ? this.canvas.artboard.animationByName(name)
-      : this.canvas.artboard.animationByIndex(name);
-
+    ? this.canvas.artboard.animationByName(name)
+    : this.canvas.artboard.animationByIndex(name);
+    
+    this.animation = ref;
     this.startTime = getStart(ref);
     this.endTime = getEnd(ref);
     this.instance = new this.service.rive.LinearAnimationInstance(ref, this.canvas.artboard);
@@ -181,7 +218,7 @@ export class RivePlayer implements OnDestroy {
     const onFrameChange = this.state.pipe(
       switchMap((state) => this.getFrame(state)),
       filter(exist),
-      map(([state, time]) => (time / 1000) * state.speed),
+      map(([state, time]) => this.moveFrame(state, time)),
       tap((delta) => {
         this.zone.run(() => this.timeChange.emit(this.instance!.time + delta))
       })
@@ -192,6 +229,63 @@ export class RivePlayer implements OnDestroy {
       map(() => this.initAnimation(name)),
       switchMap(() => merge(onTimeChange, onFrameChange))
     ).subscribe((delta) => this.applyChange(delta));
+  }
+
+  private moveFrame(state: RivePlayerState, time: number) {
+    if (!this.instance) throw new Error('Could not load animation instance before running it');
+    if (!this.animation) throw new Error('Could not load animation before running it');
+    const { speed, autoreset, mode } = state;
+    // Default mode, don't apply any logic
+    if (!mode) return time / 1000 * speed;
+
+    let delta = (time / 1000) * speed;
+    
+    // Round to avoid JS error on division
+    const start = this.startTime ?? 0;
+    const end = this.endTime ?? (this.animation.duration / this.animation.fps);
+    const currentTime = round(this.instance.time);
+
+    // When player hit floor
+    if (currentTime + delta < start) {
+      if (mode === 'loop' && speed < 0 && end) {
+        delta = end - currentTime; // end - currentTime
+      } else if (mode === 'ping-pong') {
+        delta = -delta;
+        this.update({ speed: -speed });
+        this.zone.run(() => this.speedChange.emit(-speed));
+      } else if (mode === 'one-shot') {
+        this.update({ playing: false });
+        this.zone.run(() => this.playChange.emit(false));
+        delta = start - currentTime;
+      }
+    }
+
+    // Put before "hit last frame" else currentTime + delta > end
+    if (mode === 'one-shot' && autoreset) {
+      if (speed > 0 && currentTime === end) {
+        delta = start - end;
+      }
+      if (speed < 0 && currentTime === start) {
+        delta = end - start;
+      }
+    }
+
+    // When player hit last frame
+    if (currentTime + delta > end) {
+      if (mode === 'loop' && speed > 0) {
+        delta = start - currentTime;
+      } else if (mode === 'ping-pong') {
+        delta = -delta;
+        this.update({ speed: -speed });
+        this.zone.run(() => this.speedChange.emit(-speed));
+      } else if (mode === 'one-shot') {
+        this.update({ playing: false });
+        this.zone.run(() => this.playChange.emit(false));
+        delta = end - currentTime;
+      }
+    }
+  
+    return delta;
   }
 
   private applyChange(delta: number) {
