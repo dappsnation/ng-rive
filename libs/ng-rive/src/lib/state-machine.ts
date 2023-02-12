@@ -1,5 +1,5 @@
 import { EventEmitter, Directive, NgZone, OnDestroy, Output, Input, ContentChildren, QueryList } from '@angular/core';
-import { SMIInput, StateMachineInstance } from '@rive-app/canvas-advanced';
+import { Artboard, SMIInput, StateMachineInstance } from '@rive-app/canvas-advanced';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { RiveCanvasDirective } from './canvas';
@@ -20,6 +20,23 @@ function getInput(input: SMIInput) {
   if (input.type === InputTypes.Trigger) return input.asTrigger();
   return input;
 }
+
+function assertStateMachine(animation: StateMachineInstance, artboard: Artboard, name: string | number) {
+  if (animation) return;
+  const artboardName = artboard.name ?? 'Default';
+  const count = artboard.stateMachineCount();
+  if (typeof name === 'number') {
+    throw new Error(`Provided index "${name}" for the animation of artboard "${artboardName}" is not available. Animation count is: ${count}`)
+  } else {
+    const names: string[] = [];
+    for (let i = 0; i < count; i++) {
+      names.push(artboard.stateMachineByIndex(i).name);
+    }
+    throw new Error(`Provided name "${name}" for the animation of artboard "${artboardName}" is not available. Availables names are: ${JSON.stringify(names)}`);
+  }
+  
+}
+
 
 @Directive({
   selector: 'riv-input, [rivInput]',
@@ -198,7 +215,10 @@ export class RiveStateMachine implements OnDestroy {
     const ref = typeof name === 'string'
       ? this.canvas.artboard.stateMachineByName(name)
       : this.canvas.artboard.stateMachineByIndex(name);
-      // Fetch the inputs from the runtime if we don't have them
+    
+    assertStateMachine(ref, this.canvas.artboard, name);
+    
+    // Fetch the inputs from the runtime if we don't have them
     this.instance = new this.canvas.rive.StateMachineInstance(ref, this.canvas.artboard);
     for (let i = 0; i < this.instance.inputCount(); i++) {
       this.setInput(this.instance.input(i));

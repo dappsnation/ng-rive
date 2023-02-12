@@ -47,27 +47,13 @@ export class RiveService {
       return rive?.load(new Uint8Array(buffer));
     }
 
-    // Provide the path to the file
-    if (!this.files[file]) {
-      const asset = `${this.folder}/${file}.riv`;
-      const [ rive, buffer ] = await Promise.all([
-        this.getRive(),
-        this.getAsset(asset),
-      ]);
-      if (!rive) throw new Error('Could not load rive');
-      this.counters[file] = 0;
-      this.files[file] = await rive.load(new Uint8Array(buffer));
-    }
-    this.counters[file]++;
-    return this.files[file];
+    const asset = `${this.folder}/${file}.riv`;
+    const [ rive, buffer ] = await Promise.all([
+      this.getRive(),
+      this.getAsset(asset),
+    ]);
+    if (!rive) throw new Error('Could not load rive');
+    return rive.load(new Uint8Array(buffer));
   }
 
-  /** Delete a riv file if there is no listener anymore */
-  unload(name: string) {
-    this.counters[name]--;
-    if (!this.counters[name]) {
-      this.files[name]?.delete();
-      delete this.files[name];
-    }
-  }
 }

@@ -1,5 +1,5 @@
 import { Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
-import { Observable, ReplaySubject, BehaviorSubject, from } from 'rxjs';
+import { Observable, BehaviorSubject, from } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { RiveService } from './service';
 import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from '@rive-app/canvas-advanced';
@@ -78,15 +78,20 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
   @Input() lazy: boolean | '' = false;
   @Input() fit: CanvasFit = 'contain';
   @Input() alignment: CanvasAlignment = 'center';
+
+  @Input()
   set width(w: number | string) {
-    this.canvas.width = toInt(w) ?? this.canvas.width;
+    const width = toInt(w) ?? this.canvas.width;
+    this.canvas.width = width;
   }
   get width() {
     return this.canvas.width;
   }
+
   @Input()
   set height(h: number | string) {
-    this.canvas.height = toInt(h) ?? this.canvas.height;
+    const height = toInt(h) ?? this.canvas.height;
+    this.canvas.height = height;
   }
   get height() {
     return this.canvas.height;
@@ -126,11 +131,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.renderer?.delete();
     this.artboard?.delete();
-    // Remove the file if it's not used
-    const origin = this.url.getValue();
-    if (typeof origin !== 'string') return this.file?.delete();
-    // we wait for 200ms in case next page has the same file
-    setTimeout(() => this.service.unload(origin), 200)
+    this.file?.delete();
   }
 
   get ctx(): CanvasRenderingContext2D {

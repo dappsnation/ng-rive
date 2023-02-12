@@ -3,7 +3,7 @@ import { BehaviorSubject, of, Subscription } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
-import type { LinearAnimationInstance } from "@rive-app/canvas-advanced";
+import type { Artboard, LinearAnimationInstance } from "@rive-app/canvas-advanced";
 
 interface RiveAnimationState {
   speed: number;
@@ -21,9 +21,24 @@ function getRiveAnimationState(state: Partial<RiveAnimationState> = {}): RiveAni
   }
 }
 
-
 function exist<T>(v: T | undefined | null): v is T {
   return v !== undefined && v !== null;
+}
+
+function assertAnimation(animation: LinearAnimationInstance, artboard: Artboard, name: string | number) {
+  if (animation) return;
+  const artboardName = artboard.name ?? 'Default';
+  const count = artboard.animationCount();
+  if (typeof name === 'number') {
+    throw new Error(`Provided index "${name}" for the animation of artboard "${artboardName}" is not available. Animation count is: ${count}`)
+  } else {
+    const names: string[] = [];
+    for (let i = 0; i < count; i++) {
+      names.push(artboard.animationByIndex(i).name);
+    }
+    throw new Error(`Provided name "${name}" for the animation of artboard "${artboardName}" is not available. Availables names are: ${JSON.stringify(names)}`);
+  }
+  
 }
 
 @Directive({
@@ -126,6 +141,8 @@ export class RiveAnimationDirective implements OnDestroy {
     const ref = typeof name === 'string'
       ? this.canvas.artboard.animationByName(name)
       : this.canvas.artboard.animationByIndex(name);
+
+    assertAnimation(ref, this.canvas.artboard, name);
 
     this.instance = new this.canvas.rive.LinearAnimationInstance(ref, this.canvas.artboard);
     this.load.emit(this.instance);

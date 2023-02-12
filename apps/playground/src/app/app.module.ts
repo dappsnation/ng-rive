@@ -15,20 +15,22 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterModule } from '@angular/router';
-import { SheepComponent } from './sheep/sheep.component';
 import { ResizeComponent } from './resize/resize.component';
 import { StateMachineComponent } from './state-machine/state-machine.component';
 import { PlayerComponent } from './player/player.component';
 import { WorkerComponent } from './worker/worker.component';
+import { MultipleComponent } from './multiple/multiple.component';
+import { ArtboardComponent } from './artboard/artboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SheepComponent,
     ResizeComponent,
     StateMachineComponent,
     PlayerComponent,
     WorkerComponent,
+    MultipleComponent,
+    ArtboardComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -53,10 +55,6 @@ import { WorkerComponent } from './worker/worker.component';
           pathMatch: 'full',
         },
         {
-          path: 'sheep',
-          component: SheepComponent,
-        },
-        {
           path: 'resize',
           component: ResizeComponent,
         },
@@ -71,6 +69,14 @@ import { WorkerComponent } from './worker/worker.component';
         {
           path: 'worker',
           component: WorkerComponent,
+        },
+        {
+          path: 'multiple',
+          component: MultipleComponent,
+        },
+        {
+          path: 'artboard',
+          component: ArtboardComponent,
         },
       ],
       {
