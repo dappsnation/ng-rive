@@ -1,0 +1,20 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: rgb(5, 30, 32);
+  padding: 24px;
+  margin: 24px;
+  border-radius: 24px;
+  color: white;
+}
+footer {
+  background-color: rgb(10, 91, 91);
+  border-radius: 4px;
+  padding: 8px 16px;
+}
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}

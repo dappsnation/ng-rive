@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, HostListener, Input } from '@angula
 import { AngularFireStorage } from '@angular/fire/storage';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'apps/pocket/src/environments/environment';
-import { Artboard } from 'rive-canvas';
+import { Artboard } from '@rive-app/canvas-advanced';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../auth/service';
 import { RiveFile, RiveFilesService } from '../service';

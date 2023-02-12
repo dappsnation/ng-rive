@@ -1,0 +1,21 @@
+<article>
+  <h1>Press the button</h1>
+  <button (click)="run.fire()">
+    <canvas riv="button" width="236" height="64" artboard="main">
+      <riv-state-machine name="activation" play>
+        <riv-input name="run" #run="rivInput"></riv-input>
+      </riv-state-machine>
+    </canvas>
+  </button>
+</article>
+<footer>
+  <ng-container  *ngFor="let tab of tabs; trackBy: trackById">
+    <button (focus)="tab.status = true" (blur)="tab.status = false" (mouseenter)="tab.status = true" (mouseleave)="tab.status = false">
+      <canvas riv="icons" [artboard]="tab.artboard" width="36" height="36" >
+        <riv-state-machine [name]="tab.stateMachine" play>
+          <riv-input name="active" [value]="tab.status"></riv-input>
+        </riv-state-machine>
+      </canvas>
+    </button>
+  </ng-container>
+</footer>

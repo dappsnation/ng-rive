@@ -1,4 +1,4 @@
 <canvas riv="poison-loader" width="500" height="500">
   <riv-player #player="rivPlayer" name="idle" [time]="time"></riv-player>
 </canvas>
-<input type="range" step="0.1" (input)="time = $any($event.target).value" [min]="player.startTime" [max]="player.endTime" />
+<input type="range" step="0.1" (ngModel)="time" min="0.3" max="1.3"/>

@@ -1,15 +1,18 @@
-import Rive, { RiveCanvas, File as RiveFile } from 'rive-canvas';
+import Rive from '@rive-app/canvas-advanced';
+import { RiveCanvas, File as RiveFile } from '@rive-app/canvas-advanced';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { animationFrame } from './frame';
 import { share } from 'rxjs/operators';
 import { RIVE_FOLDER, RIVE_VERSION } from './tokens';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable()
 export class RiveService {
+  private counters: Record<string, number> = {};
   private files: Record<string, RiveFile> = {};
   public rive?: RiveCanvas;
-  public frame = animationFrame.pipe(share());
+  public frame?: Observable<number>;
 
   constructor(
     @Optional() @Inject(RIVE_FOLDER) private folder: string,
@@ -17,18 +20,25 @@ export class RiveService {
     private http: HttpClient
   ) {
     this.folder = folder ?? 'assets/rive';
-    this.version = version ?? '0.7.6';
+    this.version = version ?? 'latest';
   }
 
   private async getRive() {
     if (!this.rive) {
-      const locateFile = (file: string) => `https://unpkg.com/rive-canvas@${this.version}/${file}`;
+      const locateFile = () => `https://unpkg.com/@rive-app/canvas-advanced@${this.version}/rive.wasm`;
       this.rive = await Rive({ locateFile });
+      this.frame = animationFrame(this.rive).pipe(share());
     }
     return this.rive;
   }
 
+  private getAsset(asset: string) {
+    return firstValueFrom(this.http.get(asset, { responseType: 'arraybuffer' }));
+  }
+
+  /** Load a riv file */
   async load(file: string | File | Blob) {
+    // Provide the file directly
     if (typeof file !== 'string') {
       const [ rive, buffer ] = await Promise.all([
         this.getRive(),
@@ -36,15 +46,14 @@ export class RiveService {
       ]);
       return rive?.load(new Uint8Array(buffer));
     }
-    if (!this.files[file]) {
-      const asset = `${this.folder}/${file}.riv`;
-      const [ rive, buffer ] = await Promise.all([
-        this.getRive(),
-        this.http.get(asset, { responseType: 'arraybuffer' }).toPromise(),
-      ]);
-      if (!rive) throw new Error('Could not load rive');
-      this.files[file] = rive.load(new Uint8Array(buffer));
-    }
-    return this.files[file];
+
+    const asset = `${this.folder}/${file}.riv`;
+    const [ rive, buffer ] = await Promise.all([
+      this.getRive(),
+      this.getAsset(asset),
+    ]);
+    if (!rive) throw new Error('Could not load rive');
+    return rive.load(new Uint8Array(buffer));
   }
+
 }

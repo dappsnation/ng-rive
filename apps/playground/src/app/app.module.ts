@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { RiveModule } from 'ng-rive';
@@ -15,25 +15,28 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { RouterModule } from '@angular/router';
-import { SheepComponent } from './sheep/sheep.component';
 import { ResizeComponent } from './resize/resize.component';
 import { StateMachineComponent } from './state-machine/state-machine.component';
 import { PlayerComponent } from './player/player.component';
 import { WorkerComponent } from './worker/worker.component';
+import { MultipleComponent } from './multiple/multiple.component';
+import { ArtboardComponent } from './artboard/artboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SheepComponent,
     ResizeComponent,
     StateMachineComponent,
     PlayerComponent,
     WorkerComponent,
+    MultipleComponent,
+    ArtboardComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    FormsModule,
     RiveModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -52,10 +55,6 @@ import { WorkerComponent } from './worker/worker.component';
           pathMatch: 'full',
         },
         {
-          path: 'sheep',
-          component: SheepComponent,
-        },
-        {
           path: 'resize',
           component: ResizeComponent,
         },
@@ -70,6 +69,14 @@ import { WorkerComponent } from './worker/worker.component';
         {
           path: 'worker',
           component: WorkerComponent,
+        },
+        {
+          path: 'multiple',
+          component: MultipleComponent,
+        },
+        {
+          path: 'artboard',
+          component: ArtboardComponent,
         },
       ],
       {

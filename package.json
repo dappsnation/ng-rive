@@ -54,10 +54,11 @@
     "@angular/router": "14.0.3",
     "@nguniversal/express-engine": "^14.0.2",
     "@nrwl/angular": "14.3.6",
+    "@rive-app/canvas-advanced": "^1.0.94",
+    "@rive-app/webgl-advanced": "^1.0.94",
     "express": "^4.15.2",
     "firebase": "^7.0 || ^8.0",
-    "rive-canvas": "^0.7.6",
-    "rxjs": "~6.5.5",
+    "rxjs": "^7.5.5",
     "tslib": "^2.0.0",
     "zone.js": "0.11.6"
   },

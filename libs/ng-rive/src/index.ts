@@ -1,5 +1,5 @@
 export * from './lib/module';
-export * from './lib/types';
+// export * from './lib/types';
 export * from './lib/tokens';
 export * from './lib/canvas';
 export * from './lib/player';

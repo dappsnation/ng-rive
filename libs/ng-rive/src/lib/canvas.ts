@@ -1,8 +1,8 @@
 import { Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
-import { Observable, ReplaySubject, BehaviorSubject } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, from } from 'rxjs';
+import { distinctUntilChanged, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { RiveService } from './service';
-import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from 'rive-canvas';
+import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from '@rive-app/canvas-advanced';
 import { toInt } from './utils';
 
 export type CanvasFit = 'cover' | 'contain' | 'fill' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
@@ -12,35 +12,29 @@ export type RiveOrigin = string | File | Blob | null;
 
 const exist = <T>(v?: T | null): v is T => v !== null && v !== undefined;
 
-
-// Observable that trigger once when element is visible
-const onVisible = (element: HTMLElement) => new Observable<boolean>((subscriber) => {
+const onVisible = (element: HTMLElement) => new Promise<boolean>((res, rej) => {
   // SSR
   if (typeof window === 'undefined') {
-    subscriber.next(false);
-    subscriber.complete();
-    return;
+    return res(false);
   }
   // Compatibility
   if (!('IntersectionObserver' in window)) {
-    subscriber.next(true);
-    subscriber.complete();
-    return;
+    return res(true);
   }
   let isVisible = false;
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const visible = entry.intersectionRatio !== 0;
       if (visible !== isVisible) {
-        isVisible = !isVisible;
-        subscriber.next(isVisible);
-        subscriber.complete();
+        res(isVisible);
+        observer.disconnect();
       }
     });
   }, { threshold: [0] });
   // start observing element visibility
   observer.observe(element);
 });
+
 
 // Force event to run inside zones
 export function enterZone(zone: NgZone) {
@@ -59,7 +53,7 @@ export function enterZone(zone: NgZone) {
   exportAs: 'rivCanvas'
 })
 export class RiveCanvasDirective implements OnInit, OnDestroy {
-  private url = new ReplaySubject<RiveOrigin>();
+  private url = new BehaviorSubject<RiveOrigin>(null);
   private arboardName = new BehaviorSubject<string | null>(null);
   private _ctx?: CanvasRenderingContext2D | null;
   private loaded: Observable<boolean>;
@@ -70,7 +64,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
   public artboard?: Artboard;
   public renderer?: CanvasRenderer;
 
-  public isVisible: Observable<boolean>;
+  public whenVisible: Promise<boolean>;
 
   @Input() set riv(url: RiveOrigin) {
     this.url.next(url);
@@ -84,15 +78,20 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
   @Input() lazy: boolean | '' = false;
   @Input() fit: CanvasFit = 'contain';
   @Input() alignment: CanvasAlignment = 'center';
+
+  @Input()
   set width(w: number | string) {
-    this.canvas.width = toInt(w) ?? this.canvas.width;
+    const width = toInt(w) ?? this.canvas.width;
+    this.canvas.width = width;
   }
   get width() {
     return this.canvas.width;
   }
+
   @Input()
   set height(h: number | string) {
-    this.canvas.height = toInt(h) ?? this.canvas.height;
+    const height = toInt(h) ?? this.canvas.height;
+    this.canvas.height = height;
   }
   get height() {
     return this.canvas.height;
@@ -101,16 +100,12 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
   @Output() artboardChange = new EventEmitter<Artboard>();
 
   constructor(
-    private zone: NgZone,
     private service: RiveService,
     element: ElementRef<HTMLCanvasElement>
   ) {
     this.canvas = element.nativeElement;
 
-    this.isVisible = onVisible(element.nativeElement).pipe(
-      shareReplay({ bufferSize: 1, refCount: true }),
-      enterZone(this.zone),
-    );
+    this.whenVisible = onVisible(element.nativeElement);
 
     this.loaded = this.url.pipe(
       filter(exist),
@@ -120,7 +115,8 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
         this.file = await this.service.load(url);
         this.rive = this.service.rive;
         if (!this.rive) throw new Error('Service could not load rive');
-        this.renderer = new this.rive.CanvasRenderer(this.ctx)
+        // TODO: set offscreen renderer to true for webgl
+        this.renderer = this.rive.makeRenderer(this.canvas);
       }),
       switchMap(_ => this.setArtboard()),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -129,11 +125,13 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this.onReady().pipe(take(1)).subscribe();
+    this.onReady();
   }
 
   ngOnDestroy() {
+    this.renderer?.delete();
     this.artboard?.delete();
+    this.file?.delete();
   }
 
   get ctx(): CanvasRenderingContext2D {
@@ -147,7 +145,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
     return this.arboardName.pipe(
       tap(() => this.artboard?.delete()), // Remove previous artboard if any
       map(name => name ? this.file?.artboardByName(name) : this.file?.defaultArtboard()),
-      tap(artboard => this.artboard = artboard?.instance()),
+      tap(artboard => this.artboard = artboard),
       tap(() => this.artboardChange.emit(this.artboard)),
       map(() => true)
     );
@@ -165,7 +163,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
       const bounds = this.viewbox.split(' ');
       if (bounds.length !== 4) throw new Error('View box should look like "0 0 100% 100%"');
       const [minX, minY, maxX, maxY] = bounds.map((v, i) => {
-        const size = i % 2 === 0 ? w : h;
+        const size: number = i % 2 === 0 ? w : h;
         const percentage = v.endsWith('%')
           ? parseInt(v.slice(0, -1), 10) / 100
           : parseInt(v, 10) / size;
@@ -186,9 +184,8 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
 
   onReady() {
     if (this.isLazy) {
-      return this.isVisible.pipe(
-        filter(visible => !!visible),
-        take(1),
+      return from(this.whenVisible).pipe(
+        filter(isVisible => isVisible),
         switchMap(() => this.loaded)
       );
     }
@@ -201,28 +198,34 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
     if (!this.rive) throw new Error('Could not load rive before registrating instance');
     if (!this.artboard) throw new Error('Could not load artboard before registrating instance');
     if (!this.renderer) throw new Error('Could not load renderer before registrating instance');
+    
+    this.renderer.clear();
+    
     // Move frame
     if (isLinearAnimation(instance)) {
       instance.advance(delta);
-      instance.apply(this.artboard, mix ?? 1);
+      instance.apply(mix ?? 1);
     } else {
-      instance.advance(this.artboard, delta);
+      instance.advance(delta);
     }
     this.artboard.advance(delta);
+    
     // Render frame on canvas
+    this.renderer.save();
+
+    // Align renderer if needed
     const fit = this.rive.Fit[this.fit];
     const alignment = this.rive.Alignment[this.alignment];
     const box = this.box;
     const bounds = this.artboard.bounds;
-
-    // Align renderer if needed
-    this.ctx.restore();
-    this.ctx.clearRect(0, 0, this.width as number, this.height as number);
-    this.ctx.save();
     this.renderer.align(fit, alignment, box, bounds);
 
-    this.ctx.clearRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
     this.artboard.draw(this.renderer);
+
+    this.renderer.restore();
+    
+    // TODO: If context is WebGL Flush
+    // this.renderer.flush();
   }
 }
 
