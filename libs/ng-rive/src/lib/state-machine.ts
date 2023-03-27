@@ -1,4 +1,14 @@
-import { EventEmitter, Directive, NgZone, OnDestroy, Output, Input, ContentChildren, QueryList } from '@angular/core';
+import {
+  EventEmitter,
+  Directive,
+  NgZone,
+  OnDestroy,
+  Output,
+  Input,
+  ContentChildren,
+  QueryList,
+  Inject, forwardRef
+} from '@angular/core';
 import { Artboard, SMIInput, StateMachineInstance } from '@rive-app/canvas-advanced';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
@@ -34,7 +44,6 @@ function assertStateMachine(animation: StateMachineInstance, artboard: Artboard,
     }
     throw new Error(`Provided name "${name}" for the animation of artboard "${artboardName}" is not available. Availables names are: ${JSON.stringify(names)}`);
   }
-  
 }
 
 
@@ -79,7 +88,7 @@ export class RiveSMInput {
   @Output() change = new EventEmitter<SMIInput>();
   @Output() load = new EventEmitter<SMIInput>();
 
-  constructor(private stateMachine: RiveStateMachine) {}
+  constructor(@Inject(forwardRef(() => RiveStateMachine)) private stateMachine: RiveStateMachine) {}
 
   /** @internal: Used by the RiveStateMachine */
   public init(input?: SMIInput) {
@@ -105,7 +114,7 @@ export class RiveSMInput {
     }
     this.input
       ? fire(this.input)
-      : this.shouldFire = fire; 
+      : this.shouldFire = fire;
   }
 }
 
@@ -134,7 +143,7 @@ export class RiveStateMachine implements OnDestroy {
   public instance?: StateMachineInstance;
   public state = new BehaviorSubject<StateMachineState>({ speed: 1, playing: false });
 
-  public inputs: Record<string, SMIInput> = {}; 
+  public inputs: Record<string, SMIInput> = {};
   @ContentChildren(RiveSMInput) private riveInputs?: QueryList<RiveSMInput>;
 
   @Output() load = new EventEmitter<StateMachineInstance>();
@@ -176,7 +185,7 @@ export class RiveStateMachine implements OnDestroy {
   get play() {
     return this.state.getValue().playing;
   }
-  
+
   constructor(
     private zone: NgZone,
     private canvas: RiveCanvasDirective,
@@ -208,16 +217,16 @@ export class RiveStateMachine implements OnDestroy {
     }
   }
 
-  
+
   private initStateMachine(name: string | number) {
     if (!this.canvas.rive) throw new Error('Could not load state machine instance before rive');
     if (!this.canvas.artboard) throw new Error('Could not load state machine instance before artboard');
     const ref = typeof name === 'string'
       ? this.canvas.artboard.stateMachineByName(name)
       : this.canvas.artboard.stateMachineByIndex(name);
-    
+
     assertStateMachine(ref, this.canvas.artboard, name);
-    
+
     // Fetch the inputs from the runtime if we don't have them
     this.instance = new this.canvas.rive.StateMachineInstance(ref, this.canvas.artboard);
     for (let i = 0; i < this.instance.inputCount(); i++) {
@@ -228,7 +237,7 @@ export class RiveStateMachine implements OnDestroy {
 
   private register(name: string | number) {
     // Stop subscribing to previous animation if any
-    this.sub?.unsubscribe(); 
+    this.sub?.unsubscribe();
 
     // Update on frame change if playing
     const onFrameChange = this.state.pipe(
