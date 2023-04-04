@@ -10,6 +10,7 @@
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
     "nx": "nx",
     "start": "ng serve",
+    "publish": "cd dist/libs/ng-rive & npm publish",
     "build": "nx build ng-rive --configuration production",
     "build:recorder": "ng build recorder --configuration production",
     "build:player": "ng build player --configuration production",
