@@ -9,20 +9,19 @@ import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable()
 export class RiveService {
-  private counters: Record<string, number> = {};
-  private files: Record<string, RiveFile> = {};
+  private wasmPath: string;
+  private folder: string;
   public rive?: RiveCanvas;
   public frame?: Observable<number>;
 
   constructor(
-    @Optional() @Inject(RIVE_FOLDER) private folder: string,
-    @Optional() @Inject(RIVE_VERSION) private version: string,
-    @Optional() @Inject(RIVE_WASM) private localwasmPath: string,
+    @Optional() @Inject(RIVE_FOLDER) folder: string,
+    @Optional() @Inject(RIVE_VERSION) version: string,
+    @Optional() @Inject(RIVE_WASM) wasmPath: string,
     private http: HttpClient
   ) {
     this.folder = folder ?? 'assets/rive';
-    this.version = version ?? 'latest';
-    this.wasmPath = localwasmPath ?? `https://unpkg.com/@rive-app/canvas-advanced@${this.version}/rive.wasm`;
+    this.wasmPath = wasmPath ?? `https://unpkg.com/@rive-app/canvas-advanced@${version ?? 'latest'}/rive.wasm`;
   }
 
   private async getRive() {
