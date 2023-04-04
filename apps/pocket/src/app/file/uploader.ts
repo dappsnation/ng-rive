@@ -46,7 +46,7 @@ export class RiveUploader {
           const confirmed = await this.snackbar.openFromComponent(UploadConfirm, { data: file.name })
             .afterDismissed()
             .toPromise();
-          if (!confirmed.dismissedByAction) return;
+          if (!confirmed?.dismissedByAction) return;
           await ref.put(file, { customMetadata: meta.customMetadata });
           const url = await ref.getDownloadURL().toPromise();
           return this.service.update(meta.customMetadata.fileId, { url });
