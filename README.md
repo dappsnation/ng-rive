@@ -26,7 +26,7 @@ Animations built before version 0.7.0 rive-canvas will not work with new version
 # Get started
 1. Install :
 ```
-npm install ng-rive
+npm install ng-rive @rive-app/canvas-advanced
 ```
 
 2. Import `RiveModule`: 
