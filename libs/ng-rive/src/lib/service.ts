@@ -4,28 +4,29 @@ import { Inject, Injectable, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { animationFrame } from './frame';
 import { share } from 'rxjs/operators';
-import { RIVE_FOLDER, RIVE_VERSION } from './tokens';
+import { RIVE_FOLDER, RIVE_VERSION, RIVE_WASM } from './tokens';
 import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable()
 export class RiveService {
-  private counters: Record<string, number> = {};
-  private files: Record<string, RiveFile> = {};
+  private wasmPath: string;
+  private folder: string;
   public rive?: RiveCanvas;
   public frame?: Observable<number>;
 
   constructor(
-    @Optional() @Inject(RIVE_FOLDER) private folder: string,
-    @Optional() @Inject(RIVE_VERSION) private version: string,
+    @Optional() @Inject(RIVE_FOLDER) folder: string,
+    @Optional() @Inject(RIVE_VERSION) version: string,
+    @Optional() @Inject(RIVE_WASM) wasmPath: string,
     private http: HttpClient
   ) {
     this.folder = folder ?? 'assets/rive';
-    this.version = version ?? 'latest';
+    this.wasmPath = wasmPath ?? `https://unpkg.com/@rive-app/canvas-advanced@${version ?? 'latest'}/rive.wasm`;
   }
 
   private async getRive() {
     if (!this.rive) {
-      const locateFile = () => `https://unpkg.com/@rive-app/canvas-advanced@${this.version}/rive.wasm`;
+      const locateFile = () => this.wasmPath;
       this.rive = await Rive({ locateFile });
       this.frame = animationFrame(this.rive).pipe(share());
     }

@@ -4,7 +4,8 @@
   "peerDependencies": {
     "@angular/common": ">13.0.0",
     "@angular/core": ">13.0.0",
-    "rxjs": ">7.0.0"
+    "rxjs": ">7.0.0",
+    "@rive-app/canvas-advanced": ">1.0.0"
   },
   "dependencies": {
     "tslib": "^2.0.0"
