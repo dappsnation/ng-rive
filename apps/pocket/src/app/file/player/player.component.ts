@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from 'apps/pocket/src/environments/environment';
-import { LinearAnimation, Artboard } from '@rive-app/canvas-advanced';
+import { LinearAnimationInstance, Artboard } from '@rive-app/canvas-advanced';
 import { CanvasFit, CanvasAlignment } from 'ng-rive';
 import { of } from 'rxjs';
 import { map, shareReplay, switchMap } from 'rxjs/operators';
@@ -25,7 +25,7 @@ function getMode(index: number) {
   return (['one-shot', 'loop', 'ping-pong'] as const)[index];
 }
 
-function createAnim(animation: LinearAnimation): AnimationState {
+function createAnim(animation: LinearAnimationInstance): AnimationState {
   return {
     name: animation.name,
     speed: animation.speed,
@@ -85,7 +85,7 @@ export class PlayerComponent {
     }
   }
 
-  setDuration(state: AnimationState, animation: LinearAnimation) {
+  setDuration(state: AnimationState, animation: LinearAnimationInstance) {
     if (!animation) return;
     const start = animation.workStart / animation.fps;
     const end = (animation.workEnd || animation.duration) / animation.fps;

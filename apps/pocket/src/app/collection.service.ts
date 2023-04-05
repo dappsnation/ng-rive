@@ -309,7 +309,7 @@ export abstract class FireCollection<E extends DocumentData> {
   public async getGroup(queryFn?: QueryGroupFn<E>) {
     const collectionGroup = this.getCollectionGroup(queryFn);
     const collection = await collectionGroup.get().toPromise();
-    const docs = collection.docs as QueryDocumentSnapshot<E>[];
+    const docs = collection?.docs as QueryDocumentSnapshot<E>[];
     return docs
       .map(doc => this.fromFirestore(doc))
       .filter(isNotUndefined);
