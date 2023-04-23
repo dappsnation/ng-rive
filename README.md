@@ -83,6 +83,52 @@ If you see the error `Error: Can't resolve 'fs'`, add this in your `package.json
 }
 ```
 
+6. Rive wasm runtime custom location: 
+
+If you want to host the rive wasm (WebAssembly runtime environment) yourself or use a cdn other than unpkg, you can do so with the `RIVE_WASM` provider:
+```typescript
+import { RiveModule, RIVE_WASM } from 'ng-rive';
+@NgModule({
+  declarations: [MyComponent],
+  imports: [
+    CommonModule,
+    RiveModule,
+  ],
+  providers: [{
+    provide: RIVE_WASM,
+    useValue: 'assets/rive/rive.wasm',
+  }]
+})
+export class MyModule { }
+```
+
+to build the rive wasm runtime with the angular project it must be added into your `angular.json` config file. the `rive.wasm` runtime is provided with the `@rive-app/canvas-advanced` package. This package is already part of `@ng-rive`. This can be configured as follows:
+
+```json
+...
+  "architect": {
+    "build": {
+      ...
+      "options": {
+        ...
+        "assets": {
+          ...,
+          {
+            "glob": "*.wasm",
+            "input": "node_modules/@rive-app/canvas-advanced/",
+            "output": "assets/rive/"
+          },
+          ...
+        },
+        ...
+      },
+      ...
+    },
+    ...
+  },
+...
+```
+
 # API
 
 ## Canvas
