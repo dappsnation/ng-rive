@@ -3,7 +3,7 @@ import { BehaviorSubject, of, Subscription } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
-import type { Artboard, LinearAnimationInstance } from "@rive-app/canvas-advanced";
+import type { Artboard, LinearAnimationInstance, LinearAnimation } from "@rive-app/canvas-advanced";
 
 interface RiveAnimationState {
   speed: number;
@@ -25,7 +25,7 @@ function exist<T>(v: T | undefined | null): v is T {
   return v !== undefined && v !== null;
 }
 
-function assertAnimation(animation: LinearAnimationInstance, artboard: Artboard, name: string | number) {
+function assertAnimation(animation: LinearAnimation, artboard: Artboard, name: string | number) {
   if (animation) return;
   const artboardName = artboard.name ?? 'Default';
   const count = artboard.animationCount();
@@ -120,6 +120,7 @@ export class RiveAnimationDirective implements OnDestroy {
   ngOnDestroy() {
     this.sub?.unsubscribe();
     this.instance?.delete();
+    setTimeout(() => this.instance?.delete(), 100);
   }
 
   private update(state: Partial<RiveAnimationState>) {

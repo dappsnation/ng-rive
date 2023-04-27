@@ -9,7 +9,7 @@ import {
   QueryList,
   Inject, forwardRef
 } from '@angular/core';
-import { Artboard, SMIInput, StateMachineInstance } from '@rive-app/canvas-advanced';
+import { Artboard, SMIInput, StateMachine, StateMachineInstance } from '@rive-app/canvas-advanced';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { RiveCanvasDirective } from './canvas';
@@ -31,7 +31,7 @@ function getInput(input: SMIInput) {
   return input;
 }
 
-function assertStateMachine(animation: StateMachineInstance, artboard: Artboard, name: string | number) {
+function assertStateMachine(animation: StateMachine, artboard: Artboard, name: string | number) {
   if (animation) return;
   const artboardName = artboard.name ?? 'Default';
   const count = artboard.stateMachineCount();
@@ -193,8 +193,10 @@ export class RiveStateMachine implements OnDestroy {
   ) {}
 
   ngOnDestroy() {
+    const name = this.instance?.name;
+    if (name) delete this.canvas.stateMachines[name];
     this.sub?.unsubscribe();
-    this.instance?.delete();
+    setTimeout(() => this.instance?.delete(), 100);
   }
 
   private update(state: Partial<StateMachineState>) {
@@ -229,6 +231,7 @@ export class RiveStateMachine implements OnDestroy {
 
     // Fetch the inputs from the runtime if we don't have them
     this.instance = new this.canvas.rive.StateMachineInstance(ref, this.canvas.artboard);
+    this.canvas.stateMachines[this.instance.name] = this.instance;
     for (let i = 0; i < this.instance.inputCount(); i++) {
       this.setInput(this.instance.input(i));
     }

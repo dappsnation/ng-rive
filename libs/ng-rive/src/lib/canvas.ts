@@ -1,9 +1,9 @@
-import { Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { RiveService } from './service';
 import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from '@rive-app/canvas-advanced';
-import { toInt } from './utils';
+import { getClientCoordinates, getStateMachines, toInt } from './utils';
 
 export type CanvasFit = 'cover' | 'contain' | 'fill' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
 export type CanvasAlignment = 'center' | 'topLeft' | 'topCenter' | 'topRight' | 'centerLeft' | 'centerRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
@@ -60,9 +60,11 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
   private boxes: Record<string, AABB> = {};
   public canvas: HTMLCanvasElement;
   public rive?: RiveCanvas;
-  public file?: RiveFile; 
+  public file?: RiveFile;
   public artboard?: Artboard;
   public renderer?: CanvasRenderer;
+  // Keep track of current state machine for event listeners
+  public stateMachines: Record<string, StateMachineInstance> = {};
 
   public whenVisible: Promise<boolean>;
 
@@ -99,6 +101,45 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
 
   @Output() artboardChange = new EventEmitter<Artboard>();
 
+
+  @HostListener('touchmove', ['$event'])
+  @HostListener('mouseover', ['$event'])
+  @HostListener('mouseout', ['$event'])
+  @HostListener('mousemove', ['$event'])
+  private pointerMove(event: MouseEvent | TouchEvent) {
+    const stateMachines = Object.values(this.stateMachines).filter(sm => 'pointerMove' in sm);
+    if (!stateMachines.length) return;
+    const vector = this.getTransform(event);
+    if (!vector) return;
+    for (const stateMachine of stateMachines) {
+      stateMachine.pointerMove(vector.x, vector.y);
+    }
+  }
+
+  @HostListener('touchstart', ['$event'])
+  @HostListener('mousedown', ['$event'])
+  private pointerDown(event: MouseEvent | TouchEvent) {
+    const stateMachines = Object.values(this.stateMachines).filter(sm => 'pointerDown' in sm);
+    if (!stateMachines.length) return;
+    const vector = this.getTransform(event);
+    if (!vector) return;
+    for (const stateMachine of stateMachines) {
+      stateMachine.pointerDown(vector.x, vector.y);
+    }
+  }
+
+  @HostListener('touchend', ['$event'])
+  @HostListener('mouseup', ['$event'])
+  private pointerUp(event: MouseEvent | TouchEvent){
+    const stateMachines = Object.values(this.stateMachines).filter(sm => 'pointerUp' in sm);
+    if (!stateMachines.length) return;
+    const vector = this.getTransform(event);
+    if (!vector) return;
+    for (const stateMachine of stateMachines) {
+      stateMachine.pointerUp(vector.x, vector.y);
+    }
+  }
+
   constructor(
     private service: RiveService,
     element: ElementRef<HTMLCanvasElement>
@@ -129,9 +170,12 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.renderer?.delete();
-    this.artboard?.delete();
-    this.file?.delete();
+    // Timeout to avoid late request to a deleted artboard
+    setTimeout(() => {
+      this.renderer?.delete();
+      this.artboard?.delete();
+      this.file?.delete();
+    }, 100);
   }
 
   get ctx(): CanvasRenderingContext2D {
@@ -198,9 +242,9 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
     if (!this.rive) throw new Error('Could not load rive before registrating instance');
     if (!this.artboard) throw new Error('Could not load artboard before registrating instance');
     if (!this.renderer) throw new Error('Could not load renderer before registrating instance');
-    
+
     this.renderer.clear();
-    
+
     // Move frame
     if (isLinearAnimation(instance)) {
       instance.advance(delta);
@@ -209,7 +253,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
       instance.advance(delta);
     }
     this.artboard.advance(delta);
-    
+
     // Render frame on canvas
     this.renderer.save();
 
@@ -223,9 +267,47 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
     this.artboard.draw(this.renderer);
 
     this.renderer.restore();
-    
+
     // TODO: If context is WebGL Flush
     // this.renderer.flush();
+  }
+
+
+  private getTransform(event: MouseEvent | TouchEvent) {
+    if (!this.rive) return;
+    if (!this.artboard) return;
+    const boundingRect = this.canvas.getBoundingClientRect();
+
+    const { clientX, clientY } = getClientCoordinates(event);
+    if (!clientX && !clientY) return;
+    const canvasX = clientX - boundingRect.left;
+    const canvasY = clientY - boundingRect.top;
+    const forwardMatrix = this.rive.computeAlignment(
+      this.rive.Fit[this.fit],
+      this.rive.Alignment[this.alignment],
+      {
+        minX: 0,
+        minY: 0,
+        maxX: boundingRect.width,
+        maxY: boundingRect.height,
+      },
+      this.artboard.bounds
+    );
+    const invertedMatrix = new this.rive.Mat2D();
+    forwardMatrix.invert(invertedMatrix);
+    const canvasCoordinatesVector = new this.rive.Vec2D(canvasX, canvasY);
+    const transformedVector = this.rive.mapXY(
+      invertedMatrix,
+      canvasCoordinatesVector
+    );
+    const x = transformedVector.x();
+    const y = transformedVector.y();
+
+    transformedVector.delete();
+    invertedMatrix.delete();
+    canvasCoordinatesVector.delete();
+    forwardMatrix.delete();
+    return {x, y};
   }
 }
 

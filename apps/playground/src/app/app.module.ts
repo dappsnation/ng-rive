@@ -21,6 +21,7 @@ import { PlayerComponent } from './player/player.component';
 import { WorkerComponent } from './worker/worker.component';
 import { MultipleComponent } from './multiple/multiple.component';
 import { ArtboardComponent } from './artboard/artboard.component';
+import { ListenerComponent } from './listener/listener.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { ArtboardComponent } from './artboard/artboard.component';
     PlayerComponent,
     WorkerComponent,
     MultipleComponent,
-    ArtboardComponent
+    ArtboardComponent,
+    ListenerComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -77,6 +79,10 @@ import { ArtboardComponent } from './artboard/artboard.component';
         {
           path: 'artboard',
           component: ArtboardComponent,
+        },
+        {
+          path: 'listener',
+          component: ListenerComponent,
         },
       ],
       {
