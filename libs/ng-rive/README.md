@@ -230,6 +230,17 @@ The `riv-input` enables you to manipulated the state machine:
 ### Method
 - `fire()` Trigger a change, only if the type of the input is `Trigger`
 
+## State Machine Event Listeners
+By default all State Machine defined in the template that have event listener will be triggered.
+(⚠️ You need to add your state machine in the template to start listening on it): 
+```html
+<canvas riv="skills">
+  <riv-state-machine name="move"></riv-state-machine>
+</canvas>
+```
+Canvas will listen on all event listeners from the state machine "move", **but not other in the same artboard**.
+
+
 # Technics
 
 ### Play if canvas is visible
