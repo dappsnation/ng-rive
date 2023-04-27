@@ -3,7 +3,7 @@ import { BehaviorSubject, merge, of, Subscription } from "rxjs";
 import { distinctUntilChanged, filter, map, switchMap, tap } from "rxjs/operators";
 import { RiveCanvasDirective } from './canvas';
 import { RiveService } from "./service";
-import { LinearAnimationInstance } from "@rive-app/canvas-advanced";
+import { LinearAnimationInstance, LinearAnimation } from "@rive-app/canvas-advanced";
 
 interface RivePlayerState {
   speed: number;
@@ -54,7 +54,7 @@ function getEnd(animation: LinearAnimationInstance) {
 })
 export class RivePlayer implements OnDestroy {
   private sub?: Subscription;
-  private animation?: LinearAnimationInstance;  // this is the LinearAnimation
+  private animation?: LinearAnimation;
   private instance?: LinearAnimationInstance;
 
   startTime?: number;
@@ -170,7 +170,7 @@ export class RivePlayer implements OnDestroy {
   
   ngOnDestroy() {
     this.sub?.unsubscribe();
-    this.instance?.delete();
+    setTimeout(() => this.instance?.delete(), 100);
   }
 
   private update(state: Partial<RivePlayerState>) {
@@ -187,9 +187,9 @@ export class RivePlayer implements OnDestroy {
     : this.canvas.artboard.animationByIndex(name);
     
     this.animation = ref;
-    this.startTime = getStart(ref);
-    this.endTime = getEnd(ref);
     this.instance = new this.service.rive.LinearAnimationInstance(ref, this.canvas.artboard);
+    this.startTime = getStart(this.instance);
+    this.endTime = getEnd(this.instance);
     
     this.load.emit(this.instance);
   }
@@ -209,7 +209,6 @@ export class RivePlayer implements OnDestroy {
     // Update if time have changed from the input
     const onTimeChange = this.distance.pipe(
       filter(exist),
-      filter(time => time !== this.instance?.time),
       distinctUntilChanged(),
       map(time => time - this.instance!.time),
     );
@@ -242,7 +241,7 @@ export class RivePlayer implements OnDestroy {
     
     // Round to avoid JS error on division
     const start = this.startTime ?? 0;
-    const end = this.endTime ?? (this.animation.duration / this.animation.fps);
+    const end = this.endTime ?? (this.instance.duration / this.instance.fps);
     const currentTime = round(this.instance.time);
 
     // When player hit floor
@@ -289,7 +288,7 @@ export class RivePlayer implements OnDestroy {
   }
 
   private applyChange(delta: number) {
-    // We need to use requestAnimationFrame in case we set the time
+    // We need to use requestAnimationFrame when delta is changed by the time
     this.service.rive?.requestAnimationFrame(() => {
       if (!this.instance) throw new Error('Could not load animation instance before running it');
       this.canvas.draw(this.instance, delta, this.state.getValue().mix);
