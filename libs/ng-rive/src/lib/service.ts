@@ -15,13 +15,14 @@ export class RiveService {
   public frame?: Observable<number>;
 
   constructor(
-    @Optional() @Inject(RIVE_FOLDER) folder: string,
-    @Optional() @Inject(RIVE_VERSION) version: string,
-    @Optional() @Inject(RIVE_WASM) wasmPath: string,
-    private http: HttpClient
+    private http: HttpClient,
+    @Optional() @Inject(RIVE_FOLDER) folder?: string,
+    @Optional() @Inject(RIVE_WASM) wasmPath?: string,
+    @Optional() @Inject(RIVE_VERSION) version?: string,
   ) {
+    const riveVersion = version ?? '1.1.6';
     this.folder = folder ?? 'assets/rive';
-    this.wasmPath = wasmPath ?? `https://unpkg.com/@rive-app/canvas-advanced@${version ?? 'latest'}/rive.wasm`;
+    this.wasmPath = wasmPath ?? `https://unpkg.com/@rive-app/canvas-advanced@${riveVersion}/rive.wasm`;
   }
 
   private async getRive() {

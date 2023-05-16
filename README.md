@@ -7,11 +7,6 @@ A repository for Angular built around the [rive canvas runtime](https://help.riv
 [![npm](https://img.shields.io/npm/dm/ng-rive)](https://www.npmjs.com/package/ng-rive)
 
 
-## Demo
-- 🎞️ [Rive Player](https://rive-animation-player.netlify.app/)
-- 🎥 [Animation Recorder](https://rive-video-recorder.netlify.app/)
-- ⛱️ [Playground](https://ng-rive-playground.netlify.app/)
-
 ## Compatibility
 Animations built before version 0.7.0 rive-canvas will not work with new versions of ng-rive.
 
@@ -83,7 +78,7 @@ If you see the error `Error: Can't resolve 'fs'`, add this in your `package.json
 }
 ```
 
-6. Rive wasm runtime custom location: 
+6. (Bonus) Rive wasm runtime custom location: 
 
 If you want to host the rive wasm (WebAssembly runtime environment) yourself or use a cdn other than unpkg, you can do so with the `RIVE_WASM` provider:
 ```typescript
@@ -128,6 +123,18 @@ to build the rive wasm runtime with the angular project it must be added into yo
   },
 ...
 ```
+
+7. (Bonus) Rive version
+If you want to set a specific version for your wasm file you can use the `RIVE_VERSION` injection token.
+```typescript
+  providers: [{
+    provide: RIVE_VERSION,
+    useValue: 'latest',
+  }]
+```
+`ng-rive` used to default to "latest", but it created some issue in production app.
+Now it defaults to the latest version used when the library is publish.
+You can see the current default version [here](https://github.com/dappsnation/ng-rive/blob/master/libs/ng-rive/src/lib/service.ts#L23).
 
 # API
 
