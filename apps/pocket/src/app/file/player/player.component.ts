@@ -79,7 +79,7 @@ export class PlayerComponent {
     this.animations = new Array(arboard.animationCount())
       .fill(null)
       .map((_, i) => arboard.animationByIndex(i))
-      .map(createAnim);
+      .map((anim: any) => createAnim(anim));
     if (this.animations.length) {
       this.toggle(0);
     }
