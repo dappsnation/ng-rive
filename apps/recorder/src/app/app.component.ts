@@ -68,7 +68,9 @@ export class AppComponent {
   }
 
   get filename() {
-    const { name, format } = this.form.get('output')?.value;
+    const output = this.form.get('output');
+    if (!output) return;
+    const { name, format } = output.value;
     const [ type ] = format.split(';');
     const extension = extensions[type as keyof typeof extensions];
     return `${name}.${extension}`;
