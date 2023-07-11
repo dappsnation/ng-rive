@@ -1,5 +1,5 @@
 import { Directive, Input, NgZone } from '@angular/core';
-import { RiveCanvasDirective } from '../canvas';
+import { RiveCanvas } from '../canvas';
 import { TransformComponent } from '@rive-app/canvas-advanced';
 
 @Directive()
@@ -41,7 +41,7 @@ export abstract class RiveTransformComponent<T extends TransformComponent> {
 
   constructor(
     private zone: NgZone,
-    protected canvas: RiveCanvasDirective
+    protected canvas: RiveCanvas
   ) {}
 
   abstract getComponent(name: string): T | undefined;

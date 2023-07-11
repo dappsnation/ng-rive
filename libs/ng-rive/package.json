@@ -1,6 +1,6 @@
 {
   "name": "ng-rive",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "peerDependencies": {
     "@angular/common": ">13.0.0",
     "@angular/core": ">13.0.0",
@@ -10,7 +10,13 @@
   "dependencies": {
     "tslib": "^2.0.0"
   },
-  "keywords": ["rive", "animation", "angular", "canvas", "wasm"],
+  "keywords": [
+    "rive",
+    "animation",
+    "angular",
+    "canvas",
+    "wasm"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/dappsnation/ng-rive"

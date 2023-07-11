@@ -1,14 +1,14 @@
-import { RiveCanvas } from "@rive-app/canvas-advanced";
-import { Observable, switchMap } from "rxjs";
+import { RiveCanvas as Rive } from "@rive-app/canvas-advanced";
+import { Observable } from "rxjs";
 
-export const nextFrame = (rive: RiveCanvas): Promise<number> => {
+export const nextFrame = (rive: Rive): Promise<number> => {
   return new Promise((res) => {
     rive.requestAnimationFrame(res);
   })
 }
 
 // Observable that trigger on every frame
-export const animationFrame = (rive: RiveCanvas) => new Observable<number>((subscriber) => {
+export const animationFrame = (rive: Rive) => new Observable<number>((subscriber) => {
   let start = 0;
   let first = true;
   const run = (time: number) => {

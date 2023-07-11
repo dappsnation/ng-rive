@@ -2,8 +2,8 @@ import { Directive, ElementRef, EventEmitter, HostListener, Input, NgZone, OnDes
 import { Observable, BehaviorSubject, from } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { RiveService } from './service';
-import { Artboard, CanvasRenderer, RiveCanvas, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from '@rive-app/canvas-advanced';
-import { getClientCoordinates, getStateMachines, toInt } from './utils';
+import { Artboard, CanvasRenderer, RiveCanvas as Rive, File as RiveFile, AABB, StateMachineInstance, LinearAnimationInstance } from '@rive-app/canvas-advanced';
+import { getClientCoordinates, toInt } from './utils';
 
 export type CanvasFit = 'cover' | 'contain' | 'fill' | 'fitWidth' | 'fitHeight' | 'none' | 'scaleDown';
 export type CanvasAlignment = 'center' | 'topLeft' | 'topCenter' | 'topRight' | 'centerLeft' | 'centerRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
@@ -49,17 +49,18 @@ export function enterZone(zone: NgZone) {
 }
 
 @Directive({
-  selector: 'canvas[riv]',
-  exportAs: 'rivCanvas'
+    selector: 'canvas[riv]',
+    exportAs: 'rivCanvas',
+    standalone: true
 })
-export class RiveCanvasDirective implements OnInit, OnDestroy {
+export class RiveCanvas implements OnInit, OnDestroy {
   private url = new BehaviorSubject<RiveOrigin>(null);
   private arboardName = new BehaviorSubject<string | null>(null);
   private _ctx?: CanvasRenderingContext2D | null;
   private loaded: Observable<boolean>;
   private boxes: Record<string, AABB> = {};
   public canvas: HTMLCanvasElement;
-  public rive?: RiveCanvas;
+  public rive?: Rive;
   public file?: RiveFile;
   public artboard?: Artboard;
   public renderer?: CanvasRenderer;
@@ -157,7 +158,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
         this.rive = this.service.rive;
         if (!this.rive) throw new Error('Service could not load rive');
         // TODO: set offscreen renderer to true for webgl
-        this.renderer = this.rive.makeRenderer(this.canvas);
+        this.renderer = this.rive.makeRenderer(this.canvas) as CanvasRenderer;
       }),
       switchMap(_ => this.setArtboard()),
       shareReplay({ bufferSize: 1, refCount: true })

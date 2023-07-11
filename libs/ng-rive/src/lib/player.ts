@@ -1,7 +1,7 @@
 import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, merge, of, Subscription } from "rxjs";
 import { distinctUntilChanged, filter, map, switchMap, tap } from "rxjs/operators";
-import { RiveCanvasDirective } from './canvas';
+import { RiveCanvas } from './canvas';
 import { RiveService } from "./service";
 import { LinearAnimationInstance, LinearAnimation } from "@rive-app/canvas-advanced";
 
@@ -49,8 +49,9 @@ function getEnd(animation: LinearAnimationInstance) {
 }
 
 @Directive({
-  selector: 'riv-player, [rivPlayer]',
-  exportAs: 'rivPlayer'
+    selector: 'riv-player, [rivPlayer]',
+    exportAs: 'rivPlayer',
+    standalone: true
 })
 export class RivePlayer implements OnDestroy {
   private sub?: Subscription;
@@ -163,7 +164,7 @@ export class RivePlayer implements OnDestroy {
 
   constructor(
     private zone: NgZone,
-    private canvas: RiveCanvasDirective,
+    private canvas: RiveCanvas,
     private service: RiveService,
   ) {}
 

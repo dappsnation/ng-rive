@@ -12,7 +12,7 @@ import {
 import { Artboard, SMIInput, StateMachine, StateMachineInstance } from '@rive-app/canvas-advanced';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
-import { RiveCanvasDirective } from './canvas';
+import { RiveCanvas } from './canvas';
 import { RiveService } from './service';
 
 ///////////
@@ -49,7 +49,8 @@ function assertStateMachine(animation: StateMachine, artboard: Artboard, name: s
 
 @Directive({
   selector: 'riv-input, [rivInput]',
-  exportAs: 'rivInput'
+  exportAs: 'rivInput',
+  standalone: true
 })
 export class RiveSMInput {
   private _name?: string;
@@ -134,8 +135,9 @@ function exist<T>(v: T | undefined | null): v is T {
 
 
 @Directive({
-  selector: 'riv-state-machine, [rivStateMachine]',
-  exportAs: 'rivStateMachine'
+    selector: 'riv-state-machine, [rivStateMachine]',
+    exportAs: 'rivStateMachine',
+    standalone: true
 })
 export class RiveStateMachine implements OnDestroy {
   private sub?: Subscription;
@@ -188,7 +190,7 @@ export class RiveStateMachine implements OnDestroy {
 
   constructor(
     private zone: NgZone,
-    private canvas: RiveCanvasDirective,
+    private canvas: RiveCanvas,
     private service: RiveService,
   ) {}
 

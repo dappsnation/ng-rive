@@ -1,11 +1,30 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
+import { AsyncPipe } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { RiveNode, RiveStateMachine, RiveSMInput, RiveCanvas } from 'ng-rive';
+
+const imports = [
+  RiveCanvas,
+  RiveStateMachine,
+  RiveSMInput,
+  RiveNode,
+  ReactiveFormsModule,
+  MatSlideToggleModule,
+  MatSliderModule,
+  MatButtonModule,
+  AsyncPipe
+];
 
 @Component({
-  selector: 'ng-rive-state-machine',
-  templateUrl: './state-machine.component.html',
-  styleUrls: ['./state-machine.component.scss']
+    selector: 'ng-rive-state-machine',
+    templateUrl: './state-machine.component.html',
+    styleUrls: ['./state-machine.component.scss'],
+    standalone: true,
+    imports: imports
 })
 export class StateMachineComponent {
   form = new FormControl(0);

@@ -1,9 +1,21 @@
-import { ChangeDetectorRef, Component, Pipe, PipeTransform, TemplateRef, ViewChild } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { ChangeDetectorRef, Component, Pipe, PipeTransform, TemplateRef, ViewChild, forwardRef } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarRef } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { RiveCanvasDirective } from 'ng-rive';
+import { RiveCanvas } from 'ng-rive';
 import { Artboard } from '@rive-app/canvas-advanced';
+import { RivePlayer } from '../../../../libs/ng-rive/src/lib/player';
+import { RiveCanvas as RiveCanvas_1 } from '../../../../libs/ng-rive/src/lib/canvas';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatOptionModule } from '@angular/material/core';
+import { NgFor, NgIf } from '@angular/common';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 interface CanvasElement extends HTMLCanvasElement {
   captureStream(frameRate?: number): MediaStream;
@@ -29,13 +41,31 @@ const extensions = {
 }
 
 @Component({
-  selector: 'ng-rive-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+    selector: 'ng-rive-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: true,
+    imports: [
+        MatSidenavModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        NgFor,
+        MatOptionModule,
+        NgIf,
+        MatListModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatIconModule,
+        RiveCanvas_1,
+        RivePlayer,
+        forwardRef(() => VideoFormatPipe),
+    ],
 })
 export class AppComponent {
   @ViewChild('download') download!: TemplateRef<unknown>;
-  @ViewChild(RiveCanvasDirective) rivCanvas!: RiveCanvasDirective;
+  @ViewChild(RiveCanvas) rivCanvas!: RiveCanvas;
   animations: number[] = [];
   formats = getMimeTypes();
   file?: File | null;
@@ -68,7 +98,9 @@ export class AppComponent {
   }
 
   get filename() {
-    const { name, format } = this.form.get('output')?.value;
+    const output = this.form.get('output');
+    if (!output) return;
+    const { name, format } = output.value;
     const [ type ] = format.split(';');
     const extension = extensions[type as keyof typeof extensions];
     return `${name}.${extension}`;
@@ -131,7 +163,10 @@ export class AppComponent {
 }
 
 
-@Pipe({ name: 'videoFormat' })
+@Pipe({
+    name: 'videoFormat',
+    standalone: true
+})
 export class VideoFormatPipe implements PipeTransform {
   transform(format: string) {
     const [ type, codec ] = format.split(';');

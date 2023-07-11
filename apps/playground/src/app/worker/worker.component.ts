@@ -1,10 +1,11 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'ng-rive-worker',
-  templateUrl: './worker.component.html',
-  styleUrls: ['./worker.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'ng-rive-worker',
+    templateUrl: './worker.component.html',
+    styleUrls: ['./worker.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: true
 })
 export class WorkerComponent implements AfterViewInit {
 
