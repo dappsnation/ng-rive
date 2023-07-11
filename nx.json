@@ -34,7 +34,7 @@
   "cli": {
     "defaultCollection": "@nrwl/angular"
   },
-  "defaultProject": "pocket",
+  "defaultProject": "playground",
   "generators": {
     "@nrwl/angular": {
       "application": {

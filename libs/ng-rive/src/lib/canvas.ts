@@ -157,7 +157,7 @@ export class RiveCanvasDirective implements OnInit, OnDestroy {
         this.rive = this.service.rive;
         if (!this.rive) throw new Error('Service could not load rive');
         // TODO: set offscreen renderer to true for webgl
-        this.renderer = this.rive.makeRenderer(this.canvas);
+        this.renderer = this.rive.makeRenderer(this.canvas) as CanvasRenderer;
       }),
       switchMap(_ => this.setArtboard()),
       shareReplay({ bufferSize: 1, refCount: true })
