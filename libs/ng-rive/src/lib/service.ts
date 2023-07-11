@@ -20,7 +20,7 @@ export class RiveService {
     @Optional() @Inject(RIVE_WASM) wasmPath?: string,
     @Optional() @Inject(RIVE_VERSION) version?: string,
   ) {
-    const riveVersion = version ?? '1.1.6';
+    const riveVersion = version ?? '1.2.1';
     this.folder = folder ?? 'assets/rive';
     this.wasmPath = wasmPath ?? `https://unpkg.com/@rive-app/canvas-advanced@${riveVersion}/rive.wasm`;
   }
