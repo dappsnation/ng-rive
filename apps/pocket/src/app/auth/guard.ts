@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from './service';
 
 // Remove "#" & trailing "/"
@@ -8,7 +8,7 @@ function cleanUrl(url: string) {
 }
 
 @Injectable({ providedIn: 'root' })
-export class IsConnectedGuard implements CanActivate {
+export class IsConnectedGuard  {
   redirectUrl?: string;
   
   constructor(
@@ -39,7 +39,7 @@ export class IsConnectedGuard implements CanActivate {
 
 
 @Injectable({ providedIn: 'root' })
-export class IsNotConnectedGuard implements CanActivate {  
+export class IsNotConnectedGuard  {  
   constructor(
     private auth: AuthService,
     private router: Router

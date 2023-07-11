@@ -10,7 +10,13 @@
   "dependencies": {
     "tslib": "^2.0.0"
   },
-  "keywords": ["rive", "animation", "angular", "canvas", "wasm"],
+  "keywords": [
+    "rive",
+    "animation",
+    "angular",
+    "canvas",
+    "wasm"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/dappsnation/ng-rive"
