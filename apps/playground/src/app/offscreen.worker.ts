@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import Rive, { File, RiveCanvas } from '@rive-app/canvas-advanced';
+import RiveBuilder, { File, RiveCanvas as Rive } from '@rive-app/canvas-advanced';
 
 
 interface RiveMessage {
@@ -10,10 +10,10 @@ interface RiveMessage {
   animations: string[];
 }
 
-let rive: RiveCanvas;
-async function getRive(version: string = 'latest') {
+let rive: Rive;
+async function getRive(version = 'latest') {
   if (!rive) {
-    rive = await Rive({ locateFile: () => `https://unpkg.com/@rive-app/canvas-advanced@${version}/rive.wasm` });
+    rive = await RiveBuilder({ locateFile: () => `https://unpkg.com/@rive-app/canvas-advanced@${version}/rive.wasm` });
   }
   return rive;
 }
@@ -26,7 +26,7 @@ async function loadFile(url: string) {
 }
 
 const files: Record<string, File> = {};
-async function getFile(url: string, version: string = 'latest') {
+async function getFile(url: string, version = 'latest') {
   if (!files[url]) {
     const [ rive, blob ] = await Promise.all([ getRive(version), loadFile(url) ]);
     files[url] = await rive.load(blob);

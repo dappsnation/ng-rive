@@ -86,7 +86,7 @@ If you see the error `Error: Can't resolve 'fs'`, add this in your `package.json
 # API
 
 ## Canvas
-The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag : 
+The `RiveCanvas` loads a `.riv` animation file into it's canvas tag : 
 
 #### Input
 - `[riv]`: The `.riv` file or it's name if in the asset. Full path is managed by the `RIVE_FOLDER` token.

@@ -24,7 +24,9 @@ Animations built before version 0.7.0 rive-canvas will not work with new version
 npm install ng-rive @rive-app/canvas-advanced
 ```
 
-2. Import `RiveModule`: 
+2. Module vs standalone `RiveModule`: 
+
+2.1. Module `RiveModule`
 ```typescript
 import { RiveModule } from 'ng-rive';
 
@@ -36,6 +38,20 @@ import { RiveModule } from 'ng-rive';
   ],
 })
 export class MyModule { }
+```
+
+2.2. Standalone:
+```typescript
+@Component({
+  ...
+  standalone: true,
+  imports: [
+    RiveCanvas,
+    RiveLinearAnimation,
+    ...
+  ],
+})
+export class MyComponent {}
 ```
 
 3. Add your .riv file in your assets
@@ -139,7 +155,7 @@ You can see the current default version [here](https://github.com/dappsnation/ng
 # API
 
 ## Canvas
-The `RiveCanvasDirective` loads a `.riv` animation file into it's canvas tag : 
+The `RiveCanvas` loads a `.riv` animation file into it's canvas tag : 
 
 #### Input
 - `[riv]`: The `.riv` file or it's name if in the asset. Full path is managed by the `RIVE_FOLDER` token.

@@ -1,12 +1,13 @@
 import { Directive, Input, NgZone } from '@angular/core';
-import { RiveCanvasDirective } from '../canvas';
+import { RiveCanvas } from '../canvas';
 import { RiveTransformComponent } from './transform-component';
 import { RootBone } from '@rive-app/canvas-advanced';
 
 
 @Directive({
-  selector: 'riv-root-bone, [rivRootBone]',
-  exportAs: 'rivRootBone'
+    selector: 'riv-root-bone, [rivRootBone]',
+    exportAs: 'rivRootBone',
+    standalone: true
 })
 export class RiveRootBone extends RiveTransformComponent<RootBone> {
   @Input() set x(value: number | string | null | undefined) {
@@ -21,7 +22,7 @@ export class RiveRootBone extends RiveTransformComponent<RootBone> {
     this.set('length', value);
   }
 
-  constructor(zone: NgZone, canvas: RiveCanvasDirective) {
+  constructor(zone: NgZone, canvas: RiveCanvas) {
     super(zone, canvas);
   }
 

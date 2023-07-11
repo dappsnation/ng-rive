@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { NgFor } from '@angular/common';
+import { RiveCanvas, RiveStateMachine, RiveSMInput } from 'ng-rive';
 
 
 export interface BottomTabItem {
@@ -48,9 +50,16 @@ export const tabItemsList: BottomTabItem[] = [
 ];
 
 @Component({
-  selector: 'ng-rive-artboard',
-  templateUrl: './artboard.component.html',
-  styleUrls: ['./artboard.component.scss'],
+    selector: 'ng-rive-artboard',
+    templateUrl: './artboard.component.html',
+    styleUrls: ['./artboard.component.scss'],
+    standalone: true,
+    imports: [
+        RiveCanvas,
+        RiveStateMachine,
+        RiveSMInput,
+        NgFor,
+    ],
 })
 export class ArtboardComponent {
   tabs = tabItemsList;

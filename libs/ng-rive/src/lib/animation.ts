@@ -1,7 +1,7 @@
 import { Directive, EventEmitter, Input, NgZone, OnDestroy, Output } from "@angular/core";
 import { BehaviorSubject, of, Subscription } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
-import { RiveCanvasDirective } from './canvas';
+import { RiveCanvas } from './canvas';
 import { RiveService } from "./service";
 import type { Artboard, LinearAnimationInstance, LinearAnimation } from "@rive-app/canvas-advanced";
 
@@ -42,10 +42,11 @@ function assertAnimation(animation: LinearAnimation, artboard: Artboard, name: s
 }
 
 @Directive({
-  selector: 'riv-animation, [rivAnimation]',
-  exportAs: 'rivAnimation'
+    selector: 'riv-animation, [rivAnimation]',
+    exportAs: 'rivAnimation',
+    standalone: true
 })
-export class RiveAnimationDirective implements OnDestroy {
+export class RiveLinearAnimation implements OnDestroy {
   private sub?: Subscription;
   private instance?: LinearAnimationInstance;
   distance = new BehaviorSubject<number | null>(null);
@@ -113,7 +114,7 @@ export class RiveAnimationDirective implements OnDestroy {
 
   constructor(
     private zone: NgZone,
-    private canvas: RiveCanvasDirective,
+    private canvas: RiveCanvas,
     private service: RiveService,
   ) {}
   
