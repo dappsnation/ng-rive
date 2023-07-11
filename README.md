@@ -26,7 +26,7 @@ npm install ng-rive @rive-app/canvas-advanced
 
 2. Module vs standalone `RiveModule`: 
 
-2.1. Module `RiveModule`
+  1. Module `RiveModule`
 ```typescript
 import { RiveModule } from 'ng-rive';
 
@@ -40,8 +40,9 @@ import { RiveModule } from 'ng-rive';
 export class MyModule { }
 ```
 
-2.2. Standalone:
+  2. Standalone:
 ```typescript
+import { RiveCanvas, RiveLinearAnimation } from 'ng-rive';
 @Component({
   ...
   standalone: true,
