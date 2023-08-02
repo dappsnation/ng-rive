@@ -12,11 +12,12 @@ Animations built before version 0.7.0 rive-canvas will not work with new version
 
 | Angular | Rive-canvas  | ng-rive |
 | --------|--------------|---------|
-| >14     | 0.7.*        | 0.2.*   |
-| 12      | 0.7.*        | 0.1.*   |
+| >=15    | 0.7.*        | 0.2.7   |
+| 14-15   | 0.7.*        | 0.2.*   |
+| 12-13   | 0.7.*        | 0.1.*   |
 | <12     | 0.6.*        | 0.0.*   |
 
-
+Note: Version 0.2.7 and above use standalone component.
 
 # Get started
 1. Install :
