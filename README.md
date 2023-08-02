@@ -10,20 +10,22 @@ A repository for Angular built around the [rive canvas runtime](https://help.riv
 ## Compatibility
 Animations built before version 0.7.0 rive-canvas will not work with new versions of ng-rive.
 
-| Angular | Rive-canvas  | ng-rive |
-| --------|--------------|---------|
-| >=15    | 0.7.*        | 0.2.7   |
-| 14-15   | 0.7.*        | 0.2.*   |
-| 12-13   | 0.7.*        | 0.1.*   |
-| <12     | 0.6.*        | 0.0.*   |
+| Angular | ng-rive | @rive-app/canvas-advanced |
+| --------|---------|---------------------------|
+| >=15    | 0.3.*   | 2.*.*                     |
+| 14-15   | 0.2.6   | 1.1.6                     |
+| 12-13   | 0.1.*   | 0.7.* (rive-canvas)       |
+| <12     | 0.0.*   | 0.6.* (rive-canvas)       |
 
-Note: Version 0.2.7 and above use standalone component.
+Note: Version 0.3.0 and above use standalone component.
 
 # Get started
 1. Install :
 ```
-npm install ng-rive @rive-app/canvas-advanced
+npm install ng-rive
 ```
+
+Note: since version 0.3.0 we install `@rive-app/canvas-advanced` with `ng-rive` to avoid mismatching version.
 
 2. Module vs standalone `RiveModule`: 
 

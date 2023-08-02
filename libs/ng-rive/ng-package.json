@@ -5,6 +5,7 @@
     "entryFile": "src/index.ts"
   },
   "allowedNonPeerDependencies": [
+    "@rive-app/canvas-advanced",
     "tslib"
   ]
 }
