@@ -24,7 +24,9 @@
     <mat-slide-toggle formControlName="loading">Loading</mat-slide-toggle>
     <mat-slide-toggle formControlName="hide">Hide</mat-slide-toggle>
     <mat-slide-toggle formControlName="eyes">Eyes</mat-slide-toggle>
-    <mat-slider formControlName="look" min="0" max="100"></mat-slider>
+    <mat-slider min="0" max="100">
+      <input matSliderThumb formControlName="look">
+    </mat-slider>
     <button mat-button (click)="successAnim.fire()">Success</button>
     <button mat-button (click)="errorAnim.fire()">Error</button>
     <button mat-button (click)="clickAnim.fire()">click</button>
