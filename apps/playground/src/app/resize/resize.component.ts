@@ -6,8 +6,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { RivePlayer } from '../../../../../libs/ng-rive/src/lib/player';
-import { RiveCanvas } from '../../../../../libs/ng-rive/src/lib/canvas';
+import { RivePlayer, RiveCanvas } from 'ng-rive';
 import { NgIf, NgFor, AsyncPipe } from '@angular/common';
 
 const fits = ['cover', 'contain', 'fill', 'fitWidth', 'fitHeight', 'none', 'scaleDown'];

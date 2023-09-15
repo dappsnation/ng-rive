@@ -22,6 +22,7 @@ import { RiveModule } from 'ng-rive';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
+import { MultiAnimationComponent } from './app/multi-animation/multi-animation.component';
 
 if (environment.production) {
 	enableProdMode();
@@ -30,7 +31,7 @@ if (environment.production) {
 document.addEventListener('DOMContentLoaded', () => {
 	bootstrapApplication(AppComponent, {
 		providers: [
-			importProvidersFrom(BrowserModule.withServerTransition({ appId: 'serverApp' }), ReactiveFormsModule, FormsModule, RiveModule, MatFormFieldModule, MatSelectModule, MatSidenavModule, MatButtonModule, MatListModule, MatToolbarModule, MatSliderModule, MatSlideToggleModule, MatInputModule),
+			importProvidersFrom(BrowserModule, RiveModule, ReactiveFormsModule, FormsModule, MatFormFieldModule, MatSelectModule, MatSidenavModule, MatButtonModule, MatListModule, MatToolbarModule, MatSliderModule, MatSlideToggleModule, MatInputModule),
 			provideAnimations(),
 			provideRouter([
 				{
@@ -45,6 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
 				{
 					path: 'state-machine',
 					component: StateMachineComponent,
+				},
+				{
+					path: 'multi-animation',
+					component: MultiAnimationComponent,
 				},
 				{
 					path: 'player',
