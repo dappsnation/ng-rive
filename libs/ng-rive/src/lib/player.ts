@@ -157,9 +157,7 @@ export class RivePlayer implements OnDestroy {
   // eslint-disable-next-line @angular-eslint/no-output-native
   @Output() load = new EventEmitter<LinearAnimationInstance>();
   @Output() timeChange = new EventEmitter<number>();
-  /** @deprecated will be removed */
   @Output() playChange = new EventEmitter<boolean>();
-  /** @deprecated will be removed */
   @Output() speedChange = new EventEmitter<number>();
 
   constructor(

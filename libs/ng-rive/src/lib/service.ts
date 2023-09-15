@@ -7,7 +7,7 @@ import { share } from 'rxjs/operators';
 import { RIVE_FOLDER, RIVE_VERSION, RIVE_WASM } from './tokens';
 import { firstValueFrom, Observable } from 'rxjs';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RiveService {
   private wasmPath: string;
   private folder: string;
@@ -20,7 +20,7 @@ export class RiveService {
     @Optional() @Inject(RIVE_WASM) wasmPath?: string,
     @Optional() @Inject(RIVE_VERSION) version?: string,
   ) {
-    const riveVersion = version ?? '2.1.0';
+    const riveVersion = version ?? '2.4.0';
     this.folder = folder ?? 'assets/rive';
     this.wasmPath = wasmPath ?? `https://unpkg.com/@rive-app/canvas-advanced@${riveVersion}/rive.wasm`;
   }
