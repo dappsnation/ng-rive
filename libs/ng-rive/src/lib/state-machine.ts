@@ -101,7 +101,7 @@ export class RiveSMInput {
       this.change.emit(this.input);
     }
     if (this.shouldFire) {
-      this.shouldFire(input);
+      this.shouldFire(this.input);
       delete this.shouldFire;
     }
   }
